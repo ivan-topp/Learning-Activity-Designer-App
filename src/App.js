@@ -1,9 +1,9 @@
-function App() {
+import { AppRouter } from "./router/AppRouter";
+
+function LearningActivityDesigner() {
   return (
-    <div className="App">
-      <h1>Learning Activity Designer App</h1>
-    </div>
+    <AppRouter/>
   );
 }
 
-export default App;
+export default LearningActivityDesigner;
