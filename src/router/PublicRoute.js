@@ -13,12 +13,12 @@ export const PublicRoute = ({
                 (props) => (
                     ( !isAuthenticated )
                         ? <Component {...props} />
-                        : <Redirect to="/" />
+                        : <Redirect to="/my-designs" />
                 )
             }
         />
-    )
-}
+    );
+};
 
 PublicRoute.propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
