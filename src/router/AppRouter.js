@@ -9,6 +9,7 @@ import { PublicRoute } from './PublicRoute';
 import { PrivateRoute } from './PrivateRoute';
 import { MyDesignsPage } from '../pages/MyDesigns/MyDesignsPage';
 import { useAuthState } from '../contexts/AuthContext';
+import { NavBar } from '../components/NavBar';
 
 export const AppRouter = () => {
     const { authState } = useAuthState();
@@ -19,6 +20,7 @@ export const AppRouter = () => {
     return (
         <Router>
             <div>
+                <NavBar />
                 <Switch>
                     <PublicRoute exact path="/" component={ LandingPage } isAuthenticated={ Boolean(token) } />
                     <PrivateRoute exact path="/my-designs" component={ MyDesignsPage } isAuthenticated={ Boolean(token) } />

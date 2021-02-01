@@ -6,10 +6,12 @@ import {
     Link,
 } from '@material-ui/core';
 import Logo from '../../assets/img/Logo.png';
+import Alert from '@material-ui/lab/Alert';
 import { ModalFormWithImage } from '../../components/ModalFormWithImage';
 import { useForm } from '../../hooks/useForm';
 import { register } from '../../services/AuthService';
 import { useAuthState } from '../../contexts/AuthContext';
+import { useUiState } from '../../contexts/UiContext';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -40,9 +42,9 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const RegisterModal = React.memo(({ state }) => {
+export const RegisterModal = React.memo(() => {
     const classes = useStyles();
-    const [ isOpen, setOpen ] = state; // TODO: Probablemente haya que tener un context para aspectos de interfaz.
+    const { uiState, setUiState } = useUiState(); // TODO: Probablemente haya que tener un context para aspectos de interfaz.
     const { setAuthState } = useAuthState();
     const [ error, setError ] = useState(null);
     const [ formData, handleInputChange, reset ] = useForm({
@@ -54,8 +56,12 @@ export const RegisterModal = React.memo(({ state }) => {
     });
 
     const handleClose = () => {
-        setOpen(false);
+        setUiState((prevState) => ({
+            ...prevState,
+            isRegisterModalOpen: false,
+        }));
         reset();
+        setError(null);
     };
 
     const handleRegister = async (e) => {
@@ -67,7 +73,10 @@ export const RegisterModal = React.memo(({ state }) => {
         let response = await register(setAuthState, formData);
         if (!response.data) {
             setError(response.message);
+        } else {
+            handleClose();
         }
+        
     };
 
     const toLogin = (e) => {
@@ -77,18 +86,14 @@ export const RegisterModal = React.memo(({ state }) => {
 
     return (
         <ModalFormWithImage
-            isOpen={isOpen}
-            handleClose={handleClose}
+            isOpen={ uiState.isRegisterModalOpen }
+            handleClose={ handleClose }
             title='¡Bienvenido!'
             subtitle='Completa los campos para registrar tu cuenta'
             image={<img className={classes.logo} src={Logo} alt="Logo" />}
             content={
                 <form className={classes.form} onSubmit={handleRegister} noValidate>
-                    {(error)?
-                        <h1>{ error }</h1>
-                        :
-                        null
-                    }
+                    { error && <Alert severity="error">{ error }</Alert> }
                     <TextField margin="dense" name="name" value={formData.name} onChange={handleInputChange} label="Nombres" type="text" fullWidth />
                     <TextField margin="dense" name="lastname" value={formData.lastname} onChange={handleInputChange} label="Apellidos" type="text" fullWidth />
                     <TextField margin="dense" name="email" value={formData.email} onChange={handleInputChange} label="Email" type="email" fullWidth />

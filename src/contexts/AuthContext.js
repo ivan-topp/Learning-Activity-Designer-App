@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect, useContext, createContext } from 'react';
 import { checkingToken } from '../services/AuthService';
 
-const AuthStateContext = React.createContext();
+const AuthContext = createContext();
 
 export function useAuthState() {
-	const context = React.useContext(AuthStateContext);
+	const context = useContext(AuthContext);
 	if (context === undefined) {
 		throw new Error('useAuthState must be used within a AuthProvider');
 	}
@@ -14,7 +14,7 @@ export function useAuthState() {
 
 export const AuthProvider = ({ children }) => {
 
-	const [authState, setAuthState] = React.useState({
+	const [authState, setAuthState] = useState({
 		checking: true,
 		user: null,
 		token: null,
@@ -50,8 +50,8 @@ export const AuthProvider = ({ children }) => {
 	}, [authState.token]);
 
 	return (
-		<AuthStateContext.Provider value={ { authState, setAuthState } }>
-				{children}
-		</AuthStateContext.Provider>
+		<AuthContext.Provider value={ { authState, setAuthState } }>
+			{children}
+		</AuthContext.Provider>
 	);
 };

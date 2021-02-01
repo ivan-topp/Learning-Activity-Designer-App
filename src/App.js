@@ -1,11 +1,14 @@
 import { AuthProvider } from "./contexts/AuthContext";
+import { UiProvider } from "./contexts/UiContext";
 import { AppRouter } from "./router/AppRouter";
 
 function LearningActivityDesigner() {
     return (
-        <AuthProvider>
-            <AppRouter />
-        </AuthProvider>
+        <UiProvider>
+            <AuthProvider>
+                <AppRouter />
+            </AuthProvider>
+        </UiProvider>
     );
 }
 
