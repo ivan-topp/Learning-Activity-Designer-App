@@ -4,7 +4,7 @@ import {
   Switch,
   Redirect
 } from 'react-router-dom';
-import { LandingPage } from '../pages/LandingPage';
+import { LandingPage } from '../pages/LandingPage/LandingPage';
 import { PublicRoute } from './PublicRoute';
 
 
@@ -16,6 +16,7 @@ export const AppRouter = () => {
     <Router>
       <div>
         <Switch>
+            
             <PublicRoute exact path="/" component={ LandingPage } isAuthenticated={ isLogged }/>
             <Redirect to="/" />
         </Switch>
