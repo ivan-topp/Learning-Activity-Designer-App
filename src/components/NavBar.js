@@ -55,6 +55,7 @@ export const NavBar = () => {
     };
 
     const classes = useStyles();
+    
     return (
         <div className={classes.root}>
             <AppBar position="static" color="default">

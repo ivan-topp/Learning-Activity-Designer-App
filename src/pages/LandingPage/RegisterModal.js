@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const RegisterModal = React.memo(() => {
     const classes = useStyles();
-    const { uiState, setUiState } = useUiState(); // TODO: Probablemente haya que tener un context para aspectos de interfaz.
+    const { uiState, setUiState } = useUiState();
     const { setAuthState } = useAuthState();
     const [ error, setError ] = useState(null);
     const [ formData, handleInputChange, reset ] = useForm({

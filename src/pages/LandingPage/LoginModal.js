@@ -131,7 +131,8 @@ export const LoginModal = () => {
         reset();
     };
 
-    const recoverPassword = () => {
+    const recoverPassword = (e) => {
+        e.preventDefault();
         console.log('Redirigir a recuperar contraseña...');
     }
 
