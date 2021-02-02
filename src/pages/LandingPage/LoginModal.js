@@ -2,26 +2,14 @@ import React, { useState } from 'react';
 import {
     Button,
     makeStyles,
-    //IconButton,
-    //InputAdornment,
-    //InputLabel,
-    //Input,
-    //Tooltip,
+    IconButton,
     TextField,
     Link
 } from '@material-ui/core';
-//import {
-//    Visibility,
-//    VisibilityOff,
-//    CheckCircleOutlineIcon,
-//    HighlightOffIcon,
-//
-//} from '@material-ui/icons/Visibility';
-//import { green } from '@material-ui/core/colors';
-import Alert from '@material-ui/lab/Alert';
 
+import { Visibility, VisibilityOff } from '@material-ui/icons';
+import Alert from '@material-ui/lab/Alert';
 import Logo from '../../assets/img/Logo.png';
-import './styles.css'
 import { useForm } from '../../hooks/useForm';
 import { useUiState } from '../../contexts/UiContext';
 import { ModalFormWithImage } from '../../components/ModalFormWithImage';
@@ -54,73 +42,110 @@ const useStyles = makeStyles((theme) => ({
     },
     footer: {
         display: 'flex',
+        flexDirection: 'column',
         width: '100%',
         justifyContent: 'center',
-        paddingBottom: 30,
+        alignItems: 'center',
+        paddingTop: 30,
+        paddingBottom: 15,
     },
+
     link: {
         marginTop: 10,
         marginBottom: 10,
     }
 
 }));
-
+const initialErrors = {
+    emailError: null,
+    passwordError: null,
+};
 
 export const LoginModal = () => {
 
     const classes = useStyles();
     const { uiState, setUiState } = useUiState();
     const { setAuthState } = useAuthState();
-
+    const [formErrors, setFormErrors] = useState(initialErrors);
     const [error, setError] = useState(false);
-    //const [values, setValues] = useState({
-    //    password: '',
-    //});
+    const [values, setValues] = useState({
+        password: '',
+    });
     const [formLoginValues, handleInputChange, reset] = useForm({
         email: 'aguzman2016@alu.uct.cl',
-        password: '123'
+        password: 'Mameluco123'
     });
 
     const { email, password } = formLoginValues;
 
-    const validateEmail = (email) => {
-        if (/^[-\w.%+]{1,64}@(?:[A-Z0-9]{1,63}\.){1,125}[A-Z]{2,63}$/i.test(email)) {
+    const { emailError, passwordError } = formErrors;
+    const isFormComplete = () => {
+        return Object.keys(formLoginValues).map((key, index) => {
+            if (formLoginValues[key].trim() === '') {
+                setFormErrors((prevState) => ({
+                    ...prevState,
+                    [key + 'Error']: 'Este campo es requerido.',
+                }));
+                return false;
+            } else {
+                setFormErrors((prevState) => ({
+                    ...prevState,
+                    [key + 'Error']: null,
+                }));
+            }
             return true;
-        } else {
-            return false;
-        }
+        }).reduce((a, b) => a && b);
     };
 
-    const validatePassword = (password) => {
-        if (password.length >= 3) {
-            return true;
-        } else {
+
+    const isEmailValid = () => {
+        if (!/^[-\w.%+]{1,64}@(?:[A-Z0-9]{1,63}\.){1,125}[A-Z]{2,63}$/i.test(email)) {
+            setFormErrors((prevState) => ({
+                ...prevState,
+                emailError: 'El correo debe tener la siguiente estructura: example@example.com',
+            }));
             return false;
         }
+        return true;
     };
+
+    const isPasswordValid = () => {
+        if (!password.length >= 8 && !password.length <= 16) {
+            setFormErrors((prevState) => ({
+                ...prevState,
+                passwordError: 'La contraseña debe tener entre 8 y 16 caracteres.',
+            }));
+            return false;
+        }
+        return true;
+    };
+
+
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        if (validateEmail(email) && validatePassword(password)) {
-            let response = await login(setAuthState, { email, password });
-            if (!response.data) {
-                setError(response.message);
-            }else{
-                handleClose();
-            }
-            
-            /*const res = await fetchWithoutToken('auth/login', { email, password }, 'POST');
-            const body = await res.json();
-            console.log(body);
-            if (body.ok) {
-                setError(false);
-                localStorage.setItem('user', JSON.stringify(body.data.user));
-                localStorage.setItem('token', body.data.token);
-                //localStorage.setItem('token-init-date', new Date().getTime());
-            } else {
-                setError(true);
-            }*/
+        if (!isFormComplete()) return;
+        if (!isEmailValid()) return;
+        if (!isPasswordValid()) return;
+
+        let response = await login(setAuthState, { email, password });
+        if (!response.data) {
+            setError(response.message);
+        } else {
+            handleClose();
         }
+
+        /*const res = await fetchWithoutToken('auth/login', { email, password }, 'POST');
+        const body = await res.json();
+        console.log(body);
+        if (body.ok) {
+            setError(false);
+            localStorage.setItem('user', JSON.stringify(body.data.user));
+            localStorage.setItem('token', body.data.token);
+            //localStorage.setItem('token-init-date', new Date().getTime());
+        } else {
+            setError(true);
+        }*/
     };
 
     const handleClose = () => {
@@ -137,12 +162,12 @@ export const LoginModal = () => {
     }
 
 
-    //const handleClickShowPassword = () => {
-    //    setValues({ ...values, showPassword: !values.showPassword });
-    //};
-    //const handleMouseDownPassword = (event) => {
-    //    event.preventDefault();
-    //};
+    const handleClickShowPassword = () => {
+        setValues({ ...values, showPassword: !values.showPassword });
+    };
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
 
     const toRegister = (e) => {
         e.preventDefault();
@@ -152,78 +177,70 @@ export const LoginModal = () => {
     return (
         <>
             <ModalFormWithImage
-                isOpen={ uiState.isLoginModalOpen }
-                handleClose={ handleClose }
+                isOpen={uiState.isLoginModalOpen}
+                handleClose={handleClose}
                 title='¡Bienvenido!'
-                subtitle='Completa los campos para registrar tu cuenta'
+                subtitle='Completa los campos para ingresar con tu cuenta'
                 image={<img className={classes.logo} src={Logo} alt="Logo" />}
                 content={
                     <form className={classes.form} onSubmit={handleLogin} noValidate>
-                        { error && <Alert severity="error"> Email o contraseña incorrectos</Alert> }
-                        <TextField margin="dense" name="email" value={email} onChange={handleInputChange} label="Email" type="email" fullWidth />
-                        <TextField margin="dense" name="password" value={password} onChange={handleInputChange} label="Contraseña" type='password' fullWidth />
-                        {/*<InputLabel htmlFor="standard-adornment-password">Email</InputLabel>
-                        <Input
-                            type={values.showPassword ? 'text' : 'password'}
-                            onChange={handleInputChange}
-                            fullWidth
+                        {error && <Alert severity="error"> Email o contraseña incorrectos</Alert>}
+
+
+                        <TextField
+                            error={!!emailError}
+                            helperText={emailError}
+                            margin="dense"
+                            variant="outlined"
                             name="email"
                             value={email}
-                            endAdornment={
-                                <InputAdornment position="end">
-
-                                    {ValidateEmail(email) ?
-                                        <Tooltip title="El correo esta correctamente escrito" aria-label="good">
-                                            <CheckCircleOutlineIcon style={{ color: green[500] }}></CheckCircleOutlineIcon>
-                                        </Tooltip>
-                                        :
-                                        <Tooltip title="El correo no esta correctamente escrito" aria-label="bad">
-                                            <HighlightOffIcon color="secondary"></HighlightOffIcon>
-                                        </Tooltip>}
-
-                                </InputAdornment>
-                            }
-                        />*/}
-                        {/*<InputLabel htmlFor="standard-adornment-password">Contraseña</InputLabel>
-                        <Input
-                            type={values.showPassword ? 'text' : 'password'}
                             onChange={handleInputChange}
-                            fullWidth
+                            label="Email"
+                            type="email"
+                            fullWidth />
+
+                        <TextField
+                            error={!!passwordError}
+                            helperText={passwordError}
+                            margin="dense"
+                            variant="outlined"
                             name="password"
                             value={password}
-                            endAdornment={
-                                <InputAdornment position="end">
+                            onChange={handleInputChange}
+                            label="Contraseña"
+                            type={values.showPassword ? 'text' : 'password'}
+                            fullWidth
+                            InputProps={{
+                                endAdornment:
                                     <IconButton
-                                        aria-label="toggle password visibility"
                                         onClick={handleClickShowPassword}
                                         onMouseDown={handleMouseDownPassword}
-                                        >
+                                    >
                                         {values.showPassword ? <Visibility /> : <VisibilityOff />}
                                     </IconButton>
-                                    {ValidatePassword(password)? 
-                                            <Tooltip title="La contraseña tiene mmás de 3 caracteres" aria-label="good">
-                                                <CheckCircleOutlineIcon style={{ color: green[500]}}></CheckCircleOutlineIcon>
-                                            </Tooltip> 
-                                            : 
-                                            <Tooltip title="La contraseña tiene menos de 3 caracteres" aria-label="bad">
-                                                <HighlightOffIcon color="secondary"></HighlightOffIcon>
-                                            </Tooltip> 
-                                    }
-                                </InputAdornment>
-                            }
-                        />*/}
-                        
-                        <Link className={classes.link} href='#' align='right' variant="body1" onClick={recoverPassword}>
-                            ¿Olvidaste tu contraseña?
-                        </Link>
-                        <Link className={classes.link} href="#" align='right' variant="body1" onClick={ toRegister }>
-                            ¿No tienes cuenta? Registrate
-                        </Link>
+
+                            }} />
+
+
                         <div className={classes.footer}>
                             <Button color="primary" variant='outlined' type='submit' fullWidth>
                                 Iniciar Sesión
                             </Button>
+                            <div style={{ paddingTop: 20 }}>
+                                <Link href='#' align='center' variant="body1" onClick={recoverPassword}>
+                                    ¿Olvidaste tu contraseña?
+                                </Link>
+                            </div>
+                            <div style={{ paddingBottom: 15, paddingTop: 10 }}>
+                                <Link href="#" variant="body1" onClick={toRegister}>
+                                    ¿No tienes cuenta? Registrate
+                                </Link>
+                            </div>
+
                         </div>
+
+
+
                     </form>
                 }
             />

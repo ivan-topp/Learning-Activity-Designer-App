@@ -3,6 +3,6 @@ import ReactDOM from 'react-dom';
 import LearningActivityDesigner from './App';
 
 ReactDOM.render(
-  <LearningActivityDesigner />,
+    <LearningActivityDesigner />,
   document.getElementById('root')
 );

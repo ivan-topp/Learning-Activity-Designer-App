@@ -22,13 +22,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const NavBar = () => {
-    const [isMenuOpen, setMenuOpen] = useState(false);
+    const [isMenuOpen, setMenuOpen] = useState(null);
+
     const { setUiState } = useUiState();
     const { authState } = useAuthState();
     const { setAuthState } = useAuthState();
 
     const handleLogout = () => {
-        setMenuOpen(false);
+        setMenuOpen(null);
         logout(setAuthState);
     };
 
@@ -47,11 +48,11 @@ export const NavBar = () => {
     }
 
     const handleMenu = (event) => {
-        setMenuOpen(true);
+        setMenuOpen(event.currentTarget);
     };
 
     const handleClose = () => {
-        setMenuOpen(false);
+        setMenuOpen(null);
     };
 
     const classes = useStyles();
@@ -80,7 +81,8 @@ export const NavBar = () => {
                                     <SettingsIcon />
                                 </IconButton>
                                 <Menu
-                                    id="menu-appbar"
+                                    anchorEl = {isMenuOpen}
+                                    open = {Boolean(isMenuOpen)}
                                     anchorOrigin={{
                                         vertical: 'top',
                                         horizontal: 'right',
@@ -90,7 +92,6 @@ export const NavBar = () => {
                                         vertical: 'top',
                                         horizontal: 'right',
                                     }}
-                                    open={isMenuOpen}
                                     onClose={handleClose}
                                 >
                                     <MenuItem>
