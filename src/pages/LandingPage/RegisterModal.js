@@ -13,7 +13,6 @@ import { register } from '../../services/AuthService';
 import { useAuthState } from '../../contexts/AuthContext';
 import { useUiState } from '../../contexts/UiContext';
 
-
 const useStyles = makeStyles((theme) => ({
     form: {
         display: 'flex',
@@ -64,7 +63,6 @@ export const RegisterModal = React.memo(() => {
     });
     const { name, lastname, email, password, confirmPassword } = formData;
     const { nameError, lastnameError, emailError, passwordError, confirmPasswordError } = formErrors;
-
     
     const handleClose = () => {
         setUiState((prevState) => ({
@@ -114,6 +112,7 @@ export const RegisterModal = React.memo(() => {
     }
 
     const handleInputFormChange = (e) => {
+        setErrorFromServer(null);
         setFormErrors((prevState)=>({
             ...prevState,
             [ e.target.name + 'Error']: null,
