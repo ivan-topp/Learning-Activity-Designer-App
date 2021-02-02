@@ -32,21 +32,29 @@ const useStyles = makeStyles((theme) => ({
     },
     footer: {
         display: 'flex',
+        flexDirection:'column',
         width: '100%',
         justifyContent: 'center',
-        paddingBottom: 30,
-    },
-    link: {
-        marginTop: 10,
-        marginBottom: 10,
+        alignItems: 'center',
+        paddingTop: 30,
+        paddingBottom: 15,
     }
 }));
+
+const initialErrors = {
+    nameError: null,
+    lastnameError: null,
+    emailError: null,
+    passwordError: null,
+    confirmPasswordError: null,
+};
 
 export const RegisterModal = React.memo(() => {
     const classes = useStyles();
     const { uiState, setUiState } = useUiState();
     const { setAuthState } = useAuthState();
-    const [ error, setError ] = useState(null);
+    const [ errorFromServer, setErrorFromServer ] = useState(null);
+    const [ formErrors, setFormErrors ] = useState(initialErrors);
     const [ formData, handleInputChange, reset ] = useForm({
         name: '',
         lastname: '',
@@ -54,34 +62,90 @@ export const RegisterModal = React.memo(() => {
         password: '',
         confirmPassword: '',
     });
+    const { name, lastname, email, password, confirmPassword } = formData;
+    const { nameError, lastnameError, emailError, passwordError, confirmPasswordError } = formErrors;
 
+    
     const handleClose = () => {
         setUiState((prevState) => ({
             ...prevState,
             isRegisterModalOpen: false,
         }));
         reset();
-        setError(null);
+        setFormErrors(initialErrors);
+        setErrorFromServer(null);
     };
+    
+    const isFormComplete = () => {
+        return Object.keys( formData ).map((key, index) => {
+            if(formData[key].trim() === ''){
+                setFormErrors((prevState)=>({
+                    ...prevState,
+                    [ key + 'Error']: 'Este campo es requerido.',
+                }));
+                return false;
+            } else {
+                setFormErrors((prevState)=>({
+                    ...prevState,
+                    [ key + 'Error']: null,
+                }));
+            }
+            return true;
+        }).reduce((a, b) => a && b);
+    }
+
+    const paswordsMatchs = () => {
+        if(!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,16}$/.test(password)){
+            setFormErrors((prevState) => ({
+                ...prevState,
+                passwordError: 'La contraseña debe tener al menos un carácter en minúscula, uno en mayúscula, un número y debe tener entre 8 y 16 caractéres de longitud.',
+            }));
+            return false;
+        }
+        if (password.trim() !== confirmPassword.trim()) {
+            setFormErrors((prevState) => ({
+                ...prevState,
+                passwordError: 'Las contraseñas no coinciden.',
+                confirmPasswordError: 'Las contraseñas no coinciden.'
+            }));
+            return false;
+        }
+        return true;
+    }
+
+    const handleInputFormChange = (e) => {
+        setFormErrors((prevState)=>({
+            ...prevState,
+            [ e.target.name + 'Error']: null,
+        }));
+        handleInputChange(e);
+    }
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        if (formData.password !== formData.confirmPassword){
-            console.log('Contraseñas no coinciden.');
-            return;
-        }
-        let response = await register(setAuthState, formData);
-        if (!response.data) {
-            setError(response.message);
-        } else {
+        if (!isFormComplete()) return;
+        if (!paswordsMatchs()) return;
+        let resp = await register( formData );
+        if (resp.ok) {
             handleClose();
+            setAuthState((prevState)=>({
+				...prevState,
+				user: resp.data.user,
+				token: resp.data.token,
+				checking: false,
+			}));
+        } else {
+            setErrorFromServer(resp.message);
         }
-        
     };
 
     const toLogin = (e) => {
         e.preventDefault();
-        console.log('Redirijir al login...');
+        handleClose();
+        setUiState((prevState) => ({
+            ...prevState,
+            isLoginModalOpen: true,
+        }));
     };
 
     return (
@@ -93,20 +157,77 @@ export const RegisterModal = React.memo(() => {
             image={<img className={classes.logo} src={Logo} alt="Logo" />}
             content={
                 <form className={classes.form} onSubmit={handleRegister} noValidate>
-                    { error && <Alert severity="error">{ error }</Alert> }
-                    <TextField margin="dense" name="name" value={formData.name} onChange={handleInputChange} label="Nombres" type="text" fullWidth />
-                    <TextField margin="dense" name="lastname" value={formData.lastname} onChange={handleInputChange} label="Apellidos" type="text" fullWidth />
-                    <TextField margin="dense" name="email" value={formData.email} onChange={handleInputChange} label="Email" type="email" fullWidth />
-                    <TextField margin="dense" name="password" value={formData.password} onChange={handleInputChange} label="Contraseña" type='password' fullWidth />
-                    <TextField margin="dense" name="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} label="Repetir contraseña" type='password' fullWidth />
-                    <Link className={classes.link} href='#' align='right' variant="body1" onClick={toLogin}>
-                        ¿Ya tienes cuenta?
-                    </Link>
+                    { errorFromServer && <Alert severity="error">{ errorFromServer }</Alert> }
+                    <TextField
+                        variant='outlined'
+                        error={!!nameError}
+                        helperText={ nameError } 
+                        margin="dense" 
+                        name="name" 
+                        value={ name } 
+                        onChange={ handleInputFormChange } 
+                        label="Nombres" 
+                        type="text" 
+                        fullWidth
+                    />
+                    <TextField
+                        variant='outlined'
+                        error={!!lastnameError}
+                        helperText={ lastnameError } 
+                        margin="dense" 
+                        name="lastname" 
+                        value={ lastname } 
+                        onChange={ handleInputFormChange } 
+                        label="Apellidos" 
+                        type="text" 
+                        fullWidth 
+                    />
+                    <TextField
+                        variant='outlined'
+                        error={!!emailError}
+                        helperText={ emailError } 
+                        margin="dense" 
+                        name="email" 
+                        value={ email } 
+                        onChange={ handleInputFormChange } 
+                        label="Email" 
+                        type="email" 
+                        fullWidth 
+                    />
+                    <TextField
+                        variant='outlined'
+                        error={!!passwordError}
+                        helperText={ passwordError } 
+                        margin="dense" 
+                        name="password" 
+                        value={ password } 
+                        onChange={ handleInputFormChange } 
+                        label="Contraseña" 
+                        type='password' 
+                        fullWidth 
+                    />
+                    <TextField
+                        variant='outlined'
+                        error={!!confirmPasswordError}
+                        helperText={ confirmPasswordError } 
+                        margin="dense" 
+                        name="confirmPassword" 
+                        value={ confirmPassword } 
+                        onChange={ handleInputFormChange } 
+                        label="Repetir contraseña" 
+                        type='password' 
+                        fullWidth 
+                    />
+                    
                     <div className={classes.footer}>
                         <Button color="primary" variant='outlined' type='submit' fullWidth>
                             Registrarme
                         </Button>
+                        <Link href='#' style={{paddingTop:20, paddingBottom:15}} variant="body1" onClick={toLogin}>
+                            ¿Ya tienes cuenta?
+                        </Link>
                     </div>
+                    
                 </form>
             }
         />

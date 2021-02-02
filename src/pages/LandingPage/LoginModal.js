@@ -54,8 +54,8 @@ const useStyles = makeStyles((theme) => ({
         marginTop: 10,
         marginBottom: 10,
     }
-
 }));
+
 const initialErrors = {
     emailError: null,
     passwordError: null,
@@ -67,18 +67,15 @@ export const LoginModal = () => {
     const { uiState, setUiState } = useUiState();
     const { setAuthState } = useAuthState();
     const [formErrors, setFormErrors] = useState(initialErrors);
-    const [error, setError] = useState(false);
-    const [values, setValues] = useState({
-        password: '',
-    });
+    const [errorFromServer, setErrorFromServer] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [formLoginValues, handleInputChange, reset] = useForm({
         email: 'aguzman2016@alu.uct.cl',
         password: 'Mameluco123'
     });
-
     const { email, password } = formLoginValues;
-
     const { emailError, passwordError } = formErrors;
+    
     const isFormComplete = () => {
         return Object.keys(formLoginValues).map((key, index) => {
             if (formLoginValues[key].trim() === '') {
@@ -97,7 +94,6 @@ export const LoginModal = () => {
         }).reduce((a, b) => a && b);
     };
 
-
     const isEmailValid = () => {
         if (!/^[-\w.%+]{1,64}@(?:[A-Z0-9]{1,63}\.){1,125}[A-Z]{2,63}$/i.test(email)) {
             setFormErrors((prevState) => ({
@@ -110,42 +106,40 @@ export const LoginModal = () => {
     };
 
     const isPasswordValid = () => {
-        if (!password.length >= 8 && !password.length <= 16) {
-            setFormErrors((prevState) => ({
-                ...prevState,
-                passwordError: 'La contraseña debe tener entre 8 y 16 caracteres.',
-            }));
-            return false;
-        }
-        return true;
+        if (password.length >= 8 && password.length <= 16) return true;
+        setFormErrors((prevState) => ({
+            ...prevState,
+            passwordError: 'La contraseña debe tener entre 8 y 16 caracteres.',
+        }));
+        return false;
     };
 
-
+    const handleInputFormChange = (e) => {
+        setErrorFromServer(null);
+        setFormErrors((prevState)=>({
+            ...prevState,
+            [ e.target.name + 'Error']: null,
+        }));
+        handleInputChange(e);
+    }
 
     const handleLogin = async (e) => {
         e.preventDefault();
         if (!isFormComplete()) return;
         if (!isEmailValid()) return;
         if (!isPasswordValid()) return;
-
-        let response = await login(setAuthState, { email, password });
-        if (!response.data) {
-            setError(response.message);
-        } else {
+        let resp = await login({ email, password });
+        if (resp.ok) {
             handleClose();
-        }
-
-        /*const res = await fetchWithoutToken('auth/login', { email, password }, 'POST');
-        const body = await res.json();
-        console.log(body);
-        if (body.ok) {
-            setError(false);
-            localStorage.setItem('user', JSON.stringify(body.data.user));
-            localStorage.setItem('token', body.data.token);
-            //localStorage.setItem('token-init-date', new Date().getTime());
+            setAuthState((prevState)=>({
+                ...prevState,
+                user: resp.data.user,
+                token: resp.data.token,
+                checking: false,
+            }));
         } else {
-            setError(true);
-        }*/
+            setErrorFromServer(resp.message);
+        }    
     };
 
     const handleClose = () => {
@@ -161,17 +155,21 @@ export const LoginModal = () => {
         console.log('Redirigir a recuperar contraseña...');
     }
 
-
     const handleClickShowPassword = () => {
-        setValues({ ...values, showPassword: !values.showPassword });
+        setShowPassword(!showPassword );
     };
+
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
 
     const toRegister = (e) => {
         e.preventDefault();
-        console.log('Redirijir al login...');
+        handleClose();
+        setUiState((prevState) => ({
+            ...prevState,
+            isRegisterModalOpen: true,
+        }));
     };
 
     return (
@@ -184,9 +182,7 @@ export const LoginModal = () => {
                 image={<img className={classes.logo} src={Logo} alt="Logo" />}
                 content={
                     <form className={classes.form} onSubmit={handleLogin} noValidate>
-                        {error && <Alert severity="error"> Email o contraseña incorrectos</Alert>}
-
-
+                        {errorFromServer && <Alert severity="error"> {errorFromServer}</Alert>}
                         <TextField
                             error={!!emailError}
                             helperText={emailError}
@@ -194,11 +190,11 @@ export const LoginModal = () => {
                             variant="outlined"
                             name="email"
                             value={email}
-                            onChange={handleInputChange}
+                            onChange={handleInputFormChange}
                             label="Email"
                             type="email"
-                            fullWidth />
-
+                            fullWidth 
+                        />
                         <TextField
                             error={!!passwordError}
                             helperText={passwordError}
@@ -206,9 +202,9 @@ export const LoginModal = () => {
                             variant="outlined"
                             name="password"
                             value={password}
-                            onChange={handleInputChange}
+                            onChange={handleInputFormChange}
                             label="Contraseña"
-                            type={values.showPassword ? 'text' : 'password'}
+                            type={showPassword ? 'text' : 'password'}
                             fullWidth
                             InputProps={{
                                 endAdornment:
@@ -216,12 +212,11 @@ export const LoginModal = () => {
                                         onClick={handleClickShowPassword}
                                         onMouseDown={handleMouseDownPassword}
                                     >
-                                        {values.showPassword ? <Visibility /> : <VisibilityOff />}
+                                        {showPassword ? <Visibility /> : <VisibilityOff />}
                                     </IconButton>
 
-                            }} />
-
-
+                            }} 
+                        />
                         <div className={classes.footer}>
                             <Button color="primary" variant='outlined' type='submit' fullWidth>
                                 Iniciar Sesión
@@ -236,11 +231,7 @@ export const LoginModal = () => {
                                     ¿No tienes cuenta? Registrate
                                 </Link>
                             </div>
-
                         </div>
-
-
-
                     </form>
                 }
             />
