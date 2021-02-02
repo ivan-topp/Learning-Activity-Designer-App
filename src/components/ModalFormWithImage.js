@@ -28,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
 
 export const ModalFormWithImage = React.memo(({ isOpen, handleClose, maxWidth = 'sm', title = '', subtitle = '', image, content, actions }) => {
     const classes = useStyles();
-
     return (
         <Dialog
             fullWidth={true}

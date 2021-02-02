@@ -56,13 +56,9 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         width: '100%',
         justifyContent: 'center',
-        paddingBottom: 30,
-    },
-    link: {
-        marginTop: 10,
-        marginBottom: 10,
+        paddingBottom: 15,
+        paddingTop: 30,
     }
-
 }));
 
 
@@ -102,11 +98,17 @@ export const LoginModal = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         if (validateEmail(email) && validatePassword(password)) {
-            let response = await login(setAuthState, { email, password });
-            if (!response.data) {
-                setError(response.message);
-            }else{
+            let resp = await login({ email, password });
+            if (resp.ok) {
                 handleClose();
+                setAuthState((prevState)=>({
+                    ...prevState,
+                    user: resp.data.user,
+                    token: resp.data.token,
+                    checking: false,
+                }));
+            } else {
+                setError(resp.message);
             }
             
             /*const res = await fetchWithoutToken('auth/login', { email, password }, 'POST');
@@ -160,8 +162,8 @@ export const LoginModal = () => {
                 content={
                     <form className={classes.form} onSubmit={handleLogin} noValidate>
                         { error && <Alert severity="error"> Email o contraseña incorrectos</Alert> }
-                        <TextField margin="dense" name="email" value={email} onChange={handleInputChange} label="Email" type="email" fullWidth />
-                        <TextField margin="dense" name="password" value={password} onChange={handleInputChange} label="Contraseña" type='password' fullWidth />
+                        <TextField variant='outlined' margin="dense" name="email" value={email} onChange={handleInputChange} label="Email" type="email" fullWidth />
+                        <TextField variant='outlined' margin="dense" name="password" value={password} onChange={handleInputChange} label="Contraseña" type='password' fullWidth />
                         {/*<InputLabel htmlFor="standard-adornment-password">Email</InputLabel>
                         <Input
                             type={values.showPassword ? 'text' : 'password'}
@@ -213,16 +215,21 @@ export const LoginModal = () => {
                             }
                         />*/}
                         
-                        <Link className={classes.link} href='#' align='right' variant="body1" onClick={recoverPassword}>
-                            ¿Olvidaste tu contraseña?
-                        </Link>
-                        <Link className={classes.link} href="#" align='right' variant="body1" onClick={ toRegister }>
-                            ¿No tienes cuenta? Registrate
-                        </Link>
+                        
                         <div className={classes.footer}>
                             <Button color="primary" variant='outlined' type='submit' fullWidth>
                                 Iniciar Sesión
                             </Button>
+                        </div>
+                        <div align='center'>
+                            <Link href='#' align='center' variant="body1" onClick={recoverPassword}>
+                                ¿Olvidaste tu contraseña?
+                            </Link>
+                        </div>
+                        <div style={{paddingTop:10, paddingBottom:30}} align='center'>
+                            <Link href="#" variant="body1" onClick={ toRegister }>
+                                ¿No tienes cuenta? Registrate
+                            </Link>
                         </div>
                     </form>
                 }

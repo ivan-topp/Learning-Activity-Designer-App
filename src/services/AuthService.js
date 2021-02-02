@@ -1,42 +1,26 @@
 import { fetchWithoutToken, fetchWithToken } from "../utils/fetch";
 
-export const register = async (setAuthState, registerPayload) => {
+export const register = async (registerPayload) => {
 	try {
 		const res = await fetchWithoutToken('auth/register', registerPayload, 'POST');
         const body = await res.json();
-        if (body.ok) {
-            setAuthState((prevState)=>({
-				...prevState,
-				user: body.data.user,
-				token: body.data.token,
-				checking: false,
-			}));
-        }
 		return body;
 	} catch (error) {
 		console.log(error);
 	}
 };
 
-export const login = async (setAuthState, loginPayload) => {
+export const login = async (loginPayload) => {
 	try {
 		const res = await fetchWithoutToken('auth/login', loginPayload, 'POST');
         const body = await res.json();
-        if (body.ok) {
-            setAuthState((prevState)=>({
-				...prevState,
-				user: body.data.user,
-				token: body.data.token,
-				checking: false,
-			}));
-        }
 		return body;
 	} catch (error) {
 		console.log(error);
 	}
 };
 
-export const logout = async (setAuthState) => {
+export const logout = (setAuthState) => {
 	setAuthState((prevState)=>({
         ...prevState,
         user: null,

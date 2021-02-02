@@ -96,7 +96,7 @@ export const NavBar = () => {
                                     <MenuItem>
                                         <Button color="primary" onClick={handleLogout}>
                                             Cerrar sesión
-                                            </Button>
+                                        </Button>
                                     </MenuItem>
                                 </Menu>
                             </>
