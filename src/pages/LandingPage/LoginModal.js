@@ -218,7 +218,7 @@ export const LoginModal = () => {
                             }} 
                         />
                         <div className={classes.footer}>
-                            <Button color="primary" variant='outlined' type='submit' fullWidth>
+                            <Button variant='outlined' type='submit' fullWidth>
                                 Iniciar Sesión
                             </Button>
                             <div style={{ paddingTop: 20 }}>

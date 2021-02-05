@@ -10,22 +10,26 @@ import { PrivateRoute } from './PrivateRoute';
 import { MyDesignsPage } from '../pages/MyDesigns/MyDesignsPage';
 import { useAuthState } from '../contexts/AuthContext';
 import { NavBar } from '../components/NavBar';
+import { UserConfigProvider} from '../contexts/UserConfigContext';
 
 export const AppRouter = () => {
     const { authState } = useAuthState();
     const { token, checking } = authState;
+    
     if(checking){
         return <h1>Espere...</h1>;
     }
     return (
         <Router>
             <div>
-                <NavBar />
-                <Switch>
-                    <PublicRoute exact path="/" component={ LandingPage } isAuthenticated={ Boolean(token) } />
-                    <PrivateRoute exact path="/my-designs" component={ MyDesignsPage } isAuthenticated={ Boolean(token) } />
-                    <Redirect to="/" />
-                </Switch>
+                <UserConfigProvider>
+                    <NavBar />
+                    <Switch>
+                        <PublicRoute exact path="/" component={ LandingPage } isAuthenticated={ Boolean(token) } />
+                        <PrivateRoute exact path="/my-designs" component={ MyDesignsPage } isAuthenticated={ Boolean(token) } />
+                        <Redirect to="/" />
+                    </Switch>
+                </UserConfigProvider>
             </div>
         </Router>
     );
