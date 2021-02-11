@@ -12,7 +12,6 @@ function LearningActivityDesigner() {
                     <AppRouter />
                 </UserConfigProvider>
             </AuthProvider>
-            
         </UiProvider>
     );
 }

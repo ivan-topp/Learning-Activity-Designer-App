@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Logo from '../assets/img/Logo.png';
-import { Avatar, Typography, Toolbar, AppBar, Button, ButtonGroup, IconButton, Menu, MenuItem, Switch, FormControlLabel } from '@material-ui/core';
+import { Avatar, Typography, Toolbar, AppBar, Button, ButtonGroup, IconButton, Menu, MenuItem, Switch, FormControlLabel, TextField } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { useUiState } from '../contexts/UiContext';
 import { useAuthState } from '../contexts/AuthContext';
 import { logout } from '../services/AuthService';
 import { useUserConfigState } from '../contexts/UserConfigContext';
+import { searchOtherUsers } from '../services/UserService';
+import { useForm } from '../hooks/useForm';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -14,12 +16,19 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         flexGrow: 1,
+        color:  theme.palette.text.primary
     },
     logo: {
         width: theme.spacing(5),
         height: theme.spacing(5),
         margin: 'auto',
     },
+    navbarColor:{
+        background: theme.palette.primary.navbar,
+    },
+    navbarLetter:{
+        color:  theme.palette.text.primary
+    }
 }));
 
 export const NavBar = () => {
@@ -28,6 +37,11 @@ export const NavBar = () => {
     const { setUiState } = useUiState();
     const { authState } = useAuthState();
     const { setAuthState } = useAuthState();
+    const [formSearchValues, handleInputChange, reset] = useForm({
+        username: 'Alejandro Esteban',
+    });
+
+    const {username} = formSearchValues;
     
     const handleLogout = () => {
         setMenuOpen(null);
@@ -59,12 +73,23 @@ export const NavBar = () => {
     const handleChangeUserConfig = (event) => {
         setUserConfig({ ...userConfig, [event.target.name]: event.target.checked });
     };
-    
+
+    const handleInputFormChange = (e) => {
+        handleInputChange(e);
+    };
+
+    const handleSearchUsers = async (e) => {
+        e.preventDefault();
+        const name = username
+        let res = await searchOtherUsers({name});
+        console.log(res);
+    };
+
     const classes = useStyles();
 
     return (
         <div className={classes.root}>
-            <AppBar position="static" color="default">
+            <AppBar className = {classes.navbarColor} position="static" >
                 <Toolbar>
                     <Avatar className={classes.logo} src={Logo} alt="Logo" />
                     <Typography variant="h6" className={classes.title}>
@@ -83,11 +108,28 @@ export const NavBar = () => {
                             :
                             <>  
                                 <div>
-                                    <Typography>
+                                    <form onSubmit = {handleSearchUsers} noValidate>
+                                        <TextField
+                                            id="outlined-start-adornment"
+                                            variant="outlined"
+                                            name="username"
+                                            value={username}
+                                            type="username"
+                                            onChange={handleInputFormChange}
+                                            InputProps={{
+                                                endAdornment:
+                                                    <IconButton>                                             
+                                                    </IconButton>
+                                            }}
+                                        />
+                                    </form>
+                                </div>
+                                <div >
+                                    <Typography className={classes.navbarLetter}>
                                         {authState.user.name}
                                     </Typography>
                                 </div>
-                                <IconButton onClick={handleMenu}>
+                                <IconButton onClick={handleMenu}>     
                                     <SettingsIcon />
                                 </IconButton>
                                 
@@ -104,6 +146,7 @@ export const NavBar = () => {
                                         horizontal: 'right',
                                     }}
                                     onClose={handleClose}
+                                    
                                 >   
                                     <MenuItem>
                                         <FormControlLabel
