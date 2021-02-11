@@ -28,7 +28,8 @@ export const getTheme = ( isDarkActive ) =>{
             primary: isDarkActive? '#F4F4F4': '#36393F',
           },
           background:{
-            paper: isDarkActive? '#202225': '#DCDCDC'
+            paper: isDarkActive? '#202225': '#DCDCDC',
+            default: isDarkActive? '#202225': '#DCDCDC'
             }
         }
     });

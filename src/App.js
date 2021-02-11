@@ -1,18 +1,21 @@
+import { QueryClient, QueryClientProvider } from "react-query";
+
 import { AuthProvider } from "./contexts/AuthContext";
 import { UiProvider } from "./contexts/UiContext";
-import { UserConfigProvider } from "./contexts/UserConfigContext";
 import { AppRouter } from "./router/AppRouter";
+
+const queryClient = new QueryClient()
 
 function LearningActivityDesigner() {
     
     return (
-        <UiProvider>
-            <AuthProvider>
-                <UserConfigProvider>
+        <QueryClientProvider client={queryClient}>
+            <UiProvider>
+                <AuthProvider>
                     <AppRouter />
-                </UserConfigProvider>
-            </AuthProvider>
-        </UiProvider>
+                </AuthProvider>
+            </UiProvider>
+        </QueryClientProvider>
     );
 }
 

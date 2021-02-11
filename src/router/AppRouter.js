@@ -14,12 +14,14 @@ import { NavBar } from '../components/NavBar';
 import { UserConfigProvider} from '../contexts/UserConfigContext';
 import { Footer } from '../components/Footer';
 import { CssBaseline } from '@material-ui/core';
+import { SharedWithMePage } from '../pages/SharedWithMe/SharedWithMePage';
+import { PublicRepositoryPage } from '../pages/PublicRepository/PublicRepositoryPage';
 
 export const AppRouter = () => {
     const { authState } = useAuthState();
     const { token, checking } = authState;
-    
-    if(checking){
+
+    if (checking) {
         return <h1>Espere...</h1>;
     }
     return (
@@ -30,8 +32,11 @@ export const AppRouter = () => {
                     <NavBar />
                     <Switch>
                         <PublicRoute exact path="/" component={ LandingPage } isAuthenticated={ Boolean(token) } />
-                        {/*<PrivateRoute exact path="/my-designs" component={ MyDesignsPage } isAuthenticated={ Boolean(token) } />*/}
-                        <PrivateRoute exact path="/my-perfil" component={ UserProfile } isAuthenticated={ Boolean(token) } />
+                        <PrivateRoute exact path="/profile/:uid" component={ UserProfile } isAuthenticated={ Boolean(token) } />
+                        <PrivateRoute exact path="/my-designs" component={MyDesignsPage} isAuthenticated={Boolean(token)} />
+                        <PrivateRoute path="/my-designs/:urlPath+/" component={MyDesignsPage} isAuthenticated={Boolean(token)} />
+                        <PrivateRoute exact path="/shared-with-me" component={SharedWithMePage} isAuthenticated={Boolean(token)} />
+                        <PrivateRoute exact path="/public-repository" component={PublicRepositoryPage} isAuthenticated={Boolean(token)} />
                         <Redirect to="/" />
                     </Switch>
                 </UserConfigProvider>

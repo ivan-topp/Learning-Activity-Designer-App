@@ -6,7 +6,9 @@ import GroupIcon from '@material-ui/icons/Group';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import EmailIcon from '@material-ui/icons/Email';
 import { useAuthState } from '../../contexts/AuthContext';
-import { searchMyProfile } from '../../services/UserService';
+import { getUser } from '../../services/UserService';
+import { useQuery } from 'react-query';
+import { useParams } from 'react-router-dom';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -55,6 +57,12 @@ export const UserProfile = () => {
     
     const classes = useStyles();
     const { authState } = useAuthState();
+    console.log(authState.token);
+    const urlparams = useParams();
+    const uid = urlparams.uid;
+    const { isLoading, isError, data, error } = useQuery("user-profile", async () => {
+        return await getUser(uid);
+    });
 
     const handleEditProfile = () => {
         console.log('Editar perfil');
@@ -62,79 +70,90 @@ export const UserProfile = () => {
     const handleAddContact = () => {
         console.log('Agregar usuario');
     };
-    const handleGetMyProfile = async (e) => {
-        e.preventDefault();
-        const uid = authState.user.uid
-        let res = await searchMyProfile(uid);
-        console.log(res);
+    
+    if(isError){
+        return (<Typography>Error: {error.message}</Typography>);
+    };
+    if(isLoading){
+        return (<Typography>Cargando...</Typography>);
     };
 
     return (
         <Grid container className={classes.profilePanel}>
             <Grid item xs={12} sm={3}>
                 <Grid container alignItems='center' justify='center'>
-                    <Avatar alt='IconoUsuario'className={classes.photoProfile}/>
+                    <Avatar alt={data.name + ' ' + data.lastname} className={classes.photoProfile} src={ data.img ?? ''}/>
                 </Grid>
                 <Grid container alignItems='center' justify='center'>
-                    <Typography variant='h5' component='h2'>{authState.user.name}</Typography>
+                    { data && <Typography  align='center' variant='h5' component='h2'>{data.name + ' ' + data.lastname}</Typography>}
                 </Grid>
                 <Grid container alignItems='center' justify='center'>
-                    <Typography className={classes.spaceFirstData} color='textSecondary'>Ocupación</Typography>
+                    { data && data.occupation && <Typography className={classes.spaceFirstData} color='textSecondary'>{data.occupation}</Typography>}
                 </Grid> 
                 <Grid container alignItems='center' justify='center' className={classes.spaceFirstData}>
                     <Grid item >
                         <GroupIcon/>
                     </Grid>
                     <Grid item >
-                        <Typography>{authState.user.contacs}</Typography>
+                        <Typography style={{ marginLeft: 8 }}> {data.contacts.length}</Typography>
                     </Grid>
                     ・
                     <Grid item >
                     <StarIcon/>
                     </Grid>
-                    <Grid item >
-                        <Typography>{authState.user.scoreMean}</Typography>
+                    <Grid item>
+                        <Typography style={{ marginLeft: 8 }}> {data.scoreMean}</Typography>
                     </Grid>
                 </Grid>
                 <Grid container alignItems='center' justify='center' className={classes.spaceSecondData}>
-                    {(authState.user.uid==="6019caa3719c7a3264a60b8d") ? 
+                    {(authState.user.uid===uid) ? 
                         <Button variant ='outlined' size='small' onClick={handleEditProfile}>Editar perfil</Button> 
                         : 
                         <Button variant ='outlined' size='small' onClick={handleAddContact}>Agregar a mis contactos</Button>}  
                 </Grid>
                 <Divider className={classes.spaceData}/>
                 <Grid className={classes.spaceData}>
-                    <Grid container className={classes.spaceSecondData} >
-                        <Grid item >
-                            <ApartmentIcon className={classes.spaceIcons}/>
+                    { data && data.institution && (
+                        <Grid container className={classes.spaceSecondData} >
+                            <Grid item >
+                                <ApartmentIcon className={classes.spaceIcons}/>
+                            </Grid>
+                            <Grid item >
+                            <Typography className={classes.spaceFirstData} color='textSecondary'>{data.institution}</Typography>
+                            </Grid>
                         </Grid>
-                        <Grid item >
-                            <Typography>Universidad Católica de Temuco</Typography>
+                    )}
+                    { data && data.city && data.country &&(
+                        <Grid container className={classes.spaceSecondData} >
+                            <Grid item >
+                                <ApartmentIcon className={classes.spaceIcons}/>
+                            </Grid>
+                            <Grid item >
+                            <Typography className={classes.spaceFirstData} color='textSecondary'>{data.city + ', ' + data.country}</Typography>
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid container className={classes.spaceFirstData}>
-                        <Grid item>
-                            <LocationOnIcon className={classes.spaceIcons}/>
+                    )}
+                    { data && (
+                        <Grid container className={classes.spaceSecondData} >
+                            <Grid item >
+                                <EmailIcon className={classes.spaceIcons}/>
+                            </Grid>
+                            <Grid item >
+                            <Typography className={classes.spaceFirstData} color='textSecondary'>{data.email}</Typography>
+                            </Grid>
                         </Grid>
-                        <Grid item className={classes.spaceSecondData}>
-                            <Typography>Temuco, Chile</Typography>
-                        </Grid>
-                    </Grid>
-                    <Grid container >
-                        <Grid item>
-                            <EmailIcon className={classes.spaceIcons}/>
-                        </Grid>
-                        <Grid item className={classes.spaceSecondData}>
-                            <Typography>aguzman2016@alu.uct.cl</Typography>
-                        </Grid>
-                    </Grid>
+                    )}
                     <Divider className={classes.spaceSecondData}/>
-                        <Typography color='textSecondary' className={classes.spaceSecondData}>
-                            Descripción
-                        </Typography>
-                        <Typography >
-                            Hola mi nombre es {authState.user.name}
-                        </Typography>     
+                    { data && data.description &&(
+                        <>
+                            <Typography color='textSecondary' className={classes.spaceSecondData}>
+                                Descripción
+                            </Typography>
+                            <Typography >
+                                Hola mi nombre es {authState.user.name}
+                            </Typography> 
+                        </>
+                    )}
                 </Grid>
             </Grid>
             <Grid item xs={12} sm={9} className={classes.designPanel}>
@@ -144,7 +163,7 @@ export const UserProfile = () => {
                 <Divider className={classes.spaceDesign}/>
                 <Grid className={classes.spaceDesign}>
                     <Typography variant='h5' component='h1'>Mis diseños</Typography>
-                    <Button variant="outlined" onClick={handleGetMyProfile}>Perfil Actual</Button>
+                    
                 </Grid>
             </Grid>
         </Grid>
