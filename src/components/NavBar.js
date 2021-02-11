@@ -6,6 +6,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import { useUiState } from '../contexts/UiContext';
 import { useAuthState } from '../contexts/AuthContext';
 import { logout } from '../services/AuthService';
+import { useQueryClient } from 'react-query';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -22,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const NavBar = () => {
+    const queryClient = useQueryClient();
     const [isMenuOpen, setMenuOpen] = useState(null);
 
     const { setUiState } = useUiState();
@@ -29,6 +31,7 @@ export const NavBar = () => {
     const { setAuthState } = useAuthState();
 
     const handleLogout = () => {
+        queryClient.clear();
         setMenuOpen(null);
         logout(setAuthState);
     };
@@ -56,7 +59,7 @@ export const NavBar = () => {
     };
 
     const classes = useStyles();
-    
+
     return (
         <div className={classes.root}>
             <AppBar position="static" color="default">
@@ -81,8 +84,8 @@ export const NavBar = () => {
                                     <SettingsIcon />
                                 </IconButton>
                                 <Menu
-                                    anchorEl = {isMenuOpen}
-                                    open = {Boolean(isMenuOpen)}
+                                    anchorEl={isMenuOpen}
+                                    open={Boolean(isMenuOpen)}
                                     anchorOrigin={{
                                         vertical: 'top',
                                         horizontal: 'right',
