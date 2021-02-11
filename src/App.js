@@ -7,6 +7,7 @@ import { AppRouter } from "./router/AppRouter";
 const queryClient = new QueryClient()
 
 function LearningActivityDesigner() {
+    
     return (
         <QueryClientProvider client={queryClient}>
             <UiProvider>

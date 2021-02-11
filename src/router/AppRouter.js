@@ -12,25 +12,29 @@ import { useAuthState } from '../contexts/AuthContext';
 import { NavBar } from '../components/NavBar';
 import { SharedWithMePage } from '../pages/SharedWithMe/SharedWithMePage';
 import { PublicRepositoryPage } from '../pages/PublicRepository/PublicRepositoryPage';
+import { UserConfigProvider } from '../contexts/UserConfigContext';
 
 export const AppRouter = () => {
     const { authState } = useAuthState();
     const { token, checking } = authState;
-    if(checking){
+
+    if (checking) {
         return <h1>Espere...</h1>;
     }
     return (
         <Router>
             <div>
-                <NavBar />
-                <Switch>
-                    <PublicRoute exact path="/" component={ LandingPage } isAuthenticated={ Boolean(token) } />
-                    <PrivateRoute exact path="/my-designs" component={ MyDesignsPage } isAuthenticated={ Boolean(token) } />
-                    <PrivateRoute path="/my-designs/:urlPath+/" component={ MyDesignsPage } isAuthenticated={ Boolean(token) } />
-                    <PrivateRoute exact path="/shared-with-me" component={ SharedWithMePage } isAuthenticated={ Boolean(token) } />
-                    <PrivateRoute exact path="/public-repository" component={ PublicRepositoryPage } isAuthenticated={ Boolean(token) } />
-                    <Redirect to="/" />
-                </Switch>
+                <UserConfigProvider>
+                    <NavBar />
+                    <Switch>
+                        <PublicRoute exact path="/" component={LandingPage} isAuthenticated={Boolean(token)} />
+                        <PrivateRoute exact path="/my-designs" component={MyDesignsPage} isAuthenticated={Boolean(token)} />
+                        <PrivateRoute path="/my-designs/:urlPath+/" component={MyDesignsPage} isAuthenticated={Boolean(token)} />
+                        <PrivateRoute exact path="/shared-with-me" component={SharedWithMePage} isAuthenticated={Boolean(token)} />
+                        <PrivateRoute exact path="/public-repository" component={PublicRepositoryPage} isAuthenticated={Boolean(token)} />
+                        <Redirect to="/" />
+                    </Switch>
+                </UserConfigProvider>
             </div>
         </Router>
     );
