@@ -46,7 +46,7 @@ export const NavBar = () => {
     const { authState } = useAuthState();
     
     const { setAuthState } = useAuthState();
-    const [formSearchValues, handleInputChange, reset] = useForm({
+    const [formSearchValues, handleInputChange, /*reset*/] = useForm({
         username: 'Alejandro Esteban',
     });
 

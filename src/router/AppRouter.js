@@ -24,6 +24,7 @@ export const AppRouter = () => {
     if (checking) {
         return <h1>Espere...</h1>;
     }
+
     return (
         <Router>
             <div>
@@ -39,6 +40,7 @@ export const AppRouter = () => {
                         <PrivateRoute exact path="/public-repository" component={PublicRepositoryPage} isAuthenticated={Boolean(token)} />
                         <Redirect to="/" />
                     </Switch>
+                    <Footer />
                 </UserConfigProvider>
             </div>
         </Router>

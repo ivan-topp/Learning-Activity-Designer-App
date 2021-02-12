@@ -5,6 +5,7 @@ import { Design } from './Design';
 import { DesignsFolder } from './DesignsFolder';
 import { FolderSkeleton } from './FolderSkeleton';
 import { Alert } from '@material-ui/lab';
+import { useAuthState } from '../contexts/AuthContext';
 
 const useStyles = makeStyles({
     root:{
@@ -21,14 +22,30 @@ const useStyles = makeStyles({
         justifyContent: 'flex-start',
         marginTop:15,
         marginBottom:15,
+    },
+    error: {
+        marginTop: 15,
+        width:'100%',
+        display:'flex',
+        justifyContent: 'center',
+        textAlign: 'justify',
+        alignItems:'center',
+    },
+    loadMore: {
+        marginBottom: 50,
     }
 });
 
-export const DesignsContainer = ({ title, data, isError, isLoading, error }) => {
+export const DesignsContainer = ({ title, data, isError, isLoading, error, onLoadMore }) => {
     const classes = useStyles();
+    const { authState } = useAuthState();
+
     
     if (isError) {
-        return <span>Error: {error.message}</span>
+        return (<Alert severity='error' className={ classes.error }>
+            Ha ocurrido un problema al intentar obtener los diseños. Esto probablemente se deba a un problema de conexión, por favor revise que su equipo tenga conexión a internet e intente más tarde.
+            Si el problema persiste, por favor comuníquese con el equipo de soporte.
+        </Alert>);
     }
 
     const createDesignSkeletons = () => {
@@ -59,7 +76,9 @@ export const DesignsContainer = ({ title, data, isError, isLoading, error }) => 
                             {
                                 (isLoading) 
                                 ? createFolderSkeletons()
-                                : folderList()
+                                : (!data.folders)
+                                    ? <div></div>
+                                    : folderList()
                             }
                             <div className={classes.designsContainer}>
                                 {
@@ -67,15 +86,24 @@ export const DesignsContainer = ({ title, data, isError, isLoading, error }) => 
                                         ? createDesignSkeletons()
                                         : data.designs.length > 0 
                                             ? designList()
-                                            : <Alert severity="info" style={{ width:'100%', display:'flex', justifyContent: 'center' }}>
-                                                No se han encontrado diseños. Crea tu primer diseños haciendo click aquí!
-                                            </Alert>
+                                            : (data.ownerId === authState.user.uid)
+                                                ? <Alert severity="info" style={{ width:'100%', display:'flex', justifyContent: 'center' }}>
+                                                    No se han encontrado diseños. Crea tu primer diseños haciendo click aquí!
+                                                </Alert>
+                                                : <Alert severity="info" style={{ width:'100%', display:'flex', justifyContent: 'center' }}>
+                                                    Este usuario no cuenta con diseños públicos.
+                                                </Alert>
                                 }
                             </div>
                         </div>
                     )
             }
-            { data && data.designs.length > 0 && <Button color='primary'> Cargar Más </Button>}
+            { 
+                data && data.designs.length > 0 && data.canFetchMore && 
+                    <Button className={ classes.loadMore } color='primary' onClick={ onLoadMore }> 
+                        Cargar Más 
+                    </Button>
+            }
         </div>
     )
 }

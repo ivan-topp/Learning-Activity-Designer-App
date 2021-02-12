@@ -8,6 +8,9 @@ import { useAuthState } from '../../contexts/AuthContext';
 import { getUser } from '../../services/UserService';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
+import { getPublicDesignsByUser } from '../../services/DesignService';
+import { DesignsContainer } from '../../components/DesignsContainer';
+import { Alert } from '@material-ui/lab';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -46,6 +49,19 @@ const useStyles = makeStyles((theme) => ({
     },
     spaceIcons:{
         marginRight: theme.spacing(1)
+    },
+    errorContainer: {
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'center',
+    },
+    error: {
+        marginTop: 15,
+        minWidth: '50%',
+        display:'flex',
+        justifyContent: 'center',
+        textAlign: 'justify',
+        alignItems:'center',
     }
 }));
 
@@ -55,22 +71,37 @@ export const UserProfile = () => {
     const { authState } = useAuthState();
     const urlparams = useParams();
     const uid = urlparams.uid;
+
     const { isLoading, isError, data, error } = useQuery("user-profile", async () => {
         return await getUser(uid);
-    });
+    }, { refetchOnWindowFocus: false });
+
+    const designsQuery = useQuery([ uid, "user-public-designs" ], async () => {
+        return await getPublicDesignsByUser(uid);
+    }, { refetchOnWindowFocus: false });
+    
+    if(isError){
+        return (<div className={ classes.errorContainer }>
+            <Alert severity='error' className={ classes.error }>
+                { error.message }
+            </Alert>
+        </div>);
+    };
+
+    if(isLoading){
+        return (<Typography>Cargando...</Typography>);
+    };
 
     const handleEditProfile = () => {
         console.log('Editar perfil');
     };
+
     const handleAddContact = () => {
         console.log('Agregar usuario');
     };
     
-    if(isError){
-        return (<Typography>Error: {error.message}</Typography>);
-    };
-    if(isLoading){
-        return (<Typography>Cargando...</Typography>);
+    const handleLoadMore = ( e ) => {
+        console.log('Load More Designs');
     };
 
     return (
@@ -153,11 +184,7 @@ export const UserProfile = () => {
             </Grid>
             <Grid item xs={12} sm={9} className={classes.designPanel}>
                 <Grid className={classes.spaceDesign}>
-                    <Typography variant='h4' component='h1' color='textSecondary'>Diseños</Typography>
-                </Grid>
-                <Divider className={classes.spaceDesign}/>
-                <Grid className={classes.spaceDesign}>
-                    <Typography variant='h5' component='h1'>Mis diseños</Typography>
+                    <DesignsContainer title='Diseños' {...designsQuery} onLoadMore={ handleLoadMore }/>
                 </Grid>
             </Grid>
         </Grid>

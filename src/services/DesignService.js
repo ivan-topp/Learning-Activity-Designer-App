@@ -21,6 +21,17 @@ export const getDesignsByFolder = async ( path ) => {
     return body.data;
 };
 
+export const getPublicDesignsByUser = async ( id ) => {
+    const resp = await fetchWithToken(`design/public/user/`, {
+        id
+    }, 'POST');
+    const body = await resp.json();
+    if (!body.ok) {
+        throw new Error(body.message);
+    }
+    return body.data;
+};
+
 export const deleteDesignById = async ({ id }) => {
     const resp = await fetchWithToken(`design/${ id }`, {}, 'DELETE');
     const body = await resp.json();

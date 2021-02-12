@@ -24,13 +24,13 @@ export const RecentDesigns = ({ width, height }) => {
     const classes = useStyles();
     const n = Math.trunc(width / 345);
 
-    const { isLoading, isError, data, error } = useQuery("recent-designs", async () => {
+    const { isLoading, isError, data } = useQuery("recent-designs", async () => {
         return getRecentDesigns();
-    });//{ isLoading, isError, data, error } recentDesigns
+    });
     
 
     if (isError) {
-        return <span>Error: {error.message}</span>
+        return <div></div>;
     }
     
     const createSkeletons = () => {

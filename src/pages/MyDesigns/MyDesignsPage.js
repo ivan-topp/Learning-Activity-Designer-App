@@ -30,9 +30,9 @@ const useStyles = makeStyles((theme) => ({
     breadCrumbs: {
         marginTop: 20,
         width: '100%',
-        padding: '10px 5px 10px 5px',
+        padding: '10px 15px 10px 15px',
         borderRadius: 3,
-        backgroundColor: theme.palette.secondary
+        backgroundColor: theme.palette.background.default
     }
 }));
 
@@ -42,10 +42,11 @@ export const MyDesignsPage = () => {
     const history = useHistory();
     const urlparams = useParams();
     const designsRef = useRef(null);
-    const [width, setWidth] = useState(0);
-    const [height, setHeight] = useState(0);
+    const [ width, setWidth ] = useState(0);
+    const [ height, setHeight ] = useState(0);
     const path = urlparams.urlPath ? '/' + urlparams.urlPath : '/';
-    
+    const folderName = !urlparams.urlPath ? 'Mis Diseños' : path.split('/')[ path.split('/').length - 1 ];
+
     const designsQuery = useQuery(["designs", path], async () => {
         return getDesignsByFolder(path);
     });
@@ -64,6 +65,10 @@ export const MyDesignsPage = () => {
         },
         [redirectTo],
     );
+
+    const handleLoadMore = ( e ) => {
+        console.log('Load More Designs');
+    };
 
     const createBreadcrumbsLinks = useCallback(
         () => {
@@ -134,7 +139,7 @@ export const MyDesignsPage = () => {
                         {
                             path === '/' && <RecentDesigns id='recent' width={width} height={height} />
                         }
-                        <DesignsContainer title='Mis Diseños' {...designsQuery} />
+                        <DesignsContainer title={ path === '/' ? 'Mis Diseños' : folderName } {...designsQuery} onLoadMore={ handleLoadMore } />
                     </Grid>
                     <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
                 </Grid>

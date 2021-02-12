@@ -5,6 +5,7 @@ import { useAuthState } from '../contexts/AuthContext';
 import { formatName, getUserInitials } from '../utils/textFormatters';
 import { deleteDesignById } from '../services/DesignService';
 import { useMutation, useQueryClient } from 'react-query';
+import { useHistory } from 'react-router-dom';
 
 
 const useStyles = makeStyles((theme) =>({
@@ -62,6 +63,7 @@ const useStyles = makeStyles((theme) =>({
 export const Design = ({ _id, title, updatedOn, metadata, owner, canDelete = true }) => {
     const queryClient = useQueryClient();
     const { authState } = useAuthState();
+    const history = useHistory();
     const deleteMutation = useMutation(deleteDesignById);
     const classes = useStyles();
 
@@ -76,9 +78,9 @@ export const Design = ({ _id, title, updatedOn, metadata, owner, canDelete = tru
         queryClient.invalidateQueries();
     };
 
-    const handleViewUser = ( e ) => {
+    const handleViewUser = ( e, id ) => {
         e.stopPropagation();
-        console.log('View User Profile');
+        history.push(`/profile/${id}`);
     };
 
     return (
@@ -107,7 +109,7 @@ export const Design = ({ _id, title, updatedOn, metadata, owner, canDelete = tru
                     </div>
                 </div>
             </CardContent>
-            <CardActions className={ classes.ownerInfo } onClick={ handleViewUser }>
+            <CardActions className={ classes.ownerInfo } onClick={ ( e ) => handleViewUser(e, owner._id) }>
                 <Avatar
                     alt={ formatName(owner.name, owner.lastname) } 
                     //src='https://i.pinimg.com/400x300/d6/e6/28/d6e6281bb90621d9be0a9e53d882c2c6.jpg' 
