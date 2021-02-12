@@ -26,11 +26,14 @@ const useStyles = makeStyles((theme) => ({
         margin: 'auto',
     },
     navbarColor: {
-        background: theme.palette.primary.navbar,
+        background: theme.palette.background.navbar,
     },
     navbarLetter: {
         color: theme.palette.text.primary,
         cursor: 'pointer'
+    },
+    menuColor:{
+        background: theme.palette.background.menu
     }
 }));
 
@@ -96,7 +99,7 @@ export const NavBar = () => {
 
     return (
         <div className={classes.root}>
-            <AppBar className={classes.navbarColor} position="static" >
+            <AppBar position="static" className={classes.navbarColor} elevation={0}>
                 <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div style={{ display:"flex", alignItems:'center', cursor: 'pointer' }} onClick={(e)=>history.push('/')}>
                         <Avatar className={classes.logo} src={Logo} alt="Logo" />
@@ -133,7 +136,6 @@ export const NavBar = () => {
                                         />
                                     </form>
                                 </div>
-                                
                                 <div style={{ display:'flex', alignItems:'center' }}>
                                     <Typography className={classes.navbarLetter} onClick={(e) => history.push(`/profile/${authState.user.uid}`)}>
                                         {authState.user.name}
@@ -142,8 +144,6 @@ export const NavBar = () => {
                                         <SettingsIcon />
                                     </IconButton>
                                 </div>
-                                
-
                                 <Menu
                                     anchorEl={isMenuOpen}
                                     open={Boolean(isMenuOpen)}
@@ -157,7 +157,7 @@ export const NavBar = () => {
                                         horizontal: 'right',
                                     }}
                                     onClose={handleClose}
-
+                                    
                                 >
                                     <MenuItem>
                                         <FormControlLabel

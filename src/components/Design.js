@@ -17,10 +17,10 @@ const useStyles = makeStyles((theme) =>({
         borderRadius: 5,
         cursor: 'pointer',
         userSelect: 'none',
-        backgroundColor: 'rgba(0, 0, 0, 0)',//theme.palette.primary.sidePanels,
+        backgroundColor: theme.palette.background.design,
         '&:hover': {
             zIndex: 0.5,
-            background: 'rgba(0, 0, 0, 0.05)',//theme.palette.primary.sidePanels,
+            background: theme.palette.background.designHover,
         },
     },
     ownerInfo: {

@@ -14,10 +14,6 @@ export const getTheme = ( isDarkActive ) =>{
             dark: orange[500], 
             light: lightBlue[500],
             main: isDarkActive? orange[500] : lightBlue[500],
-            workspace: isDarkActive? '#36393F': '#FFFFFF',
-            sidePanels: isDarkActive? '#2F3136': '#F4F4F4',
-            navbar: isDarkActive? '#202225': '#DCDCDC'
-
           },
           secondary: {
             dark: deepOrange[900],
@@ -28,10 +24,14 @@ export const getTheme = ( isDarkActive ) =>{
             primary: isDarkActive? '#F4F4F4': '#36393F',
           },
           background:{
-            paper: isDarkActive? '#202225': '#DCDCDC',
-            default: isDarkActive? '#202225': '#DCDCDC'
-            }
-        }
+            default: isDarkActive? '#36393F': '#F4F4F4', //SidePanels,
+            paper: isDarkActive? '#36393F': '#F4F4F4', // Menu, Login and Register Modal
+            workSpace: isDarkActive? '#2F3136': '#FEFEFE',
+            navbar: isDarkActive? '#202225': '#DCDCDC',
+            design: isDarkActive? '#36393F': '#F4F4F4',
+            designHover: isDarkActive? '#393D46': '#F6F6F6',
+          }
+        },
     });
     return theme;
 }

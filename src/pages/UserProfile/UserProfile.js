@@ -3,7 +3,6 @@ import { Grid, Typography, Avatar, makeStyles, Button, Divider, } from '@materia
 import StarIcon from '@material-ui/icons/Star';
 import ApartmentIcon from '@material-ui/icons/Apartment';
 import GroupIcon from '@material-ui/icons/Group';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
 import EmailIcon from '@material-ui/icons/Email';
 import { useAuthState } from '../../contexts/AuthContext';
 import { getUser } from '../../services/UserService';
@@ -12,13 +11,10 @@ import { useParams } from 'react-router-dom';
 
 
 const useStyles = makeStyles((theme) => ({
-    profilePanel:{
-        background: theme.palette.primary.sidePanels
-    },
     designPanel:{
         flexDirection: 'column',
         borderLeft:`1px solid ${theme.palette.divider}`,
-        background: theme.palette.primary.workspace,
+        background: theme.palette.background.workSpace,
         minHeight: 'calc(100vh - 64px)'
     },
     photoProfile: {
@@ -57,7 +53,6 @@ export const UserProfile = () => {
     
     const classes = useStyles();
     const { authState } = useAuthState();
-    console.log(authState.token);
     const urlparams = useParams();
     const uid = urlparams.uid;
     const { isLoading, isError, data, error } = useQuery("user-profile", async () => {
@@ -79,7 +74,7 @@ export const UserProfile = () => {
     };
 
     return (
-        <Grid container className={classes.profilePanel}>
+        <Grid container>
             <Grid item xs={12} sm={3}>
                 <Grid container alignItems='center' justify='center'>
                     <Avatar alt={data.name + ' ' + data.lastname} className={classes.photoProfile} src={ data.img ?? ''}/>
@@ -150,7 +145,7 @@ export const UserProfile = () => {
                                 Descripción
                             </Typography>
                             <Typography >
-                                Hola mi nombre es {authState.user.name}
+                                {data.description}
                             </Typography> 
                         </>
                     )}
@@ -163,7 +158,6 @@ export const UserProfile = () => {
                 <Divider className={classes.spaceDesign}/>
                 <Grid className={classes.spaceDesign}>
                     <Typography variant='h5' component='h1'>Mis diseños</Typography>
-                    
                 </Grid>
             </Grid>
         </Grid>
