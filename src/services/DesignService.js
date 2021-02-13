@@ -10,9 +10,10 @@ export const getRecentDesigns = async () => {
     return body.data;
 };
 
-export const getDesignsByFolder = async ( path ) => {
+export const getDesignsByFolder = async ( path, pageParam ) => {
     const resp = await fetchWithToken('design/user', {
-        path
+        path,
+        from: pageParam,
     }, 'POST');
     const body = await resp.json();
     if (!body.ok) {
@@ -21,9 +22,10 @@ export const getDesignsByFolder = async ( path ) => {
     return body.data;
 };
 
-export const getPublicDesignsByUser = async ( id ) => {
+export const getPublicDesignsByUser = async ( id, pageParam ) => {
     const resp = await fetchWithToken(`design/public/user/`, {
-        id
+        id,
+        from: pageParam,
     }, 'POST');
     const body = await resp.json();
     if (!body.ok) {

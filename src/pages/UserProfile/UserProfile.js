@@ -6,7 +6,7 @@ import GroupIcon from '@material-ui/icons/Group';
 import EmailIcon from '@material-ui/icons/Email';
 import { useAuthState } from '../../contexts/AuthContext';
 import { getUser } from '../../services/UserService';
-import { useQuery } from 'react-query';
+import { useInfiniteQuery, useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 import { getPublicDesignsByUser } from '../../services/DesignService';
 import { DesignsContainer } from '../../components/DesignsContainer';
@@ -76,14 +76,21 @@ export const UserProfile = () => {
         return await getUser(uid);
     }, { refetchOnWindowFocus: false });
 
-    const designsQuery = useQuery([ uid, "user-public-designs" ], async () => {
-        return await getPublicDesignsByUser(uid);
-    }, { refetchOnWindowFocus: false });
+    const designsQuery = useInfiniteQuery([ uid, 'user-public-designs' ], async ({ pageParam = 0 }) => {
+        return await getPublicDesignsByUser(uid, pageParam);
+    }, {
+        refetchOnWindowFocus: false,
+        getNextPageParam: (lastPage, pages) => {
+            if(lastPage.nPages === pages.length) return undefined; 
+            return lastPage.from;
+        },
+    });
     
     if(isError){
         return (<div className={ classes.errorContainer }>
             <Alert severity='error' className={ classes.error }>
-                { error.message }
+                Ha ocurrido un problema al intentar obtener el usuario en la base de datos. Esto probablemente se deba a un problema de conexión, por favor revise que su equipo tenga conexión a internet e intente más tarde.
+                Si el problema persiste, por favor comuníquese con el equipo de soporte.
             </Alert>
         </div>);
     };
@@ -98,10 +105,6 @@ export const UserProfile = () => {
 
     const handleAddContact = () => {
         console.log('Agregar usuario');
-    };
-    
-    const handleLoadMore = ( e ) => {
-        console.log('Load More Designs');
     };
 
     return (
@@ -184,7 +187,11 @@ export const UserProfile = () => {
             </Grid>
             <Grid item xs={12} sm={9} className={classes.designPanel}>
                 <Grid className={classes.spaceDesign}>
-                    <DesignsContainer title='Diseños' {...designsQuery} onLoadMore={ handleLoadMore }/>
+                    <Typography variant='h4'>
+                        Diseños Públicos
+                    </Typography>
+                    <Divider />
+                    <DesignsContainer {...designsQuery}/>
                 </Grid>
             </Grid>
         </Grid>
