@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }) => {
 	useEffect(() => {
 		const user = JSON.parse(localStorage.getItem('user'));
 		const token = localStorage.getItem('token');
+		
 		if(user !== null && token !== null){
 			checkingToken(setAuthState);
 		}else{
@@ -48,6 +49,14 @@ export const AuthProvider = ({ children }) => {
 			localStorage.setItem('token', authState.token);
 		}
 	}, [authState.token]);
+
+	useEffect(() => {
+		if(authState.user === null){
+			localStorage.removeItem('contacts');
+		}else{
+			localStorage.setItem('contacts', JSON.stringify(authState.contacts));
+		}
+	}, [authState.contacts]);
 
 	return (
 		<AuthContext.Provider value={ { authState, setAuthState } }>
