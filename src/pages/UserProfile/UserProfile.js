@@ -72,7 +72,7 @@ export const UserProfile = () => {
     const urlparams = useParams();
     const uid = urlparams.uid;
 
-    const { isLoading, isError, data, error } = useQuery("user-profile", async () => {
+    const { isLoading, isError, data, /*error*/ } = useQuery("user-profile", async () => {
         return await getUser(uid);
     }, { refetchOnWindowFocus: false });
 

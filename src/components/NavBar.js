@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Logo from '../assets/img/Logo.png';
-import { Avatar, Typography, Toolbar, AppBar, Button, ButtonGroup, IconButton, Menu, MenuItem, Switch, FormControlLabel, TextField } from '@material-ui/core';
+import { Avatar, Typography, Toolbar, AppBar, Button, ButtonGroup, IconButton, Menu, MenuItem, Switch, FormControlLabel, OutlinedInput } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { useUiState } from '../contexts/UiContext';
 import { useAuthState } from '../contexts/AuthContext';
 import { logout } from '../services/AuthService';
 import { useQueryClient } from 'react-query';
 import { useUserConfigState } from '../contexts/UserConfigContext';
-import { searchOtherUsers } from '../services/UserService';
-import { useForm } from '../hooks/useForm';
 import { useHistory } from 'react-router-dom';
+import { Search } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -32,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.primary,
         cursor: 'pointer'
     },
-    menuColor:{
+    menuColor: {
         background: theme.palette.background.menu
     }
 }));
@@ -44,13 +43,9 @@ export const NavBar = () => {
     const { userConfig, setUserConfig } = useUserConfigState();
     const { setUiState } = useUiState();
     const { authState } = useAuthState();
-    
-    const { setAuthState } = useAuthState();
-    const [formSearchValues, handleInputChange, /*reset*/] = useForm({
-        username: 'Alejandro Esteban',
-    });
 
-    const { username } = formSearchValues;
+    const { setAuthState } = useAuthState();
+    const [filter, setFilter] = useState('');
 
     const handleLogout = () => {
         queryClient.clear();
@@ -72,10 +67,6 @@ export const NavBar = () => {
         }));
     };
 
-    const handleMenu = (event) => {
-        setMenuOpen(event.currentTarget);
-    };
-
     const handleClose = () => {
         setMenuOpen(null);
     };
@@ -84,15 +75,20 @@ export const NavBar = () => {
         setUserConfig({ ...userConfig, [event.target.name]: event.target.checked });
     };
 
-    const handleInputFormChange = (e) => {
-        handleInputChange(e);
+    const handleInputFormChange = ({ target }) => {
+        setFilter(target.value);
     };
 
     const handleSearchUsers = async (e) => {
         e.preventDefault();
-        const name = username
-        let res = await searchOtherUsers({ name });
-        console.log(res);
+        if(filter.trim().length > 0) {
+            history.push(`/users/search?q=${filter.trim()}`);
+            setFilter('');
+        }
+    };
+
+    const handleMenu = ( e ) => {
+        setMenuOpen(e.currentTarget);
     };
 
     const classes = useStyles();
@@ -101,7 +97,7 @@ export const NavBar = () => {
         <div className={classes.root}>
             <AppBar position="static" className={classes.navbarColor} elevation={0}>
                 <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div style={{ display:"flex", alignItems:'center', cursor: 'pointer' }} onClick={(e)=>history.push('/')}>
+                    <div style={{ display: "flex", alignItems: 'center', cursor: 'pointer' }} onClick={(e) => history.push('/')}>
                         <Avatar className={classes.logo} src={Logo} alt="Logo" />
                         <Typography variant="h6" className={classes.title}>
                             LAD
@@ -121,26 +117,24 @@ export const NavBar = () => {
                             <>
                                 <div>
                                     <form onSubmit={handleSearchUsers} noValidate>
-                                        <TextField
-                                            id="outlined-start-adornment"
+                                        <OutlinedInput
                                             variant="outlined"
-                                            name="username"
-                                            value={username}
-                                            type="username"
+                                            name="filter"
+                                            value={filter}
+                                            type="text"
+                                            placeholder='Buscar usuario'
                                             onChange={handleInputFormChange}
-                                            InputProps={{
-                                                endAdornment:
-                                                    <IconButton>
-                                                    </IconButton>
-                                            }}
                                         />
+                                        <IconButton type="submit" className={classes.iconButton} aria-label="search">
+                                            <Search />
+                                        </IconButton>
                                     </form>
                                 </div>
-                                <div style={{ display:'flex', alignItems:'center' }}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <Typography className={classes.navbarLetter} onClick={(e) => history.push(`/profile/${authState.user.uid}`)}>
                                         {authState.user.name}
                                     </Typography>
-                                    <IconButton onClick={handleMenu}>
+                                    <IconButton onClick={ handleMenu }>
                                         <SettingsIcon />
                                     </IconButton>
                                 </div>
@@ -157,7 +151,7 @@ export const NavBar = () => {
                                         horizontal: 'right',
                                     }}
                                     onClose={handleClose}
-                                    
+
                                 >
                                     <MenuItem>
                                         <FormControlLabel

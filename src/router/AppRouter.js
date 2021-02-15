@@ -16,6 +16,7 @@ import { Footer } from '../components/Footer';
 import { CssBaseline } from '@material-ui/core';
 import { SharedWithMePage } from '../pages/SharedWithMe/SharedWithMePage';
 import { PublicRepositoryPage } from '../pages/PublicRepository/PublicRepositoryPage';
+import { SearchUsersPage } from '../pages/SearchUsersPage/SearchUsersPage';
 
 export const AppRouter = () => {
     const { authState } = useAuthState();
@@ -38,6 +39,7 @@ export const AppRouter = () => {
                         <PrivateRoute path="/my-designs/:urlPath+/" component={MyDesignsPage} isAuthenticated={Boolean(token)} />
                         <PrivateRoute exact path="/shared-with-me" component={SharedWithMePage} isAuthenticated={Boolean(token)} />
                         <PrivateRoute exact path="/public-repository" component={PublicRepositoryPage} isAuthenticated={Boolean(token)} />
+                        <PrivateRoute exact path="/users/search" component={SearchUsersPage} isAuthenticated={Boolean(token)} />
                         <Redirect to="/" />
                     </Switch>
                     <Footer />

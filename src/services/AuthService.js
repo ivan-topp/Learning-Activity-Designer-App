@@ -34,8 +34,6 @@ export const checkingToken = async (setAuthState) => {
     try {
         const resp = await fetchWithToken( 'auth/renew' );
         const body = await resp.json();
-        console.log(body.ok);
-    
         if( body.ok ){
             setAuthState((prevState) => ({
                 ...prevState,
