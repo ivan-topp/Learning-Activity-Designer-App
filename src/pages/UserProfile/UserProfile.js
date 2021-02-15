@@ -6,10 +6,14 @@ import GroupIcon from '@material-ui/icons/Group';
 import EmailIcon from '@material-ui/icons/Email';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import EditIcon from '@material-ui/icons/Edit';
+import CloseIcon from '@material-ui/icons/Close';
 import { useAuthState } from '../../contexts/AuthContext';
 import {  getUser, updateContact } from '../../services/UserService';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
+import { getPublicDesignsByUser } from '../../services/DesignService';
+import { DesignsContainer } from '../../components/DesignsContainer';
+import { Alert } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
     designPanel:{
@@ -47,6 +51,19 @@ const useStyles = makeStyles((theme) => ({
     },
     spaceIcons:{
         marginRight: theme.spacing(1)
+    },
+    errorContainer: {
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'center',
+    },
+    error: {
+        marginTop: 15,
+        minWidth: '50%',
+        display:'flex',
+        justifyContent: 'center',
+        textAlign: 'justify',
+        alignItems:'center',
     }
 }));
 
@@ -57,8 +74,19 @@ export const UserProfile = () => {
     const { authState, setAuthState } = useAuthState();
     const urlparams = useParams();
     const uid = urlparams.uid;
+
     const { isLoading, isError, data, error, refetch } = useQuery("user-profile", async () => {
         return await getUser(uid);
+    }, { refetchOnWindowFocus: false });
+
+    const designsQuery = useInfiniteQuery([ uid, 'user-public-designs' ], async ({ pageParam = 0 }) => {
+        return await getPublicDesignsByUser(uid, pageParam);
+    }, {
+        refetchOnWindowFocus: false,
+        getNextPageParam: (lastPage, pages) => {
+            if(lastPage.nPages === pages.length) return undefined; 
+            return lastPage.from;
+        },
     });
     
     const updateConctactMutation = useMutation(updateContact, {
@@ -73,6 +101,18 @@ export const UserProfile = () => {
             queryClient.invalidateQueries('user-profile');
         }
     });
+    if(isError){
+        return (<div className={ classes.errorContainer }>
+            <Alert severity='error' className={ classes.error }>
+                Ha ocurrido un problema al intentar obtener el usuario en la base de datos. Esto probablemente se deba a un problema de conexión, por favor revise que su equipo tenga conexión a internet e intente más tarde.
+                Si el problema persiste, por favor comuníquese con el equipo de soporte.
+            </Alert>
+        </div>);
+    };
+
+    if(isLoading){
+        return (<Typography>Cargando...</Typography>);
+    };
 
     const handleEditProfile = () => {
         console.log('Editar perfil');
@@ -91,7 +131,7 @@ export const UserProfile = () => {
         console.log(authState.user.uid, authState.user.contacts.filter(contact=>contact!==uid));
         await updateConctactMutation.mutate({uid: authState.user.uid, contacts: authState.user.contacts.filter(contact=>contact!==uid)});
         queryClient.invalidateQueries('user-profile');
-    }
+    };
     
     if(isError){
         return (<Typography>Error: {error.message}</Typography>);
@@ -129,12 +169,12 @@ export const UserProfile = () => {
                 </Grid>
                 <Grid container alignItems='center' justify='center' className={classes.spaceSecondData}>
                     {(authState.user.uid===uid) ? 
-                        <Button variant ='outlined' size='small' onClick={handleEditProfile}startIcon={<EditIcon />}>Editar perfil</Button> 
+                        <Button variant ='outlined' size='small' onClick={handleEditProfile} startIcon={<EditIcon />}>Editar perfil</Button> 
                         :
                         (authState.user.contacts.includes(uid)) ? 
-                        <Button variant ='outlined' size='small' onClick={handleDeleteContact} startIcon={<PersonAddIcon />}>Eliminar de mis contactos</Button> 
+                        <Button variant ='outlined' size='small' onClick={handleDeleteContact} startIcon={<CloseIcon />}>Eliminar de mis contactos</Button> 
                         : 
-                        <Button variant = "contained" size='small' onClick={handleAddContact} startIcon={<PersonAddIcon />} >Agregar a mis contactos</Button>}  
+                        <Button variant ='outlined' size='small' onClick={handleAddContact} startIcon={<PersonAddIcon />} >Agregar a mis contactos</Button>}  
                 </Grid>
                 <Divider className={classes.spaceData}/>
                 <Grid className={classes.spaceData}>
@@ -183,11 +223,11 @@ export const UserProfile = () => {
             </Grid>
             <Grid item xs={12} sm={9} className={classes.designPanel}>
                 <Grid className={classes.spaceDesign}>
-                    <Typography variant='h4' component='h1' color='textSecondary'>Diseños</Typography>
-                </Grid>
-                <Divider className={classes.spaceDesign}/>
-                <Grid className={classes.spaceDesign}>
-                    <Typography variant='h5' component='h1'>Mis diseños</Typography>
+                    <Typography variant='h4'>
+                        Diseños Públicos
+                    </Typography>
+                    <Divider />
+                    <DesignsContainer {...designsQuery}/>
                 </Grid>
             </Grid>
         </Grid>

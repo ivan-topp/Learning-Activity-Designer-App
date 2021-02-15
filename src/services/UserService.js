@@ -1,6 +1,6 @@
 import { fetchWithToken } from "../utils/fetch";
 
-export const getUser = async (id) => {
+export const getUser = async ( id ) => {
     const res = await fetchWithToken(`user/${id}`);
     const body = await res.json();
     if(!body.ok){
@@ -9,12 +9,15 @@ export const getUser = async (id) => {
 	return body.data;
 };
 
-export const searchOtherUsers = async (name) => {
-    const res = await fetchWithToken('user/user', name, 'POST');
+export const searchUsers = async ( filter, pageParam ) => {
+    const res = await fetchWithToken('user/search/', {
+        filter,
+        from: pageParam,
+    }, 'POST');
     const body = await res.json();
-    //if(!body.ok){
-    //    throw new Error(body.message);
-    //}
+    if(!body.ok){
+        throw new Error(body.message);
+    }
 	return body.data;
 };
 

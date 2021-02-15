@@ -1,6 +1,4 @@
 import React from 'react'
-import { useHistory } from 'react-router-dom';
-import { useAuthState } from '../../contexts/AuthContext';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import {  Grid, makeStyles, Typography, ButtonBase, Avatar, Button } from '@material-ui/core';
 
@@ -21,9 +19,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 export const UserCard = () => {
     const classes = useStyles();
-    const history = useHistory();
-    const { authState } = useAuthState();
-
     const handleAddContact = () => {
         console.log('Agregar');
     };

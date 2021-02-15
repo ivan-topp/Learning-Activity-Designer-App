@@ -1,14 +1,11 @@
 import React from 'react';
-import { Button, Divider, makeStyles, Typography } from '@material-ui/core';
-import { DesignSkeleton } from './DesignSkeleton';
+import { Button, makeStyles } from '@material-ui/core';
 import { Design } from './Design';
-import { DesignsFolder } from './DesignsFolder';
-import { FolderSkeleton } from './FolderSkeleton';
 import { Alert } from '@material-ui/lab';
+import { useAuthState } from '../contexts/AuthContext';
 
 const useStyles = makeStyles({
-    root:{
-        paddingTop: 15,
+    root: {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -19,63 +16,64 @@ const useStyles = makeStyles({
         flexGrow: 1,
         flexWrap: 'wrap',
         justifyContent: 'flex-start',
-        marginTop:15,
-        marginBottom:15,
+        marginTop: 15,
+        marginBottom: 15,
+    },
+    error: {
+        marginTop: 15,
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        textAlign: 'justify',
+        alignItems: 'center',
+    },
+    loadMore: {
+        marginBottom: 50,
     }
 });
 
-export const DesignsContainer = ({ title, data, isError, isLoading, error }) => {
+export const DesignsContainer = ({ data, status, isFetchingNextPage, fetchNextPage, hasNextPage }) => {
     const classes = useStyles();
-    
-    if (isError) {
-        return <span>Error: {error.message}</span>
-    }
-
-    const createDesignSkeletons = () => {
-        return Array.from(Array(8).keys()).map( i => {return(<DesignSkeleton key={`my-design-skeleton-${ i }`}/>)});
-    };
-
-    const createFolderSkeletons = () => {
-        return Array.from(Array(8).keys()).map( i => {return(<FolderSkeleton key={`my-folder-skeleton-${ i }`}/>)});
-    };
-    
-    const folderList = () => {
-        return data.folders.map((folder) => <DesignsFolder key={'my-folder' + folder._id} { ...folder } />);
-    };
+    const { authState } = useAuthState();
 
     const designList = () => {
-        return data.designs.map((design) => <Design key={'my-design' + design._id} title={design.metadata.name} {...design} />);
+        return data.pages.map((page, index) => {
+            return page.designs.map((design, i) => <Design key={'my-design' + design._id} title={design.metadata.name} {...design} />);
+        });
     };
 
-    return (
-        <div className={ classes.root }>
-            <Typography variant='h4'>
-                { title }
-            </Typography>
-            <Divider />
+    return status === 'loading' ? (
+        <p>Loading...</p>
+    ) : status === 'error' ? (
+        <Alert severity='error' className={classes.error}>
+            Ha ocurrido un problema al intentar obtener los diseños. Esto probablemente se deba a un problema de conexión, por favor revise que su equipo tenga conexión a internet e intente más tarde.
+            Si el problema persiste, por favor comuníquese con el equipo de soporte.
+        </Alert>
+    ) : (
+        <div className={classes.root}>
+            <div className={classes.designsContainer}>
+                {
+                    data.pages[0].designs.length > 0
+                        ? designList()
+                        : (data.pages[0].ownerId === authState.user.uid)
+                            ? <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                                No se han encontrado diseños. Crea tu primer diseños haciendo click aquí!
+                            </Alert>
+                            : <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                                Este usuario no cuenta con diseños públicos.
+                            </Alert>
+                }
+            </div>
             {
-                (
-                        <div className={classes.designsContainer}>
-                            {
-                                (isLoading) 
-                                ? createFolderSkeletons()
-                                : folderList()
-                            }
-                            <div className={classes.designsContainer}>
-                                {
-                                    (isLoading) 
-                                        ? createDesignSkeletons()
-                                        : data.designs.length > 0 
-                                            ? designList()
-                                            : <Alert severity="info" style={{ width:'100%', display:'flex', justifyContent: 'center' }}>
-                                                No se han encontrado diseños. Crea tu primer diseños haciendo click aquí!
-                                            </Alert>
-                                }
-                            </div>
-                        </div>
-                    )
+                data && data.pages[0].designs.length > 0 && hasNextPage &&
+                <Button className={classes.loadMore} color='primary' onClick={() => fetchNextPage()}>
+                    {
+                        isFetchingNextPage
+                            ? 'Cargando más...'
+                            : 'Cargar Más'
+                    }
+            </Button>
             }
-            { data && data.designs.length > 0 && <Button color='primary'> Cargar Más </Button>}
         </div>
     )
 }
