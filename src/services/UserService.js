@@ -20,3 +20,20 @@ export const searchUsers = async ( filter, pageParam ) => {
     }
 	return body.data;
 };
+
+export const updateContact = async(  {uid, contacts} ) => {
+    try {
+        console.log(contacts, uid)
+        const res = await fetchWithToken(`user/${uid}`, { 
+            newData: { contacts }
+         }, 'PUT');
+        const body = await res.json();
+        if(!body.ok){
+            throw new Error(body.message);
+        }
+        return body.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+

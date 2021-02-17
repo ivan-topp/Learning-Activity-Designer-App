@@ -4,14 +4,16 @@ import StarIcon from '@material-ui/icons/Star';
 import ApartmentIcon from '@material-ui/icons/Apartment';
 import GroupIcon from '@material-ui/icons/Group';
 import EmailIcon from '@material-ui/icons/Email';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import EditIcon from '@material-ui/icons/Edit';
+import CloseIcon from '@material-ui/icons/Close';
 import { useAuthState } from '../../contexts/AuthContext';
-import { getUser } from '../../services/UserService';
-import { useInfiniteQuery, useQuery } from 'react-query';
+import {  getUser, updateContact } from '../../services/UserService';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 import { getPublicDesignsByUser } from '../../services/DesignService';
 import { DesignsContainer } from '../../components/DesignsContainer';
 import { Alert } from '@material-ui/lab';
-
 
 const useStyles = makeStyles((theme) => ({
     designPanel:{
@@ -68,11 +70,12 @@ const useStyles = makeStyles((theme) => ({
 export const UserProfile = () => {
     
     const classes = useStyles();
-    const { authState } = useAuthState();
+    const queryClient = useQueryClient();
+    const { authState, setAuthState } = useAuthState();
     const urlparams = useParams();
     const uid = urlparams.uid;
 
-    const { isLoading, isError, data, /*error*/ } = useQuery("user-profile", async () => {
+    const { isLoading, isError, data, error, refetch } = useQuery("user-profile", async () => {
         return await getUser(uid);
     }, { refetchOnWindowFocus: false });
 
@@ -86,6 +89,18 @@ export const UserProfile = () => {
         },
     });
     
+    const updateConctactMutation = useMutation(updateContact, {
+        onSuccess: (data, {uid, contacts}, context) => {
+            console.log(data);
+            console.log(uid, contacts);
+            console.log(context);
+            setAuthState((prevState)=>({
+                ...prevState, 
+                user: Object.assign({}, {...prevState.user, contacts})
+            }));
+            queryClient.invalidateQueries('user-profile');
+        }
+    });
     if(isError){
         return (<div className={ classes.errorContainer }>
             <Alert severity='error' className={ classes.error }>
@@ -103,8 +118,26 @@ export const UserProfile = () => {
         console.log('Editar perfil');
     };
 
-    const handleAddContact = () => {
-        console.log('Agregar usuario');
+    const handleAddContact = async (e) => {
+        e.preventDefault();
+        await updateConctactMutation.mutate({uid: authState.user.uid, contacts:[...authState.user.contacts, uid]});
+        queryClient.invalidateQueries('user-profile');
+        await refetch();
+    };
+
+    const handleDeleteContact = async (e) =>{
+        e.preventDefault();
+        console.log(authState.user)
+        console.log(authState.user.uid, authState.user.contacts.filter(contact=>contact!==uid));
+        await updateConctactMutation.mutate({uid: authState.user.uid, contacts: authState.user.contacts.filter(contact=>contact!==uid)});
+        queryClient.invalidateQueries('user-profile');
+    };
+    
+    if(isError){
+        return (<Typography>Error: {error.message}</Typography>);
+    };
+    if(isLoading){
+        return (<Typography>Cargando...</Typography>);
     };
 
     return (
@@ -136,9 +169,12 @@ export const UserProfile = () => {
                 </Grid>
                 <Grid container alignItems='center' justify='center' className={classes.spaceSecondData}>
                     {(authState.user.uid===uid) ? 
-                        <Button variant ='outlined' size='small' onClick={handleEditProfile}>Editar perfil</Button> 
+                        <Button variant ='outlined' size='small' onClick={handleEditProfile} startIcon={<EditIcon />}>Editar perfil</Button> 
+                        :
+                        (authState.user.contacts.includes(uid)) ? 
+                        <Button variant ='outlined' size='small' onClick={handleDeleteContact} startIcon={<CloseIcon />}>Eliminar de mis contactos</Button> 
                         : 
-                        <Button variant ='outlined' size='small' onClick={handleAddContact}>Agregar a mis contactos</Button>}  
+                        <Button variant ='outlined' size='small' onClick={handleAddContact} startIcon={<PersonAddIcon />} >Agregar a mis contactos</Button>}  
                 </Grid>
                 <Divider className={classes.spaceData}/>
                 <Grid className={classes.spaceData}>
