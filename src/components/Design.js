@@ -115,7 +115,6 @@ export const Design = ({ _id, title, updatedOn, metadata, folder, owner, canDele
     const handleOpenDesign = (e) => {
         e.stopPropagation();
         history.push(`designs/${ _id }`);
-        console.log('Open Design');
     };
 
     const handleDeleteDesign = async (e) => {

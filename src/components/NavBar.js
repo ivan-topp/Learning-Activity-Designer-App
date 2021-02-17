@@ -132,7 +132,7 @@ export const NavBar = () => {
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <Typography className={classes.navbarLetter} onClick={(e) => history.push(`/profile/${authState.user.uid}`)}>
-                                        {authState.user.name}
+                                        { authState.user.name }
                                     </Typography>
                                     <IconButton onClick={ handleMenu }>
                                         <SettingsIcon />

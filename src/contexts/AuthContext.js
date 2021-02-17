@@ -50,13 +50,13 @@ export const AuthProvider = ({ children }) => {
 		}
 	}, [authState.token]);
 
-	useEffect(() => {
-		if(authState.user === null){
-			localStorage.removeItem('contacts');
-		}else{
-			localStorage.setItem('contacts', JSON.stringify(authState.contacts));
-		}
-	}, [authState.contacts]);
+	//useEffect(() => {
+	//	if(authState.user === null){
+	//		localStorage.removeItem('contacts');
+	//	}else{
+	//		localStorage.setItem('contacts', JSON.stringify(authState.contacts));
+	//	}
+	//}, [authState.contacts, authState.user]);
 
 	return (
 		<AuthContext.Provider value={ { authState, setAuthState } }>
