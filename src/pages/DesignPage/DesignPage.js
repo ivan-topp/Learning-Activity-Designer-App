@@ -9,26 +9,26 @@ export const DesignPage = () => {
 
     const { id } = useParams();
     const { authState } = useAuthState();
-    const { socket, online } = useSocketState();
+    const { socket/*, online*/ } = useSocketState();
     const [ users, setUsersList] = useState([]);
 
     useEffect(() => {
-        socket.emit('join-to-design', { user: authState.user, design: id });
+        socket.emit('join-to-design', { user: authState.user, designId: id });
         socket.on('joined', ( users ) => setUsersList(users));
-        return () => socket.off('joined');
+        return () => {
+            socket.emit('leave-from-design', { user: authState.user, designId: id });
+            socket.off('joined');
+        };
     }, [socket, authState.user, id]);
-
-    console.log(users);
-    console.log(online);
 
     return (
         <>
             <Typography variant='h4'>DesignPage</Typography>
             <hr/>
             {
-                users.map((user) => 
+                users.map((user, index) => 
                     <Avatar
-                        key={user.uid}
+                        key={user.uid + index}
                         alt={formatName(user.name, user.lastname)}
                         src={user.img ?? ''}
                     >
