@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     },  
 }));
 
-export const DesignWorkspace = () => {
+export const DesignWorkspace = ({ design }) => {
     const classes = useStyles();
     return (
         <>
