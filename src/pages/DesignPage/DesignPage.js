@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Button, Grid, makeStyles, Avatar } from '@material-ui/core';
+import { Grid, makeStyles, Avatar, Typography, Tabs, Tab } from '@material-ui/core';
 import { useSocketState } from '../../contexts/SocketContext';
 import { useAuthState } from '../../contexts/AuthContext';
 import { formatName, getUserInitials } from '../../utils/textFormatters';
 import { DesignWorkspace } from './DesignWorkspace';
 import { DesignMetadata } from './DesignMetadata';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -37,6 +38,35 @@ const useStyles = makeStyles((theme) => ({
         borderBottom: `2px solid ${theme.palette.divider}`
     }, 
 }));
+const TabPanel = (props) => {
+    const { children, value, index, ...other } = props;
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`full-width-tabpanel-${index}`}
+        aria-labelledby={`full-width-tab-${index}`}
+        {...other}
+      >
+        {value === index && (
+            <Typography component={'span'}>{children}</Typography>
+        )}
+      </div>
+    );
+}
+
+TabPanel.propTypes = {
+    children: PropTypes.node,
+    index: PropTypes.any.isRequired,
+    value: PropTypes.any.isRequired,
+};
+
+const a11yProps = (index) =>{
+    return {
+      id: `full-width-tab-${index}`,
+      'aria-controls': `full-width-tabpanel-${index}`,
+    };
+}
 
 export const DesignPage = () => {
     const classes = useStyles();
@@ -44,7 +74,8 @@ export const DesignPage = () => {
     const { authState } = useAuthState();
     const { socket/*, online*/ } = useSocketState();
     const [ users, setUsersList] = useState([]);
-    const [ isSelectedMetaData, setIsSelectedMetaData ] = useState(true);
+    const [value, setValue] = useState(0);
+    //const [ isSelectedMetaData, setIsSelectedMetaData ] = useState(true);
 
     useEffect(() => {
         socket.emit('join-to-design', { user: authState.user, designId: id });
@@ -55,30 +86,23 @@ export const DesignPage = () => {
         };
     }, [socket, authState.user, id]);
     
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+    
     return (
         <>  
             <Grid container className={classes.menu}>
                 <Grid item xs={12} md={2} />
                 <Grid item xs={12} md={8} >
-                    {isSelectedMetaData ?
-                        <Grid container> 
-                            <Grid item className={classes.menuLettersSelected}>
-                                <Button>METADATOS</Button>
-                            </Grid>
-                            <Grid item className={classes.menuLetters}>
-                                <Button onClick={()=>{setIsSelectedMetaData(false)}}>DISEÑO</Button>
-                            </Grid>
-                        </Grid>
-                        : 
-                        <Grid container> 
-                            <Grid item className={classes.menuLetters}>
-                                <Button onClick={()=>{setIsSelectedMetaData(true)}}>METADATOS</Button>
-                            </Grid>
-                            <Grid item className={classes.menuLettersSelected}>
-                                <Button >DISEÑO</Button>
-                            </Grid>
-                        </Grid>    
-                    }
+                    <Tabs
+                        value={value}
+                        onChange={handleChange}
+                        aria-label="full width tabs example"
+                        >
+                        <Tab label="METADATA" {...a11yProps(0)} />
+                        <Tab label="DISEÑO" {...a11yProps(1)} />
+                    </Tabs>
                 </Grid>
                 <Grid item xs={12} md ={2}>
                 {
@@ -94,11 +118,12 @@ export const DesignPage = () => {
                 }
                 </Grid>
             </Grid>
-            { isSelectedMetaData ?
-                <DesignMetadata/> 
-                :
-                <DesignWorkspace/> 
-            }
+                <TabPanel value={value} index={0}>
+                    <DesignMetadata/>
+                </TabPanel>
+                <TabPanel value={value} index={1}>
+                    <DesignWorkspace/>
+                </TabPanel>
         </>
     )
 }
