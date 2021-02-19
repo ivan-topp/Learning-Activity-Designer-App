@@ -60,7 +60,7 @@ export const DesignPage = () => {
     const { socket/*, online*/ } = useSocketState();
     const [ users, setUsersList] = useState([]);
     const [ value, setValue ] = useState(0);
-    const [ design, setDesign ] = useState({});
+    const [ design, setDesign ] = useState(null);
     
     useEffect(() => {
         socket.emit('join-to-design', { user: authState.user, designId: id }, ( res ) => {
@@ -105,7 +105,7 @@ export const DesignPage = () => {
                         }
                     </div>
                 </Grid>
-                <Grid xs={12} md={3} lg={2}></Grid>
+                <Grid item xs={12} md={3} lg={2}></Grid>
             </Grid>
                 <TabPanel value={value} index={0}>
                     <DesignMetadata design={ design }/>
