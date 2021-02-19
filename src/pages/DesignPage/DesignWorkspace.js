@@ -22,12 +22,21 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(1)
     },
     textLefPanel:{
-        marginTop: theme.spacing(1)
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1)
     },
     spaceData:{
-        marginBottom: theme.spacing(2),
+        marginBottom: theme.spacing(1),
         borderBottom: `2px solid ${theme.palette.divider}`
-    },  
+    },
+    LeftPanelMetadata:{
+        marginTop: theme.spacing(1),
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2)
+    },
+    textLefPanelMetadata:{
+        marginTop: theme.spacing(3)
+    }
 }));
 
 export const DesignWorkspace = () => {
@@ -40,6 +49,79 @@ export const DesignWorkspace = () => {
                         <Typography className={classes.textLefPanel}> INFORMACIÓN DISEÑO </Typography>
                     </Grid>
                     <Divider className={classes.spaceData}/>
+                    <Grid className={classes.LeftPanelMetadata}>
+                        <Typography color='textSecondary'>
+                            Nombre
+                        </Typography>
+                        <Typography>
+                            No definido.
+                        </Typography>
+                        <Divider/>
+                        <Typography color='textSecondary' className={classes.textLefPanelMetadata}>
+                            Tema
+                        </Typography>
+                        <Typography>
+                            No definido.
+                        </Typography>
+                        <Divider/>
+                        <Typography color='textSecondary' className={classes.textLefPanelMetadata}>
+                            Tiempo de trabajo
+                        </Typography>
+                        <Typography>
+                            No definido.
+                        </Typography>
+                        <Divider/>
+                        <Typography color='textSecondary' className={classes.textLefPanelMetadata}>
+                            Tiempo de trabajo Diseño
+                        </Typography>
+                        <Typography>
+                            No definido.
+                        </Typography>
+                        <Divider/>
+                        <Typography color='textSecondary' className={classes.textLefPanelMetadata}>
+                            Modo de entrega
+                        </Typography>
+                        <Typography>
+                            No definido.
+                        </Typography>
+                        <Divider/>
+                        <Typography color='textSecondary' className={classes.textLefPanelMetadata}>
+                            Tamaño de la clase
+                        </Typography>
+                        <Typography>
+                            No definido.
+                        </Typography>
+                        <Divider/>
+                        <Typography color='textSecondary' className={classes.textLefPanelMetadata}>
+                            Conocimiento Previo
+                        </Typography>
+                        <Typography>
+                            No definido.
+                        </Typography>
+                        <Divider/>
+                        <Typography color='textSecondary' className={classes.textLefPanelMetadata}>
+                            Descripción
+                        </Typography>
+                        <Typography>
+                            No definido.
+                        </Typography>
+                        <Divider/>
+                        <Typography color='textSecondary' className={classes.textLefPanelMetadata}>
+                            Objetivos
+                        </Typography>
+                        <Typography>
+                            No definido.
+                        </Typography>
+                        <Divider/>
+                        <Typography color='textSecondary' className={classes.textLefPanelMetadata}>
+                            Resultados
+                        </Typography>
+                        <Typography>
+                            No definido.
+                        </Typography>
+                        <Divider/>
+                    </Grid>
+                    
                 </Grid>
                 <Grid item xs={12} md={6} lg={8} className={classes.workspace}>
                     <ButtonGroup size="small" aria-label="outlined primary button group" className={classes.buttonGroupWorkSpace}>

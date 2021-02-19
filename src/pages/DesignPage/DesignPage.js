@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Grid, makeStyles, Avatar, Typography, Tabs, Tab } from '@material-ui/core';
+import { Grid, makeStyles, Avatar, Tabs, Tab } from '@material-ui/core';
 import { useSocketState } from '../../contexts/SocketContext';
 import { useAuthState } from '../../contexts/AuthContext';
 import { formatName, getUserInitials } from '../../utils/textFormatters';
 import { DesignWorkspace } from './DesignWorkspace';
 import { DesignMetadata } from './DesignMetadata';
+import { TabPanel } from '../../components/TabPanel'
 import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
@@ -38,22 +39,6 @@ const useStyles = makeStyles((theme) => ({
         borderBottom: `2px solid ${theme.palette.divider}`
     }, 
 }));
-const TabPanel = (props) => {
-    const { children, value, index, ...other } = props;
-    return (
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`full-width-tabpanel-${index}`}
-        aria-labelledby={`full-width-tab-${index}`}
-        {...other}
-      >
-        {value === index && (
-            <Typography component={'span'}>{children}</Typography>
-        )}
-      </div>
-    );
-}
 
 TabPanel.propTypes = {
     children: PropTypes.node,
@@ -75,7 +60,6 @@ export const DesignPage = () => {
     const { socket/*, online*/ } = useSocketState();
     const [ users, setUsersList] = useState([]);
     const [value, setValue] = useState(0);
-    //const [ isSelectedMetaData, setIsSelectedMetaData ] = useState(true);
 
     useEffect(() => {
         socket.emit('join-to-design', { user: authState.user, designId: id });
