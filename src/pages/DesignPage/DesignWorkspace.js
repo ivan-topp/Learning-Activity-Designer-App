@@ -1,5 +1,6 @@
 import { Button, ButtonGroup, Divider, Grid, makeStyles, Typography } from '@material-ui/core'
 import React from 'react'
+import { DesignGraphic } from './DesignGraphic';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -19,7 +20,8 @@ const useStyles = makeStyles((theme) => ({
         borderLeft: `1px solid ${theme.palette.divider}`,
     },
     buttonGroupWorkSpace:{
-        marginTop: theme.spacing(1)
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1)
     },
     textLefPanel:{
         marginTop: theme.spacing(1),
@@ -36,13 +38,17 @@ const useStyles = makeStyles((theme) => ({
     },
     textLefPanelMetadata:{
         marginTop: theme.spacing(3)
-    }
+    },
+    designUnit:{
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1)
+    },
 }));
 
-export const DesignWorkspace = () => {
+export const DesignWorkspace = ({ design }) => {
     const classes = useStyles();
     return (
-        <>
+        <>  {console.log(design)}
             <Grid container>
                 <Grid item xs={12} md={3} lg={2} className={classes.leftPanel}>
                     <Grid container alignItems='center' justify='center'>
@@ -54,7 +60,7 @@ export const DesignWorkspace = () => {
                             Nombre
                         </Typography>
                         <Typography>
-                            No definido.
+                            {design.metadata.name}
                         </Typography>
                         <Divider/>
                         <Typography color='textSecondary' className={classes.textLefPanelMetadata}>
@@ -121,7 +127,6 @@ export const DesignWorkspace = () => {
                         </Typography>
                         <Divider/>
                     </Grid>
-                    
                 </Grid>
                 <Grid item xs={12} md={6} lg={8} className={classes.workspace}>
                     <ButtonGroup size="small" aria-label="outlined primary button group" className={classes.buttonGroupWorkSpace}>
@@ -129,8 +134,16 @@ export const DesignWorkspace = () => {
                         <Button>Compartir</Button>
                         <Button>Guardar</Button>
                     </ButtonGroup>
+                    <Grid>
+                        <Button variant = "outlined">Agregar Unidad de Aprendizaje</Button>
+                        <Grid className={classes.designUnit}>
+                            <Typography> Unidad </Typography>
+                        </Grid>
+                    </Grid>
                 </Grid>
-                <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
+                <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}>
+                    <DesignGraphic/>
+                </Grid>
             </Grid>   
         </>
     )

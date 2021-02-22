@@ -6,8 +6,7 @@ import { useAuthState } from '../../contexts/AuthContext';
 import { formatName, getUserInitials } from '../../utils/textFormatters';
 import { DesignWorkspace } from './DesignWorkspace';
 import { DesignMetadata } from './DesignMetadata';
-import { TabPanel } from '../../components/TabPanel'
-import PropTypes from 'prop-types';
+import { TabPanel } from '../../components/TabPanel';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -27,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
         borderLeft: `1px solid ${theme.palette.divider}`,
     },
     menu:{
-        marginTop: theme.spacing(1),
         borderBottom: `1px solid ${theme.palette.divider}`,
     },
     menuLetters:{
@@ -37,14 +35,16 @@ const useStyles = makeStyles((theme) => ({
     menuLettersSelected:{
         marginLeft: theme.spacing(2),
         borderBottom: `2px solid ${theme.palette.divider}`
-    }, 
+    },
+    tabBar: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    usersConnecteds: {
+        display: 'flex',
+    }
 }));
-
-TabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.any.isRequired,
-    value: PropTypes.any.isRequired,
-};
 
 const a11yProps = (index) =>{
     return {
@@ -59,14 +59,18 @@ export const DesignPage = () => {
     const { authState } = useAuthState();
     const { socket/*, online*/ } = useSocketState();
     const [ users, setUsersList] = useState([]);
-    const [value, setValue] = useState(0);
-
+    const [ value, setValue ] = useState(0);
+    const [ design, setDesign ] = useState({});
+    
     useEffect(() => {
-        socket.emit('join-to-design', { user: authState.user, designId: id });
-        socket.on('joined', ( users ) => setUsersList(users));
+        socket.emit('join-to-design', { user: authState.user, designId: id }, ( res ) => {
+            if (res.ok) setDesign(res.data.design);
+            else console.log(res);
+        });
+        socket.on('users', ( users ) => setUsersList(users));
         return () => {
             socket.emit('leave-from-design', { user: authState.user, designId: id });
-            socket.off('joined');
+            socket.off('users');
         };
     }, [socket, authState.user, id]);
     
@@ -77,8 +81,8 @@ export const DesignPage = () => {
     return (
         <>  
             <Grid container className={classes.menu}>
-                <Grid item xs={12} md={2} />
-                <Grid item xs={12} md={8} >
+                <Grid item xs={12} md={3} lg={2} />
+                <Grid item xs={12} md={6} lg={8} className={ classes.tabBar}>
                     <Tabs
                         value={value}
                         onChange={handleChange}
@@ -87,26 +91,27 @@ export const DesignPage = () => {
                         <Tab label="METADATA" {...a11yProps(0)} />
                         <Tab label="DISEÑO" {...a11yProps(1)} />
                     </Tabs>
+                    <div className={classes.usersConnecteds}>
+                        {
+                            users.map((user, index) => 
+                                <Avatar
+                                    key={user.uid + index}
+                                    alt={formatName(user.name, user.lastname)}
+                                    src={user.img ?? ''}
+                                >
+                                    {getUserInitials(user.name, user.lastname)}
+                                </Avatar>
+                            )
+                        }
+                    </div>
                 </Grid>
-                <Grid item xs={12} md ={2}>
-                {
-                    users.map((user, index) => 
-                        <Avatar
-                            key={user.uid + index}
-                            alt={formatName(user.name, user.lastname)}
-                            src={user.img ?? ''}
-                        >
-                            {getUserInitials(user.name, user.lastname)}
-                        </Avatar>
-                    )
-                }
-                </Grid>
+                <Grid item xs={12} md={3} lg={2}></Grid>
             </Grid>
                 <TabPanel value={value} index={0}>
-                    <DesignMetadata/>
+                    <DesignMetadata design={ design }/>
                 </TabPanel>
                 <TabPanel value={value} index={1}>
-                    <DesignWorkspace/>
+                    <DesignWorkspace design={ design }/>
                 </TabPanel>
         </>
     )

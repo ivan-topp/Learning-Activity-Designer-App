@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { Typography } from '@material-ui/core';
 
 export const TabPanel = (props) => {
@@ -16,3 +17,9 @@ export const TabPanel = (props) => {
       </div>
     );
 }
+
+TabPanel.propTypes = {
+    children: PropTypes.node,
+    index: PropTypes.any.isRequired,
+    value: PropTypes.any.isRequired,
+};
