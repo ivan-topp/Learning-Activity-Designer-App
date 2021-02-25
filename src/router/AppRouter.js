@@ -23,7 +23,7 @@ export const AppRouter = () => {
     const { authState } = useAuthState();
     const { token, checking } = authState;
 
-    if (checking) {
+    if (!token && checking) {
         return <h1>Espere...</h1>;
     }
 
@@ -34,14 +34,14 @@ export const AppRouter = () => {
                     <CssBaseline/>
                     <NavBar />
                     <Switch>
-                        <PublicRoute exact path="/" component={ LandingPage } isAuthenticated={ Boolean(token) } />
-                        <PrivateRoute exact path="/profile/:uid" component={ UserProfile } isAuthenticated={ Boolean(token) } />
-                        <PrivateRoute exact path="/my-designs" component={MyDesignsPage} isAuthenticated={Boolean(token)} />
-                        <PrivateRoute path="/my-designs/:urlPath+/" component={MyDesignsPage} isAuthenticated={Boolean(token)} />
-                        <PrivateRoute exact path="/shared-with-me" component={SharedWithMePage} isAuthenticated={Boolean(token)} />
-                        <PrivateRoute exact path="/public-repository" component={PublicRepositoryPage} isAuthenticated={Boolean(token)} />
-                        <PrivateRoute exact path="/users/search" component={SearchUsersPage} isAuthenticated={Boolean(token)} />
-                        <PrivateRoute exact path="/designs/:id" component={DesignPage} isAuthenticated={Boolean(token)} />
+                        <PublicRoute exact path="/" component={ LandingPage } isAuthenticated={!checking && !!token }/>
+                        <PrivateRoute exact path="/profile/:uid" component={ UserProfile } isAuthenticated={ !checking && !!token }/>
+                        <PrivateRoute exact path="/my-designs" component={MyDesignsPage} isAuthenticated={!checking && !!token }/>
+                        <PrivateRoute path="/my-designs/:urlPath+/" component={MyDesignsPage} isAuthenticated={!checking && !!token }/>
+                        <PrivateRoute exact path="/shared-with-me" component={SharedWithMePage} isAuthenticated={!checking && !!token }/>
+                        <PrivateRoute exact path="/public-repository" component={PublicRepositoryPage} isAuthenticated={!checking && !!token }/>
+                        <PrivateRoute exact path="/users/search" component={SearchUsersPage} isAuthenticated={!checking && !!token }/>
+                            <PrivateRoute exact path="/designs/:id" component={DesignPage} isAuthenticated={!checking && !!token }/>
                         <Redirect to="/" />
                     </Switch>
                     <Footer />

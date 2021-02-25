@@ -34,6 +34,16 @@ export const getPublicDesignsByUser = async ( id, pageParam ) => {
     return body.data;
 };
 
+export const createDesign = async (path) => {
+    console.log(path);
+    const resp = await fetchWithToken(`design`, { path }, 'POST');
+    const body = await resp.json();
+    if (!body.ok) {
+        throw new Error(body.message);
+    }
+    return body.data;
+};
+
 export const deleteDesignById = async ({ id }) => {
     const resp = await fetchWithToken(`design/${ id }`, {}, 'DELETE');
     const body = await resp.json();
