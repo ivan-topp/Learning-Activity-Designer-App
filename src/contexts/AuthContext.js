@@ -21,17 +21,20 @@ export const AuthProvider = ({ children }) => {
 	});
 
 	useEffect(() => {
-		const user = JSON.parse(localStorage.getItem('user'));
-		const token = localStorage.getItem('token');
-
-		if (user !== null && token !== null) {
-			checkingToken(setAuthState);
-		} else {
-			setAuthState((prevState) => ({
-				...prevState,
-				checking: false,
-			}));
-		}
+		const checking = async () => {
+			const user = JSON.parse(localStorage.getItem('user'));
+			const token = localStorage.getItem('token');
+	
+			if (user !== null && token !== null) {
+				await checkingToken(setAuthState);
+			} else {
+				setAuthState((prevState) => ({
+					...prevState,
+					checking: false,
+				}));
+			}
+		};
+		checking();
 	}, []);
 
 	useEffect(() => {
@@ -49,14 +52,6 @@ export const AuthProvider = ({ children }) => {
 			localStorage.setItem('token', authState.token);
 		}
 	}, [authState.token]);
-
-	//useEffect(() => {
-	//	if(authState.user === null){
-	//		localStorage.removeItem('contacts');
-	//	}else{
-	//		localStorage.setItem('contacts', JSON.stringify(authState.contacts));
-	//	}
-	//}, [authState.contacts, authState.user]);
 
 	return (
 		<AuthContext.Provider value={{ authState, setAuthState }}>

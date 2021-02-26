@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHistory, useParams } from "react-router-dom";
-import { Breadcrumbs, Divider, Grid, Link, List, ListItem, ListItemText, makeStyles, Typography } from '@material-ui/core';
+import { Breadcrumbs, Button, Divider, Grid, Link, List, ListItem, ListItemText, makeStyles, Typography } from '@material-ui/core';
 import { RecentDesigns } from './RecentDesigns';
 import { DesignsContainer } from '../../components/DesignsContainer';
-import { useInfiniteQuery, useQuery } from 'react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from 'react-query';
 import { Group, Home, Public } from '@material-ui/icons';
-import { getDesignsByFolder } from '../../services/DesignService';
+import { createDesign, getDesignsByFolder } from '../../services/DesignService';
 import { getfolderByPath } from '../../services/FolderService';
 import { FoldersContainer } from '../../components/FoldersContainer';
+import { useAuthState } from '../../contexts/AuthContext';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -31,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
     },
     breadCrumbs: {
         marginTop: 20,
+        marginBottom: 20,
         width: '100%',
         padding: '10px 15px 10px 15px',
         borderRadius: 3,
@@ -46,6 +48,8 @@ export const MyDesignsPage = () => {
     const history = useHistory();
     const urlparams = useParams();
     const designsRef = useRef(null);
+    const queryClient = useQueryClient();
+    const { authState } = useAuthState();
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
     const path = urlparams.urlPath ? '/' + urlparams.urlPath : '/';
@@ -64,6 +68,28 @@ export const MyDesignsPage = () => {
     const foldersQuery = useQuery(['folders', path], async () => {
         return await getfolderByPath(path);
     }, { refetchOnWindowFocus: false });
+
+    const createDesignMutation = useMutation(createDesign, {
+        onMutate: async () => {
+            await queryClient.cancelQueries('recent-designs');
+            await queryClient.cancelQueries(['designs', path]);
+            await queryClient.cancelQueries([authState.user.id, 'user-public-designs']);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries('recent-designs');
+            queryClient.invalidateQueries(['designs', path]);
+            queryClient.invalidateQueries([authState.user.id, 'user-public-designs']);
+        },
+        onError: (error) => {
+            // TODO: Emitir notificación o message para denotar el error.
+            console.log(error);
+        },
+        onSuccess: data => {
+            console.log('onSuccess');
+            console.log(data);
+            history.push(`/designs/${data.design._id}`);
+        }
+    });
 
     const redirectTo = useCallback(
         (path) => {
@@ -111,10 +137,17 @@ export const MyDesignsPage = () => {
         }
     }, [designsRef]);
 
+    const handleCreateDesign = async ( e, path = '/' ) => {
+        await createDesignMutation.mutate(path);
+    };
+
     return (
         <>
             <Grid container>
                 <Grid item xs={12} md={3} lg={2} className={classes.leftPanel}>
+                    <Button variant='contained' color='default' style={{margin:10}} onClick={handleCreateDesign}> 
+                        Crear Diseño
+                    </Button>
                     <List component="nav" aria-label="main mailbox folders">
                         <ListItem button selected>
                             <Home className={classes.icon} />
@@ -150,9 +183,14 @@ export const MyDesignsPage = () => {
                         path === '/' && <RecentDesigns id='recent' width={width} height={height} />
                     }
                     <div className={ classes.designsAndFoldersContainer }>
-                        <Typography variant='h4'>
-                            {path === '/' ? 'Mis Diseños' : folderName}
-                        </Typography>
+                        <div style={{display:'flex', justifyContent: 'space-between', alignItems:'flex-end', paddingBottom: 5}}>
+                            <Typography variant='h4'>
+                                {path === '/' ? 'Mis Diseños' : folderName}
+                            </Typography>
+                            <Button variant='outlined' style={{height: 35}} size='large' color='default' onClick={(e)=>handleCreateDesign(e, path)}> 
+                                Crear Diseño
+                            </Button>
+                        </div>
                         <Divider />
                         <FoldersContainer {...foldersQuery}/>
                         <DesignsContainer {...designsQuery} />

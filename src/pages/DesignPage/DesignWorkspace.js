@@ -53,6 +53,7 @@ export const DesignWorkspace = ({ design }) => {
     const handleNewUA = () => {
         console.log('Agregar nueva unidad de aprendizaje')
     };
+    console.log(metadata);
     return (
         <>  
             <Grid container>
@@ -76,7 +77,7 @@ export const DesignWorkspace = ({ design }) => {
                             { metadata && metadata.category &&(
                                 <>
                                         <Typography variant="body2" color='textSecondary' className={classes.textLefPanelMetadata}>Tema</Typography>
-                                        <Typography variant="body2"> { metadata.category } </Typography>
+                                        <Typography variant="body2"> { metadata.category.name } </Typography>
                                         <Divider/>
                                     </>
                                 )

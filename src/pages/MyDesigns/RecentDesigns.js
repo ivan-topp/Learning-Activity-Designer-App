@@ -9,6 +9,9 @@ import { getRecentDesigns } from '../../services/DesignService';
 const useStyles = makeStyles({
     root:{
         paddingTop: 15,
+        marginBottom: 15,
+        //marginLeft: -10,
+        //marginRight: -10,
     },
     recentDesigns: {
         width: '100%',
@@ -17,6 +20,10 @@ const useStyles = makeStyles({
         flexWrap: 'nowrap',
         justifyContent: 'flex-start',
         marginTop:15,
+    },
+    title: {
+        //paddingLeft:10,
+        //paddingRight:10,
     }
 });
 
@@ -45,7 +52,7 @@ export const RecentDesigns = ({ width, height }) => {
         <div className={classes.root}>
             {
                 data && data.length !== 0 
-                    ? <div>
+                    ? <div className={classes.title}>
                     <Typography variant='h4'>
                         Diseños recientes
                     </Typography>

@@ -15,8 +15,8 @@ const useStyles = makeStyles((theme) =>({
         userSelect: 'none',
         backgroundColor: 'rgba(0, 0, 0, 0)',//theme.palette.primary.sidePanels,
         '&:hover': {
-            zIndex: 0.5,
-            background: 'rgba(0, 0, 0, 0.05)',//theme.palette.primary.sidePanels,
+            boxShadow: '0px 0px 10px 0 #bcc3d6',
+            background: theme.palette.background.designHover,
         },
     },
     folderBody: {

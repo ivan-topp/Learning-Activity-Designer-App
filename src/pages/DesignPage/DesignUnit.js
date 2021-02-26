@@ -42,10 +42,10 @@ export const DesignUnit = ({ design }) => {
 
     const handleAddActivity = () => {
         console.log("Agregar nueva Actividad");
-    }
-
+    };
+    console.log(design)
     return (
-        <>
+        <>  
             {
                 design.data.tlas.map((value, index)=>{
                     return (
@@ -72,7 +72,7 @@ export const DesignUnit = ({ design }) => {
                                         <Grid container>
                                             <Grid item />
                                             <Grid item  className={classes.buttonPos}>
-                                                <Button size="small" variant="outlined" onClick={handleAddActivity}> Agregar Tarea</Button>
+                                                <Button size="small" variant="outlined" onClick={handleAddActivity}> Agregar Tarea </Button>
                                             </Grid>
                                         </Grid>
                                     </Grid>
@@ -89,7 +89,6 @@ export const DesignUnit = ({ design }) => {
                     )
                 })
             }
-            
         </>
     )
 }
