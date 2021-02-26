@@ -23,29 +23,29 @@ export const AuthProvider = ({ children }) => {
 	useEffect(() => {
 		const user = JSON.parse(localStorage.getItem('user'));
 		const token = localStorage.getItem('token');
-		
-		if(user !== null && token !== null){
+
+		if (user !== null && token !== null) {
 			checkingToken(setAuthState);
-		}else{
-			setAuthState((prevState)=>({
+		} else {
+			setAuthState((prevState) => ({
 				...prevState,
 				checking: false,
 			}));
 		}
-	  }, []);
+	}, []);
 
 	useEffect(() => {
-		if(authState.user === null){
+		if (authState.user === null) {
 			localStorage.removeItem('user');
-		}else{
+		} else {
 			localStorage.setItem('user', JSON.stringify(authState.user));
 		}
 	}, [authState.user]);
 
 	useEffect(() => {
-		if(authState.token === null){
+		if (authState.token === null) {
 			localStorage.removeItem('token');
-		}else{
+		} else {
 			localStorage.setItem('token', authState.token);
 		}
 	}, [authState.token]);
@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
 	//}, [authState.contacts, authState.user]);
 
 	return (
-		<AuthContext.Provider value={ { authState, setAuthState } }>
+		<AuthContext.Provider value={{ authState, setAuthState }}>
 			{children}
 		</AuthContext.Provider>
 	);

@@ -42,3 +42,12 @@ export const deleteDesignById = async ({ id }) => {
     }
     return body.data;
 };
+
+export const updateTLADesing = async ({ id }) => {
+    const resp = await fetchWithToken(`design/${ id }/edit`, {}, 'PUT');
+    const body = await resp.json();
+    if (!body.ok) {
+        throw new Error(body.message);
+    }
+    return body.data;
+};
