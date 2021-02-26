@@ -85,8 +85,8 @@ export const MyDesignsPage = () => {
             console.log(error);
         },
         onSuccess: data => {
-            console.log('onSuccess');
-            console.log(data);
+            //console.log('onSuccess');
+            //console.log(data);
             history.push(`/designs/${data.design._id}`);
         }
     });

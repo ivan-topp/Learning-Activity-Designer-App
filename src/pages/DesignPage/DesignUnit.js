@@ -43,10 +43,9 @@ export const DesignUnit = ({ design }) => {
     const handleAddActivity = () => {
         console.log("Agregar nueva Actividad");
     };
-    console.log(design)
     return (
         <>  
-            {
+            {  
                 design.data.tlas.map((value, index)=>{
                     return (
                         <Grid className={classes.unitSpacing} key={index}>

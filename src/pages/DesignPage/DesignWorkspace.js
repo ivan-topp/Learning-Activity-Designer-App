@@ -53,7 +53,6 @@ export const DesignWorkspace = ({ design }) => {
     const handleNewUA = () => {
         console.log('Agregar nueva unidad de aprendizaje')
     };
-    console.log(metadata);
     return (
         <>  
             <Grid container>
