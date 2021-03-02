@@ -1,10 +1,13 @@
 import { Button, Divider, FormControl, FormControlLabel, Grid, InputLabel, makeStyles, MenuItem, Select, Switch, TextField, Typography } from '@material-ui/core'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useQuery } from 'react-query';
 import { useForm } from '../../hooks/useForm';
 import { useSocketState } from '../../contexts/SocketContext';
 import TimeFormatter from '../../utils/timeFormatters';
 import { getCategories } from '../../services/CategoryService';
+import { Alert } from '@material-ui/lab';
+import { LearningResult } from '../../components/LearningResult';
+import { LearningResultModal } from '../../components/LearningResultModal';
 //import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
@@ -31,11 +34,13 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
     },
     content: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
         marginTop: 10,
         marginBottom: 10,
     },
     grid: {
-        //backgroundColor:'green',
         display:'flex',
         alignItems:'center',
     },
@@ -57,6 +62,7 @@ export const DesignMetadata = ({ design }) => {
     const { socket/*, online*/ } = useSocketState();
     //const { id } = useParams();
     const { metadata } = design;
+    const [isLearningResultModalOpen, setLearningResultModalOpen] = useState(false);
 
     const [form, handleInputChange, , setValues] = useForm({
         name: metadata.name,
@@ -88,10 +94,11 @@ export const DesignMetadata = ({ design }) => {
     }, [design, setValues, metadata]);
     
     const { name, category, classSize, workingTimeDesignHours, workingTimeDesignMinutes, workingTimeHours, workingTimeMinutes, priorKnowledge, description, objective, isPublic } = form;
+    
     const { isLoading, isError, data, error } = useQuery('categories', async () => {
         return await getCategories();
     }, { refetchOnWindowFocus: false });
-    
+
     if(isError){
         return (<Typography>{error.message}</Typography>);
     }
@@ -111,6 +118,9 @@ export const DesignMetadata = ({ design }) => {
         }else{
             socket.emit('edit-metadata-field', { designId: design._id, field: target.name, value: form[target.name]});
         }
+    };
+    const handleClose = ( e ) => {
+        setLearningResultModalOpen(false);
     };
 
     const handleChangeCategory = ( e ) => {
@@ -301,15 +311,25 @@ export const DesignMetadata = ({ design }) => {
                     </Grid>
                     <div className={classes.title}>
                         <Typography variant='h4'>Resultados de aprendizaje</Typography>
-                        <Button variant='outlined' color='default'>Agregar</Button>
+                        <Button variant='outlined' color='default' onClick={() => setLearningResultModalOpen(true)}>Agregar</Button>
                     </div>
                     <Divider />
                     <div className={classes.content}>
-
+                        {
+                            metadata.results.length === 0 
+                                ? <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                                    Este diseño aún no tiene resultados de aprendizaje. Agrega el primer resultado de aprendizaje haciendo click aquí!
+                                </Alert>
+                                : metadata.results.map((result) => (
+                                    <LearningResult key={result._id} {...result}/>
+                                ))
+                                
+                        }
                     </div>
                 </Grid>
                 <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
             </Grid>
+            <LearningResultModal designId={design._id} isOpen={isLearningResultModalOpen} handleClose={handleClose}/>
         </>
     )
 }

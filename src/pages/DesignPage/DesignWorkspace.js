@@ -141,23 +141,23 @@ export const DesignWorkspace = ({ design }) => {
                             }
                         </Grid>
                         <Grid>
-                            { metadata && metadata.objetive &&(
+                            { metadata && metadata.objective &&(
                                     <>
                                         <Typography color='textSecondary' className={classes.textLefPanelMetadata}> Objetivos </Typography>
-                                        <Typography> { metadata.objetive } </Typography>
+                                        <Typography> { metadata.objective } </Typography>
                                         <Divider/>
                                     </>
                                 )
                             }
                         </Grid>
                         <Grid>
-                            { metadata && metadata.results &&(
+                            { /*metadata && metadata.results &&(
                                     <>
                                         <Typography color='textSecondary' className={classes.textLefPanelMetadata}> Resultados </Typography>
                                         <Typography>{ metadata.results }</Typography>
                                         <Divider/>
                                     </>
-                                )
+                                )*/
                             }
                         </Grid>
                     </Grid>
