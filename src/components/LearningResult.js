@@ -1,6 +1,6 @@
 import React from 'react';
 import { IconButton, makeStyles, Typography } from '@material-ui/core';
-import { Delete } from '@material-ui/icons';
+import { Delete, Edit } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -16,24 +16,30 @@ const useStyles = makeStyles((theme) => ({
         textOverflow: 'ellipsis',
         textAlign: 'justify',
     },
-    deleteIcon: {
+    actions: {
         position: 'absolute',
         top: 8,
         right: 8,
     }
 }));
 
-export const LearningResult = ({verb, description}) => {
+export const LearningResult = ({ verb, description, handleEdit, handleDelete}) => {
     const classes = useStyles();
+
     return (
         <div className={classes.root}>
             <Typography color="textSecondary" gutterBottom variant='caption'>Resultado</Typography>
             <Typography variant='body2'>{verb}</Typography>
             <Typography color="textSecondary" gutterBottom variant='caption'>Descripción</Typography>
             <Typography className={classes.description} variant='body2'>{description}</Typography>
-            <IconButton className={classes.deleteIcon} onClick={()=>console.log('object')}>
-                <Delete />
-            </IconButton>
+            <div className={classes.actions}>
+                <IconButton className={classes.deleteIcon} onClick={()=>handleEdit(verb, description)}>
+                    <Edit />
+                </IconButton>
+                <IconButton className={classes.deleteIcon} onClick={()=>handleDelete(verb, description)}>
+                    <Delete />
+                </IconButton>
+            </div>
         </div>
     )
 }
