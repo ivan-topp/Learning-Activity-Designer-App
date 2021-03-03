@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         borderLeft:`1px solid ${theme.palette.divider}`,
         background: theme.palette.background.workSpace,
-        minHeight: 'calc(100vh - 64px)'
+        minHeight: 'calc(100vh - 128px)'
     },
     photoProfile: {
         width: theme.spacing(30),

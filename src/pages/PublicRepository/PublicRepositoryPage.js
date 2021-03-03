@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     workspace: {
         paddingLeft: 30,
         paddingRight: 30,
-        minHeight: '100vh',
+        minHeight: 'calc(100vh - 128px)',
     },
     rightPanel: {
         display: 'flex',

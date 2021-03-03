@@ -2,6 +2,7 @@ import { Button, ButtonGroup, Divider, Grid, makeStyles, Typography } from '@mat
 import React from 'react'
 import { DesignGraphic } from './DesignGraphic';
 import { DesignUnit } from './DesignUnit';
+import { useSocketState } from '../../contexts/SocketContext';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -13,7 +14,8 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: 15,
         paddingRight: 15,
         background: theme.palette.background.workSpace,
-        minHeight: 'calc(100vh - 64px)'
+        height: 'calc(100vh - 177px)',
+        overflow: 'auto'
     },
     rightPanel: {
         display: 'flex',
@@ -40,19 +42,41 @@ const useStyles = makeStyles((theme) => ({
     textLefPanelMetadata:{
         marginTop: theme.spacing(3)
     },
+    workSpaceUnits:{
+    },
+    '@global': {
+    //Ancho del scrollbar    
+    '*::-webkit-scrollbar': {
+        width: '0.4em'
+    },
+    //Sombra del scrollbar
+    '*::-webkit-scrollbar-track': {
+        '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)'
+         
+    },
+    //Scrollbar
+    '*::-webkit-scrollbar-thumb': {
+        '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
+        borderRadius: '15px',
+        backgroundColor: 'rgba(0,0,0,.1)',
+    }
+    },
+      
 }));
 
 export const DesignWorkspace = ({ design }) => {
     const classes = useStyles();
     const { metadata } = design;
+    const { socket } = useSocketState();
 
-    
-    const handleSaveDesign = () => {
-        console.log('Guardar diseño');
+    const handleSaveDesign = (e) => {
+        socket.emit('save-design', { designId: design._id });
     };
+
     const handleNewUA = () => {
-        console.log('Agregar nueva unidad de aprendizaje')
+        socket.emit('new-tla', { designId: design._id});    
     };
+    
     return (
         <>  
             <Grid container>
@@ -141,10 +165,10 @@ export const DesignWorkspace = ({ design }) => {
                             }
                         </Grid>
                         <Grid>
-                            { metadata && metadata.objetive &&(
+                            { metadata && metadata.objective &&(
                                     <>
                                         <Typography color='textSecondary' className={classes.textLefPanelMetadata}> Objetivos </Typography>
-                                        <Typography> { metadata.objetive } </Typography>
+                                        <Typography> { metadata.objective } </Typography>
                                         <Divider/>
                                     </>
                                 )
@@ -168,14 +192,16 @@ export const DesignWorkspace = ({ design }) => {
                         <Button>Compartir</Button>
                         <Button onClick = {handleSaveDesign}>Guardar</Button>
                     </ButtonGroup>
-                    <Grid>
+                    <Grid className={classes.workSpaceUnits}>
                         <Button size="small" variant = "outlined" onClick={handleNewUA}>Agregar Unidad de Aprendizaje</Button>
-                        <DesignUnit design = { design } />
+                        <Grid >
+                            <DesignUnit design = { design } />
+                        </Grid>
                     </Grid>
                 </Grid>
                 <Grid item xs={3} md={3} lg={2} className={classes.rightPanel}>
-                    <Grid>
-                        <DesignGraphic  design = { design }/>
+                    <Grid >
+                        <DesignGraphic design = { design }/>
                     </Grid>
                 </Grid>
             </Grid>   
