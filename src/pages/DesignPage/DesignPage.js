@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Grid, makeStyles, Avatar, Tabs, Tab, Typography } from '@material-ui/core';
 import { useSocketState } from '../../contexts/SocketContext';
@@ -56,21 +56,32 @@ const a11yProps = (index) => {
 export const DesignPage = () => {
     const classes = useStyles();
     const { id } = useParams();
+    const isMounted = useRef(true);
     const { authState } = useAuthState();
     const { socket/*, online*/ } = useSocketState();
     const [users, setUsersList] = useState([]);
     const [value, setValue] = useState(0);
     const [design, setDesign] = useState(null);
 
+    useEffect(()=>{
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
     useEffect(() => {
         socket.emit('join-to-design', { user: authState.user, designId: id }, (res) => {
-            if (res.ok) setDesign(res.data.design);
+            if (res.ok){
+                if(isMounted.current) setDesign(res.data.design);
+            } 
             else console.log(res);
         });
         socket.on('update-design', (design) => {
-            setDesign(design);
+            if(isMounted.current) setDesign(design);
         });
-        socket.on('users', (users) => setUsersList(users));
+        socket.on('users', (users) => {
+            if(isMounted.current) setUsersList(users);
+        });
         return () => {
             socket.emit('leave-from-design', { user: authState.user, designId: id });
             socket.off('updateDesign');

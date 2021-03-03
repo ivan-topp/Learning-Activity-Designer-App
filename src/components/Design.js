@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
         justifySelf: 'start',
         width: '20%',
     },
-    deleteDesign: {
+    deleteIcon: {
         position: 'absolute',
         top: 8,
         right: 8,
@@ -156,7 +156,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, canDele
                     </CardContent>
                 </CardActionArea>
                 {
-                    canDelete && authState.user.uid === owner._id && (<IconButton className={classes.deleteDesign} onClick={handleDeleteDesign}>
+                    canDelete && authState.user.uid === owner._id && (<IconButton className={classes.deleteIcon} onClick={handleDeleteDesign}>
                         <Delete />
                     </IconButton>)
                 }
