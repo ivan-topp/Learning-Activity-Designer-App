@@ -94,7 +94,7 @@ export const LearningResultModal = ({ design, isOpen, handleClose, _verb, _descr
                     (activeStep === 0)
                         ? <BloomPiramid index={category} setCategory={setCategory}/>
                         : (activeStep === 1)
-                            ? <BloomVerbList active={verb} setVerb={setVerb} category={category} />
+                            ? <BloomVerbList active={verb} setVerb={setVerb} category={category} results={design.metadata.results}/>
                             : <TextField
                                 multiline
                                 rows={6}

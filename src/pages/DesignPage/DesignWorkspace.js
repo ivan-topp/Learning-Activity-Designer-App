@@ -45,21 +45,21 @@ const useStyles = makeStyles((theme) => ({
     workSpaceUnits:{
     },
     '@global': {
-    //Ancho del scrollbar    
-    '*::-webkit-scrollbar': {
-        width: '0.4em'
-    },
-    //Sombra del scrollbar
-    '*::-webkit-scrollbar-track': {
-        '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)'
-         
-    },
-    //Scrollbar
-    '*::-webkit-scrollbar-thumb': {
-        '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
-        borderRadius: '15px',
-        backgroundColor: 'rgba(0,0,0,.1)',
-    }
+        //Ancho del scrollbar    
+        '*::-webkit-scrollbar': {
+            width: '0.4em'
+        },
+        //Sombra del scrollbar
+        '*::-webkit-scrollbar-track': {
+            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)'
+            
+        },
+        //Scrollbar
+        '*::-webkit-scrollbar-thumb': {
+            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
+            borderRadius: '15px',
+            backgroundColor: 'rgba(0,0,0,.1)',
+        }
     },
       
 }));

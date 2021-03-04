@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const BloomVerbList = ({ active, setVerb, category }) => {
+export const BloomVerbList = ({ active, setVerb, category, results }) => {
     const classes = useStyles();
 
     const { isLoading, isError, data } = useQuery('bloom-verbs', async () => {
@@ -32,8 +32,9 @@ export const BloomVerbList = ({ active, setVerb, category }) => {
     console.log(active);
 
     const createOptionList = () => {
-        
+        console.log(results);
         return data.bloomVerbs.map(option => {
+            const exists = !!results.find(result => option.name === result.verb);
             const isActive = active === option.name;
             return (
             <FormControlLabel 
@@ -41,6 +42,7 @@ export const BloomVerbList = ({ active, setVerb, category }) => {
                 key={option._id}
                 value={option.name}
                 control={<Radio 
+                    disabled={exists}
                     checked={isActive}
                     onChange={(e)=> setVerb(option.name)}
                     value={option.name}
