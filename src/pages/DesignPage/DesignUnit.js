@@ -3,18 +3,26 @@ import React, { useEffect, useState } from 'react'
 import { DesignActivity } from './DesignActivity';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { useSocketState } from '../../contexts/SocketContext';
+import { StackedBar } from '../../components/StackedBar';
 
 const useStyles = makeStyles((theme) => ({
     unitSpacing:{
         marginTop: theme.spacing(3),
     },
     titleUnitSpacing:{
+        display: 'flex',
+        paddingLeft: 10,
+        paddingRight: 10,
         marginTop: theme.spacing(1),
-        marginLeft: theme.spacing(1)
     },
     graphicUnitSpacing:{
-        marginTop: theme.spacing(3),
-        marginLeft: "auto",
+        width: '100%',
+        paddingLeft: 10,
+        paddingRight: 10,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: theme.spacing(1),
     },
     trashIcon:{
         marginLeft: "auto",
@@ -86,8 +94,7 @@ export const DesignUnit = ({ design }) => {
                     <Grid className={classes.unitSpacing} key={index}>
                         <Paper>
                             <Grid container>
-                                <Grid item xs={11} sm={5} className={classes.titleUnitSpacing}>
-                                    <Typography component={'span'} >
+                                <Grid item xs={12} sm={5} className={classes.titleUnitSpacing}>
                                     <TextField
                                         margin='dense'
                                         variant="outlined"
@@ -99,12 +106,9 @@ export const DesignUnit = ({ design }) => {
                                         inputProps={{ maxLength: 30 }}
                                         fullWidth
                                     />
-                                    </Typography>
                                 </Grid>
-                                <Grid item xs={11} sm={6} className={classes.graphicUnitSpacing}>
-                                    <Typography> Barra de aprendizaje Unidad</Typography>
-                                </Grid>
-                                <Grid item className={classes.trashIcon}>
+                                <Grid item xs={12} sm={7} className={classes.graphicUnitSpacing}>
+                                    <StackedBar />
                                     <Tooltip title="Delete"> 
                                         <IconButton onClick={()=>handleDeleteUnit(index)}>
                                             <DeleteForeverIcon fontSize="small"/>
