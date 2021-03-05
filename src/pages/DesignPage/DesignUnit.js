@@ -1,8 +1,9 @@
-import { Box, Button, Divider, Grid, IconButton, makeStyles, Paper, TextField, Tooltip, Typography } from '@material-ui/core'
+import { Button, Divider, Grid, IconButton, makeStyles, Paper, TextField, Tooltip, Typography } from '@material-ui/core'
 import React, { useEffect, useState } from 'react'
 import { DesignActivity } from './DesignActivity';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { useSocketState } from '../../contexts/SocketContext';
+import { Alert } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
     unitSpacing:{
@@ -42,7 +43,6 @@ export const DesignUnit = ({ design }) => {
     const classes = useStyles();
     const { socket } = useSocketState();
     const [ tlaArray, setTlaArray ] =  useState(design.data.tlas);
-
     useEffect(() => {
         setTlaArray(design.data.tlas)
     }, [design]);
@@ -76,15 +76,15 @@ export const DesignUnit = ({ design }) => {
         socket.emit('delete-tla', { designId: design._id, index });
     };
 
-    const handleAddActivity = () => {
-        console.log("Agregar nueva Actividad");
+    const handleAddActivity = (index) => {
+        socket.emit('new-activity', { designId: design._id, index });
     };
 
     const listTlaArray = () =>{
         return (
             tlaArray.map(( tla, index ) =>(
-                    <Grid className={classes.unitSpacing} key={index}>
-                        <Paper>
+                    <Grid key={index}>
+                        <Paper className={classes.unitSpacing}>
                             <Grid container>
                                 <Grid item xs={11} sm={5} className={classes.titleUnitSpacing}>
                                     <Typography component={'span'} >
@@ -115,13 +115,13 @@ export const DesignUnit = ({ design }) => {
                             <Divider/>
                             <Grid container spacing={2} >
                                 <Grid item xs={12} sm={8}>
-                                    <Box boxShadow={1} className={classes.gridActivity}>
-                                        <DesignActivity/>
-                                    </Box>
+                                    <Grid className={classes.gridActivity}>
+                                        <DesignActivity design={design} index={index}/>
+                                    </Grid>
                                     <Grid container>
                                         <Grid item />
                                         <Grid item  className={classes.buttonPos}>
-                                            <Button size="small" variant="outlined" onClick={handleAddActivity}> Agregar Tarea </Button>
+                                            <Button size="small" variant="outlined" onClick={()=>handleAddActivity(index)}> Agregar Tarea </Button>
                                         </Grid>
                                     </Grid>
                                 </Grid>
@@ -152,7 +152,10 @@ export const DesignUnit = ({ design }) => {
     
     return (
         <>  
-            {  listTlaArray() }
+         {  
+            /*listTlaArray() */ 
+            (tlaArray === undefined) ? <Alert severity="info">Usted aún no tiene unidades en su diseño</Alert> : listTlaArray()
+        }
         </>
     )
 }

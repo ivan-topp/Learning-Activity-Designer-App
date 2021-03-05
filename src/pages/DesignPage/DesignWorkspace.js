@@ -74,7 +74,7 @@ export const DesignWorkspace = ({ design }) => {
     };
 
     const handleNewUA = () => {
-        socket.emit('new-tla', { designId: design._id});    
+        socket.emit('new-tla', { designId: design._id });    
     };
     
     return (
