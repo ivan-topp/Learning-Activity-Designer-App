@@ -1,11 +1,13 @@
 import { Button, Divider, FormControl, FormControlLabel, Grid, InputLabel, makeStyles, MenuItem, Select, Switch, TextField, Typography } from '@material-ui/core'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useQuery } from 'react-query';
 import { useForm } from '../../hooks/useForm';
 import { useSocketState } from '../../contexts/SocketContext';
 import TimeFormatter from '../../utils/timeFormatters';
 import { getCategories } from '../../services/CategoryService';
-//import { useParams } from 'react-router-dom';
+import { Alert } from '@material-ui/lab';
+import { LearningResult } from '../../components/LearningResult';
+import { LearningResultModal } from '../../components/LearningResultModal';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -31,13 +33,15 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
     },
     content: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
         marginTop: 10,
         marginBottom: 10,
     },
     grid: {
-        //backgroundColor:'green',
-        display:'flex',
-        alignItems:'center',
+        display: 'flex',
+        alignItems: 'center',
     },
     category: {
         width: '100%',
@@ -57,10 +61,13 @@ export const DesignMetadata = ({ design }) => {
     const { socket/*, online*/ } = useSocketState();
     //const { id } = useParams();
     const { metadata } = design;
+    const [isLearningResultModalOpen, setLearningResultModalOpen] = useState(false);
+    const [verb, setVerb] = useState('');
+    const [_description, setDescription] = useState('');
 
     const [form, handleInputChange, , setValues] = useForm({
         name: metadata.name,
-        category: metadata.category ? metadata.category.name : 'Sin categoría' ,
+        category: metadata.category ? metadata.category.name : 'Sin categoría',
         classSize: metadata.classSize,
         workingTimeDesignHours: TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[0],
         workingTimeDesignMinutes: TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[1],
@@ -71,10 +78,11 @@ export const DesignMetadata = ({ design }) => {
         objective: metadata.objective,
         isPublic: metadata.isPublic
     });
+
     useEffect(() => {
         setValues({
             name: metadata.name,
-            category: metadata.category ? metadata.category.name : 'Sin categoría' ,
+            category: metadata.category ? metadata.category.name : 'Sin categoría',
             classSize: metadata.classSize,
             workingTimeDesignHours: TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[0],
             workingTimeDesignMinutes: TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[1],
@@ -86,45 +94,65 @@ export const DesignMetadata = ({ design }) => {
             isPublic: metadata.isPublic
         });
     }, [design, setValues, metadata]);
-    
+
     const { name, category, classSize, workingTimeDesignHours, workingTimeDesignMinutes, workingTimeHours, workingTimeMinutes, priorKnowledge, description, objective, isPublic } = form;
+
     const { isLoading, isError, data, error } = useQuery('categories', async () => {
         return await getCategories();
     }, { refetchOnWindowFocus: false });
-    
-    if(isError){
+
+    if (isError) {
         return (<Typography>{error.message}</Typography>);
     }
 
-    if(isLoading){
+    if (isLoading) {
         return (<Typography>Cargando...</Typography>);
     }
 
     const createCategoryList = () => {
-        if(data == null || data.categories.length === 0) return (<MenuItem value='Sin categoría'>Sin categoría</MenuItem>);
-        return data.categories.map( c => <MenuItem key={c._id} value={c.name}>{c.name}</MenuItem>);
+        if (data == null || data.categories.length === 0) return (<MenuItem value='Sin categoría'>Sin categoría</MenuItem>);
+        return data.categories.map(c => <MenuItem key={c._id} value={c.name}>{c.name}</MenuItem>);
     };
 
-    const editDesign = ({target}) => {
-        if(target.name === 'workingTimeHours' || target.name === 'workingTimeMinutes'){
-            socket.emit('edit-metadata-field', { designId: design._id, field: 'workingTime', value: TimeFormatter.toMinutes(workingTimeHours, workingTimeMinutes)});
-        }else{
-            socket.emit('edit-metadata-field', { designId: design._id, field: target.name, value: form[target.name]});
+    const editDesign = ({ target }) => {
+        if (target.name === 'workingTimeHours' || target.name === 'workingTimeMinutes') {
+            socket.emit('edit-metadata-field', { designId: design._id, field: 'workingTime', value: TimeFormatter.toMinutes(workingTimeHours, workingTimeMinutes) });
+        } else {
+            socket.emit('edit-metadata-field', { designId: design._id, field: target.name, value: form[target.name] });
         }
     };
+    const handleClose = (e) => {
+        setVerb('');
+        setDescription('');
+        setLearningResultModalOpen(false);
+    };
 
-    const handleChangeCategory = ( e ) => {
+    const handleChangeCategory = (e) => {
         handleInputChange(e);
-        socket.emit('edit-metadata-field', { designId: design._id, field: e.target.name, value: data.categories.find(c => c.name === e.target.value)});
+        socket.emit('edit-metadata-field', { designId: design._id, field: e.target.name, value: data.categories.find(c => c.name === e.target.value) });
     };
 
-    const handleTogglePublic = ( e ) => {
-        handleInputChange({target: {value: e.target.checked, name: e.target.name}});
-        socket.emit('edit-metadata-field', { designId: design._id, field: e.target.name, value: e.target.checked});
+    const handleTogglePublic = (e) => {
+        handleInputChange({ target: { value: e.target.checked, name: e.target.name } });
+        socket.emit('edit-metadata-field', { designId: design._id, field: e.target.name, value: e.target.checked });
     };
 
-    const handleSaveDesign = ( e ) => {
+    const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
+    };
+
+    const handleEdit = (verb, description) => {
+        setVerb(verb);
+        setDescription(description);
+        setLearningResultModalOpen(true);
+    };
+
+    const handleDelete = (verb, description) => {
+        let index = 0;
+        design.metadata.results.forEach((result, _index) => {
+            if (result.verb === verb && result.description === description) index = _index;
+        });
+        socket.emit('delete-learning-result', { designId: design._id, index });
     };
 
     return (
@@ -192,7 +220,7 @@ export const DesignMetadata = ({ design }) => {
                             />
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
-                            <div style={{width: '100%'}}>
+                            <div style={{ width: '100%' }}>
                                 <Typography > Tiempo de trabajo </Typography>
                                 <div className={classes.timeField}>
                                     <TextField
@@ -230,7 +258,7 @@ export const DesignMetadata = ({ design }) => {
                             </div>
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
-                            <div style={{width: '100%'}}>
+                            <div style={{ width: '100%' }}>
                                 <Typography > Tiempo diseñado </Typography>
                                 <div className={classes.timeField}>
                                     <TextField
@@ -301,15 +329,25 @@ export const DesignMetadata = ({ design }) => {
                     </Grid>
                     <div className={classes.title}>
                         <Typography variant='h4'>Resultados de aprendizaje</Typography>
-                        <Button variant='outlined' color='default'>Agregar</Button>
+                        <Button variant='outlined' color='default' onClick={() => setLearningResultModalOpen(true)}>Agregar</Button>
                     </div>
                     <Divider />
                     <div className={classes.content}>
+                        {
+                            metadata.results.length === 0
+                                ? <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                                    Este diseño aún no tiene resultados de aprendizaje. Agrega el primer resultado de aprendizaje haciendo click aquí!
+                                </Alert>
+                                : metadata.results.map((result, index) => (
+                                    <LearningResult key={`learning-result-${index}`} {...result} handleEdit={handleEdit} handleDelete={handleDelete} />
+                                ))
 
+                        }
                     </div>
                 </Grid>
                 <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
             </Grid>
+            <LearningResultModal design={design} isOpen={isLearningResultModalOpen} handleClose={handleClose} _verb={verb} _description={_description} />
         </>
     )
 }

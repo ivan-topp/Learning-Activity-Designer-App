@@ -45,21 +45,21 @@ const useStyles = makeStyles((theme) => ({
     workSpaceUnits:{
     },
     '@global': {
-    //Ancho del scrollbar    
-    '*::-webkit-scrollbar': {
-        width: '0.4em'
-    },
-    //Sombra del scrollbar
-    '*::-webkit-scrollbar-track': {
-        '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)'
-         
-    },
-    //Scrollbar
-    '*::-webkit-scrollbar-thumb': {
-        '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
-        borderRadius: '15px',
-        backgroundColor: 'rgba(0,0,0,.1)',
-    }
+        //Ancho del scrollbar    
+        '*::-webkit-scrollbar': {
+            width: '0.4em'
+        },
+        //Sombra del scrollbar
+        '*::-webkit-scrollbar-track': {
+            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)'
+            
+        },
+        //Scrollbar
+        '*::-webkit-scrollbar-thumb': {
+            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
+            borderRadius: '15px',
+            backgroundColor: 'rgba(0,0,0,.1)',
+        }
     },
       
 }));
@@ -175,13 +175,13 @@ export const DesignWorkspace = ({ design }) => {
                             }
                         </Grid>
                         <Grid>
-                            { metadata && metadata.results &&(
+                            { /*metadata && metadata.results &&(
                                     <>
                                         <Typography color='textSecondary' className={classes.textLefPanelMetadata}> Resultados </Typography>
                                         <Typography>{ metadata.results }</Typography>
                                         <Divider/>
                                     </>
-                                )
+                                )*/
                             }
                         </Grid>
                     </Grid>
@@ -195,7 +195,9 @@ export const DesignWorkspace = ({ design }) => {
                     <Grid className={classes.workSpaceUnits}>
                         <Button size="small" variant = "outlined" onClick={handleNewUA}>Agregar Unidad de Aprendizaje</Button>
                         <Grid >
-                            <DesignUnit design = { design } />
+                            {
+                                design.data.tlas && design.data.tlas.map((tla, index) => <DesignUnit key={`tla-${index}`} design={design} index={index} tla={tla}/> )
+                            }
                         </Grid>
                     </Grid>
                 </Grid>
