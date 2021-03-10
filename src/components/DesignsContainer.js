@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, makeStyles } from '@material-ui/core';
-import { Design } from './Design';
+import { Design } from 'components/Design';
 import { Alert } from '@material-ui/lab';
-import { useAuthState } from '../contexts/AuthContext';
+import { useAuthState } from 'contexts/AuthContext';
 
 const useStyles = makeStyles({
     root: {

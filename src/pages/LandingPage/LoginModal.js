@@ -9,12 +9,12 @@ import {
 
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import Alert from '@material-ui/lab/Alert';
-import Logo from '../../assets/img/Logo.png';
-import { useForm } from '../../hooks/useForm';
-import { useUiState } from '../../contexts/ui/UiContext';
-import { ModalFormWithImage } from '../../components/ModalFormWithImage';
-import { useAuthState } from '../../contexts/AuthContext';
-import { types } from '../../types/types';
+import Logo from 'assets/img/Logo.png';
+import { useForm } from 'hooks/useForm';
+import { useUiState } from 'contexts/ui/UiContext';
+import { ModalFormWithImage } from 'components/ModalFormWithImage';
+import { useAuthState } from 'contexts/AuthContext';
+import { types } from 'types/types';
 const useStyles = makeStyles((theme) => ({
     formcontrol: {
         display: 'flex',

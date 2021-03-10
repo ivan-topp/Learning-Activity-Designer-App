@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import { Chart } from 'chart.js'
+import React, { useEffect } from 'react';
+import { Chart } from 'chart.js';
 import { Grid, makeStyles, Typography } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({

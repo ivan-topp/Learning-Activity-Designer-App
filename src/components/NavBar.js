@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useQueryClient } from 'react-query';
 import { makeStyles } from '@material-ui/core/styles';
-import Logo from '../assets/img/Logo.png';
+import { Search } from '@material-ui/icons';
+import Logo from 'assets/img/Logo.png';
 import { Avatar, Typography, Toolbar, AppBar, Button, ButtonGroup, IconButton, Menu, MenuItem, Switch, FormControlLabel, OutlinedInput } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
-import { useUiState } from '../contexts/ui/UiContext';
-import { useAuthState } from '../contexts/AuthContext';
-import { useQueryClient } from 'react-query';
-import { useUserConfigState } from '../contexts/UserConfigContext';
-import { useHistory } from 'react-router-dom';
-import { Search } from '@material-ui/icons';
-import { types } from '../types/types';
+import { useUiState } from 'contexts/ui/UiContext';
+import { useAuthState } from 'contexts/AuthContext';
+import { useUserConfigState } from 'contexts/UserConfigContext';
+import { types } from 'types/types';
 
 const useStyles = makeStyles((theme) => ({
     root: {

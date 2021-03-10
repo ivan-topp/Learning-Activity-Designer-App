@@ -1,8 +1,8 @@
-import { Button, ButtonGroup, Divider, Grid, makeStyles, Typography } from '@material-ui/core'
-import React from 'react'
-import { DesignGraphic } from './DesignGraphic';
-import { DesignUnit } from './DesignUnit';
-import { useSocketState } from '../../contexts/SocketContext';
+import React from 'react';
+import { Button, ButtonGroup, Divider, Grid, makeStyles, Typography } from '@material-ui/core';
+import { DesignGraphic } from 'pages/DesignPage/Workspace/DesignGraphic';
+import { DesignUnit } from 'pages/DesignPage/Workspace/DesignUnit';
+import { useSocketState } from 'contexts/SocketContext';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {

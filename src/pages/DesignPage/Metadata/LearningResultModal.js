@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, makeStyles, Step, StepLabel, Stepper, TextField } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
-import { BloomPiramid } from './BloomPiramid';
-import { BloomVerbList } from './BloomVerbList';
-import { useSocketState } from '../contexts/SocketContext';
+import { BloomPiramid } from 'pages/DesignPage/Metadata/BloomPiramid';
+import { BloomVerbList } from 'pages/DesignPage/Metadata/BloomVerbList';
+import { useSocketState } from 'contexts/SocketContext';
 
 const useStyles = makeStyles((theme) => ({
     title: {

@@ -5,13 +5,13 @@ import {
     TextField,
     Link,
 } from '@material-ui/core';
-import Logo from '../../assets/img/Logo.png';
+import Logo from 'assets/img/Logo.png';
 import Alert from '@material-ui/lab/Alert';
-import { ModalFormWithImage } from '../../components/ModalFormWithImage';
-import { useForm } from '../../hooks/useForm';
-import { useAuthState } from '../../contexts/AuthContext';
-import { useUiState } from '../../contexts/ui/UiContext';
-import { types } from '../../types/types';
+import { ModalFormWithImage } from 'components/ModalFormWithImage';
+import { useForm } from 'hooks/useForm';
+import { useAuthState } from 'contexts/AuthContext';
+import { useUiState } from 'contexts/ui/UiContext';
+import { types } from 'types/types';
 
 const useStyles = makeStyles((theme) => ({
     form: {

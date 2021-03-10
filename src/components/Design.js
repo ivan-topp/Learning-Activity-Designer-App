@@ -1,9 +1,9 @@
 import React from 'react';
 import { Avatar, Card, CardActionArea, CardActions, CardContent, IconButton, makeStyles, Typography } from '@material-ui/core';
 import { Delete, Description, Star } from '@material-ui/icons';
-import { useAuthState } from '../contexts/AuthContext';
-import { formatName, getUserInitials } from '../utils/textFormatters';
-import { deleteDesignById } from '../services/DesignService';
+import { useAuthState } from 'contexts/AuthContext';
+import { formatName, getUserInitials } from 'utils/textFormatters';
+import { deleteDesignById } from 'services/DesignService';
 import { useMutation, useQueryClient } from 'react-query';
 import { useHistory } from 'react-router-dom';
 

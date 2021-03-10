@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@material-ui/core';
-import React, { useState, useContext, createContext, useEffect } from 'react'
-import { useAuthState } from '../contexts/AuthContext';
-import { getTheme } from '../theme/theme';
+import React, { useState, useContext, createContext, useEffect } from 'react';
+import { useAuthState } from 'contexts/AuthContext';
+import { getTheme } from 'theme/theme';
 
 const UserConfigContext = createContext();
 

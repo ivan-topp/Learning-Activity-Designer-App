@@ -1,4 +1,4 @@
-import { fetchWithToken } from "../utils/fetch";
+import { fetchWithToken } from "utils/fetch";
 
 
 export const getfolderByPath = async ( path ) => {

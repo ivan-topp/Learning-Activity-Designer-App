@@ -1,7 +1,7 @@
 import { FormControlLabel, makeStyles, Radio } from '@material-ui/core';
 import React from 'react'
 import { useQuery } from 'react-query';
-import { getBloomVerbs } from '../services/BloomService';
+import { getBloomVerbs } from 'services/BloomService';
 
 const useStyles = makeStyles((theme) => ({
     root: {

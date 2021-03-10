@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Grid, makeStyles, Avatar, Tabs, Tab, Typography } from '@material-ui/core';
-import { useSocketState } from '../../contexts/SocketContext';
-import { useAuthState } from '../../contexts/AuthContext';
-import { formatName, getUserInitials } from '../../utils/textFormatters';
-import { DesignWorkspace } from './DesignWorkspace';
-import { DesignMetadata } from './DesignMetadata';
-import { TabPanel } from '../../components/TabPanel';
+import { useSocketState } from 'contexts/SocketContext';
+import { useAuthState } from 'contexts/AuthContext';
+import { formatName, getUserInitials } from 'utils/textFormatters';
+import { DesignWorkspace } from 'pages/DesignPage/Workspace/DesignWorkspace';
+import { DesignMetadata } from 'pages/DesignPage/Metadata/DesignMetadata';
+import { TabPanel } from 'components/TabPanel';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, makeStyles, Typography } from '@material-ui/core';
-import { LeftPanel } from '../LeftPanel';
+import { LeftPanel } from 'pages/Navigation/LeftPanel';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {

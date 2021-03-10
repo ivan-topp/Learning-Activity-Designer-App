@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory, useParams } from "react-router-dom";
 import { Button, Divider, Grid, makeStyles, Typography } from '@material-ui/core';
-import { RecentDesigns } from './RecentDesigns';
-import { DesignsContainer } from '../../../components/DesignsContainer';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from 'react-query';
-import { createDesign, getDesignsByFolder } from '../../../services/DesignService';
-import { getfolderByPath } from '../../../services/FolderService';
-import { FoldersContainer } from '../../../components/FoldersContainer';
-import { useAuthState } from '../../../contexts/AuthContext';
-import { useUiState } from '../../../contexts/ui/UiContext';
-import { DesignsBreadcrumbs } from './DesignsBreadcrumbs';
-import { LeftPanel } from '../LeftPanel';
-import { types } from '../../../types/types';
+import { DesignsContainer } from 'components/DesignsContainer';
+import { createDesign, getDesignsByFolder } from 'services/DesignService';
+import { getfolderByPath } from 'services/FolderService';
+import { FoldersContainer } from 'components/FoldersContainer';
+import { useAuthState } from 'contexts/AuthContext';
+import { useUiState } from 'contexts/ui/UiContext';
+import { types } from 'types/types';
+import { LeftPanel } from 'pages/Navigation/LeftPanel';
+import { DesignsBreadcrumbs } from 'pages/Navigation/MyDesigns/DesignsBreadcrumbs';
+import { RecentDesigns } from 'pages/Navigation/MyDesigns/RecentDesigns';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {

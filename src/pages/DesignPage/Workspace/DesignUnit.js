@@ -1,10 +1,10 @@
+import React, { useEffect } from 'react';
 import { Button, Checkbox, Divider, FormControlLabel, Grid, IconButton, makeStyles, Paper, TextField, Tooltip, Typography } from '@material-ui/core'
-import React, { useEffect } from 'react'
-import { DesignActivity } from './DesignActivity';
+import { DesignActivity } from 'pages/DesignPage/Workspace/DesignActivity';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import { useSocketState } from '../../contexts/SocketContext';
-import { StackedBar } from '../../components/StackedBar';
-import { useForm } from '../../hooks/useForm';
+import { useSocketState } from 'contexts/SocketContext';
+import { StackedBar } from 'components/StackedBar';
+import { useForm } from 'hooks/useForm';
 
 const useStyles = makeStyles((theme) => ({
     unitSpacing: {

@@ -1,13 +1,13 @@
+import React, { useEffect, useState } from 'react';
 import { Button, Divider, FormControl, FormControlLabel, Grid, InputLabel, makeStyles, MenuItem, Select, Switch, TextField, Typography } from '@material-ui/core'
-import React, { useEffect, useState } from 'react'
 import { useQuery } from 'react-query';
-import { useForm } from '../../hooks/useForm';
-import { useSocketState } from '../../contexts/SocketContext';
-import TimeFormatter from '../../utils/timeFormatters';
-import { getCategories } from '../../services/CategoryService';
 import { Alert } from '@material-ui/lab';
-import { LearningResult } from '../../components/LearningResult';
-import { LearningResultModal } from '../../components/LearningResultModal';
+import { useForm } from 'hooks/useForm';
+import { useSocketState } from 'contexts/SocketContext';
+import TimeFormatter from 'utils/timeFormatters';
+import { getCategories } from 'services/CategoryService';
+import { LearningResult } from 'pages/DesignPage/Metadata/LearningResult';
+import { LearningResultModal } from 'pages/DesignPage/Metadata/LearningResultModal';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {

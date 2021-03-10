@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
-import { DesignsFolder } from './DesignsFolder';
+import { DesignsFolder } from 'components/DesignsFolder';
 
 const useStyles = makeStyles({
     root: {

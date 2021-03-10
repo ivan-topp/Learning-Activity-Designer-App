@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, createContext, useCallback } from 'react';
-import { fetchWithoutToken, fetchWithToken } from '../utils/fetch';
+import { fetchWithoutToken, fetchWithToken } from 'utils/fetch';
 
 const AuthContext = createContext();
 

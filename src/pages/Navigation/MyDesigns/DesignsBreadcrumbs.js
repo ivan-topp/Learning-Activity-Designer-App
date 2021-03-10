@@ -1,7 +1,7 @@
 import { Breadcrumbs, Link, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { useUiState } from '../../../contexts/ui/UiContext';
+import { useUiState } from 'contexts/ui/UiContext';
 
 const useStyles = makeStyles((theme) => ({
     root: {

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Avatar, makeStyles, Typography } from '@material-ui/core';
-import { formatName, getUserInitials } from '../utils/textFormatters';
 import { useHistory } from 'react-router-dom';
+import { Avatar, makeStyles, Typography } from '@material-ui/core';
+import { formatName, getUserInitials } from 'utils/textFormatters';
 
 const useStyles = makeStyles((theme) => ({
     root: {

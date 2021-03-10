@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import {  Grid, makeStyles, Typography, ButtonBase, Avatar, Button } from '@material-ui/core';
 

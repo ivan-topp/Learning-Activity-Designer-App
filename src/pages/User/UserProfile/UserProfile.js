@@ -1,19 +1,13 @@
 import React from 'react';
-import { Grid, Typography, Avatar, makeStyles, Button, Divider, } from '@material-ui/core';
-import StarIcon from '@material-ui/icons/Star';
-import ApartmentIcon from '@material-ui/icons/Apartment';
-import GroupIcon from '@material-ui/icons/Group';
-import EmailIcon from '@material-ui/icons/Email';
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import EditIcon from '@material-ui/icons/Edit';
-import CloseIcon from '@material-ui/icons/Close';
-import { useAuthState } from '../../../contexts/AuthContext';
-import {  getUser, updateContact } from '../../../services/UserService';
-import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
-import { getPublicDesignsByUser } from '../../../services/DesignService';
-import { DesignsContainer } from '../../../components/DesignsContainer';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from 'react-query';
+import { Grid, Typography, Avatar, makeStyles, Button, Divider, } from '@material-ui/core';
+import { Star, Apartment, Group, Email, PersonAdd, Edit, Close } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
+import { useAuthState } from 'contexts/AuthContext';
+import { getUser, updateContact } from 'services/UserService';
+import { getPublicDesignsByUser } from 'services/DesignService';
+import { DesignsContainer } from 'components/DesignsContainer';
 
 const useStyles = makeStyles((theme) => ({
     designPanel:{
@@ -154,14 +148,14 @@ export const UserProfile = () => {
                 </Grid> 
                 <Grid container alignItems='center' justify='center' className={classes.spaceFirstData}>
                     <Grid item >
-                        <GroupIcon/>
+                        <Group/>
                     </Grid>
                     <Grid item >
                         <Typography style={{ marginLeft: 8 }}> {data.contacts.length}</Typography>
                     </Grid>
                     ・
                     <Grid item >
-                    <StarIcon/>
+                    <Star/>
                     </Grid>
                     <Grid item>
                         <Typography style={{ marginLeft: 8 }}> {data.scoreMean}</Typography>
@@ -169,19 +163,19 @@ export const UserProfile = () => {
                 </Grid>
                 <Grid container alignItems='center' justify='center' className={classes.spaceSecondData}>
                     {(authState.user.uid===uid) ? 
-                        <Button variant ='outlined' size='small' onClick={handleEditProfile} startIcon={<EditIcon />}>Editar perfil</Button> 
+                        <Button variant ='outlined' size='small' onClick={handleEditProfile} startIcon={<Edit />}>Editar perfil</Button> 
                         :
                         (authState.user.contacts.includes(uid)) ? 
-                        <Button variant ='outlined' size='small' onClick={handleDeleteContact} startIcon={<CloseIcon />}>Eliminar de mis contactos</Button> 
+                        <Button variant ='outlined' size='small' onClick={handleDeleteContact} startIcon={<Close />}>Eliminar de mis contactos</Button> 
                         : 
-                        <Button variant ='outlined' size='small' onClick={handleAddContact} startIcon={<PersonAddIcon />} >Agregar a mis contactos</Button>}  
+                        <Button variant ='outlined' size='small' onClick={handleAddContact} startIcon={<PersonAdd />} >Agregar a mis contactos</Button>}  
                 </Grid>
                 <Divider className={classes.spaceData}/>
                 <Grid className={classes.spaceData}>
                     { data && data.institution && (
                         <Grid container className={classes.spaceSecondData} >
                             <Grid item >
-                                <ApartmentIcon className={classes.spaceIcons}/>
+                                <Apartment className={classes.spaceIcons}/>
                             </Grid>
                             <Grid item >
                             <Typography className={classes.spaceFirstData} color='textSecondary'>{data.institution}</Typography>
@@ -191,7 +185,7 @@ export const UserProfile = () => {
                     { data && data.city && data.country &&(
                         <Grid container className={classes.spaceSecondData} >
                             <Grid item >
-                                <ApartmentIcon className={classes.spaceIcons}/>
+                                <Apartment className={classes.spaceIcons}/>
                             </Grid>
                             <Grid item >
                             <Typography className={classes.spaceFirstData} color='textSecondary'>{data.city + ', ' + data.country}</Typography>
@@ -201,7 +195,7 @@ export const UserProfile = () => {
                     { data && (
                         <Grid container className={classes.spaceSecondData} >
                             <Grid item >
-                                <EmailIcon className={classes.spaceIcons}/>
+                                <Email className={classes.spaceIcons}/>
                             </Grid>
                             <Grid item >
                             <Typography className={classes.spaceFirstData} color='textSecondary'>{data.email}</Typography>

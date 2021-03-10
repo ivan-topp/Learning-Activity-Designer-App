@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import { useQuery } from 'react-query';
-import { getBloomCategories } from '../services/BloomService';
+import { getBloomCategories } from 'services/BloomService';
 
 const useStyles = makeStyles((theme) => ({
     root: {

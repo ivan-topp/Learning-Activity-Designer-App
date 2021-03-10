@@ -3,8 +3,8 @@ import { Button, Divider, List, ListItem, ListItemText, makeStyles } from '@mate
 import { Group, Home, Public } from '@material-ui/icons';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useMutation, useQueryClient } from 'react-query';
-import { useAuthState } from '../../contexts/AuthContext';
-import { createDesign } from '../../services/DesignService';
+import { useAuthState } from 'contexts/AuthContext';
+import { createDesign } from 'services/DesignService';
 
 const useStyles = makeStyles((theme) => ({
     icon: {

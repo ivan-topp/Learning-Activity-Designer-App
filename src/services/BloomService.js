@@ -1,4 +1,4 @@
-import { fetchWithToken } from "../utils/fetch";
+import { fetchWithToken } from "utils/fetch";
 
 export const getBloomCategories = async () => {
     const resp = await fetchWithToken('bloom/category');
