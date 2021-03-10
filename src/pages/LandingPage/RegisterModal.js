@@ -9,9 +9,9 @@ import Logo from '../../assets/img/Logo.png';
 import Alert from '@material-ui/lab/Alert';
 import { ModalFormWithImage } from '../../components/ModalFormWithImage';
 import { useForm } from '../../hooks/useForm';
-import { register } from '../../services/AuthService';
 import { useAuthState } from '../../contexts/AuthContext';
-import { useUiState } from '../../contexts/UiContext';
+import { useUiState } from '../../contexts/ui/UiContext';
+import { types } from '../../types/types';
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -50,8 +50,8 @@ const initialErrors = {
 
 export const RegisterModal = React.memo(() => {
     const classes = useStyles();
-    const { uiState, setUiState } = useUiState();
-    const { setAuthState } = useAuthState();
+    const { uiState, dispatch } = useUiState();
+    const { register } = useAuthState();
     const [ errorFromServer, setErrorFromServer ] = useState(null);
     const [ formErrors, setFormErrors ] = useState(initialErrors);
     const [ formData, handleInputChange, reset ] = useForm({
@@ -65,10 +65,7 @@ export const RegisterModal = React.memo(() => {
     const { nameError, lastnameError, emailError, passwordError, confirmPasswordError } = formErrors;
     
     const handleClose = () => {
-        setUiState((prevState) => ({
-            ...prevState,
-            isRegisterModalOpen: false,
-        }));
+        dispatch({ type: types.ui.toggleRegisterModal});
         reset();
         setFormErrors(initialErrors);
         setErrorFromServer(null);
@@ -125,26 +122,13 @@ export const RegisterModal = React.memo(() => {
         if (!isFormComplete()) return;
         if (!paswordsMatchs()) return;
         let resp = await register( formData );
-        if (resp.ok) {
-            handleClose();
-            setAuthState((prevState)=>({
-				...prevState,
-				user: resp.data.user,
-				token: resp.data.token,
-				checking: false,
-			}));
-        } else {
-            setErrorFromServer(resp.message);
-        }
+        if (!resp.ok) setErrorFromServer(resp.message);
     };
 
     const toLogin = (e) => {
         e.preventDefault();
         handleClose();
-        setUiState((prevState) => ({
-            ...prevState,
-            isLoginModalOpen: true,
-        }));
+        dispatch({ type: types.ui.toggleLoginModal});
     };
 
     return (

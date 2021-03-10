@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 
 import { AuthProvider } from "./contexts/AuthContext";
 import { SocketProvider } from "./contexts/SocketContext";
-import { UiProvider } from "./contexts/UiContext";
+import { UiProvider } from "./contexts/ui/UiContext";
 import { AppRouter } from "./router/AppRouter";
 
 const queryClient = new QueryClient()

@@ -1,5 +1,5 @@
-import { Box, Button, Checkbox, Divider, FormControlLabel, Grid, IconButton, makeStyles, Paper, TextField, Tooltip, Typography } from '@material-ui/core'
-import React, { useEffect, useState } from 'react'
+import { Button, Checkbox, Divider, FormControlLabel, Grid, IconButton, makeStyles, Paper, TextField, Tooltip, Typography } from '@material-ui/core'
+import React, { useEffect } from 'react'
 import { DesignActivity } from './DesignActivity';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { useSocketState } from '../../contexts/SocketContext';
@@ -139,7 +139,7 @@ export const DesignUnit = ({ design, index, tla }) => {
                         <Grid item xs={12} sm={8}>
                             <Grid className={classes.gridActivity}>
                                 { 
-                                    design.data.tlas[index] && design.data.tlas[index].activities.map((activity, i)=> <DesignActivity key={`activity-${i}-tla-${index}`} design={design} index={i} activity={activity} tlaIndex={index}/> ) 
+                                    design.data.tlas[index] && design.data.tlas[index].activities && design.data.tlas[index].activities.map((activity, i)=> <DesignActivity key={`activity-${i}-tla-${index}`} design={design} index={i} activity={activity} tlaIndex={index}/> ) 
                                 }
                             </Grid>
                             <Grid container>

@@ -7,12 +7,12 @@ import EmailIcon from '@material-ui/icons/Email';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import EditIcon from '@material-ui/icons/Edit';
 import CloseIcon from '@material-ui/icons/Close';
-import { useAuthState } from '../../contexts/AuthContext';
-import {  getUser, updateContact } from '../../services/UserService';
+import { useAuthState } from '../../../contexts/AuthContext';
+import {  getUser, updateContact } from '../../../services/UserService';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
-import { getPublicDesignsByUser } from '../../services/DesignService';
-import { DesignsContainer } from '../../components/DesignsContainer';
+import { getPublicDesignsByUser } from '../../../services/DesignService';
+import { DesignsContainer } from '../../../components/DesignsContainer';
 import { Alert } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({

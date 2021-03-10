@@ -11,10 +11,10 @@ import { Visibility, VisibilityOff } from '@material-ui/icons';
 import Alert from '@material-ui/lab/Alert';
 import Logo from '../../assets/img/Logo.png';
 import { useForm } from '../../hooks/useForm';
-import { useUiState } from '../../contexts/UiContext';
+import { useUiState } from '../../contexts/ui/UiContext';
 import { ModalFormWithImage } from '../../components/ModalFormWithImage';
-import { login } from '../../services/AuthService';
 import { useAuthState } from '../../contexts/AuthContext';
+import { types } from '../../types/types';
 const useStyles = makeStyles((theme) => ({
     formcontrol: {
         display: 'flex',
@@ -64,8 +64,8 @@ const initialErrors = {
 export const LoginModal = () => {
 
     const classes = useStyles();
-    const { uiState, setUiState } = useUiState();
-    const { setAuthState } = useAuthState();
+    const { uiState, dispatch } = useUiState();
+    const { login } = useAuthState();
     const [formErrors, setFormErrors] = useState(initialErrors);
     const [errorFromServer, setErrorFromServer] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -75,7 +75,7 @@ export const LoginModal = () => {
     });
     const { email, password } = formLoginValues;
     const { emailError, passwordError } = formErrors;
-    
+
     const isFormComplete = () => {
         return Object.keys(formLoginValues).map((key, index) => {
             if (formLoginValues[key].trim() === '') {
@@ -116,9 +116,9 @@ export const LoginModal = () => {
 
     const handleInputFormChange = (e) => {
         setErrorFromServer(null);
-        setFormErrors((prevState)=>({
+        setFormErrors((prevState) => ({
             ...prevState,
-            [ e.target.name + 'Error']: null,
+            [e.target.name + 'Error']: null,
         }));
         handleInputChange(e);
     }
@@ -128,25 +128,14 @@ export const LoginModal = () => {
         if (!isFormComplete()) return;
         if (!isEmailValid()) return;
         if (!isPasswordValid()) return;
-        let resp = await login({ email, password });
-        if (resp.ok) {
-            handleClose();
-            setAuthState((prevState)=>({
-                ...prevState,
-                user: resp.data.user,
-                token: resp.data.token,
-                checking: false,
-            }));
-        } else {
-            setErrorFromServer(resp.message);
-        }    
+        const resp = await login(email, password);
+        if (!resp.ok) setErrorFromServer(resp.message);
     };
 
     const handleClose = () => {
-        setUiState((prevState) => ({
-            ...prevState,
-            isLoginModalOpen: false,
-        }));
+        dispatch({
+            type: types.ui.toggleLoginModal
+        });
         reset();
     };
 
@@ -156,7 +145,7 @@ export const LoginModal = () => {
     }
 
     const handleClickShowPassword = () => {
-        setShowPassword(!showPassword );
+        setShowPassword(!showPassword);
     };
 
     const handleMouseDownPassword = (event) => {
@@ -166,10 +155,9 @@ export const LoginModal = () => {
     const toRegister = (e) => {
         e.preventDefault();
         handleClose();
-        setUiState((prevState) => ({
-            ...prevState,
-            isRegisterModalOpen: true,
-        }));
+        dispatch({
+            type: types.ui.toggleRegisterModal
+        });
     };
 
     return (
@@ -193,7 +181,7 @@ export const LoginModal = () => {
                             onChange={handleInputFormChange}
                             label="Email"
                             type="email"
-                            fullWidth 
+                            fullWidth
                         />
                         <TextField
                             error={!!passwordError}
@@ -215,7 +203,7 @@ export const LoginModal = () => {
                                         {showPassword ? <Visibility /> : <VisibilityOff />}
                                     </IconButton>
 
-                            }} 
+                            }}
                         />
                         <div className={classes.footer}>
                             <Button variant='outlined' type='submit' fullWidth>

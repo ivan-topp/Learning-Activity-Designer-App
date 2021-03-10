@@ -5,9 +5,8 @@ export const getfolderByPath = async ( path ) => {
     const resp = await fetchWithToken('folder/user', {
         path,
     }, 'POST');
-    const body = await resp.json();
-    if (!body.ok) {
-        throw new Error(body.message);
+    if (!resp.ok) {
+        throw new Error(resp.message);
     }
-    return body.data;
+    return resp.data;
 };

@@ -3,13 +3,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import Logo from '../assets/img/Logo.png';
 import { Avatar, Typography, Toolbar, AppBar, Button, ButtonGroup, IconButton, Menu, MenuItem, Switch, FormControlLabel, OutlinedInput } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
-import { useUiState } from '../contexts/UiContext';
+import { useUiState } from '../contexts/ui/UiContext';
 import { useAuthState } from '../contexts/AuthContext';
-import { logout } from '../services/AuthService';
 import { useQueryClient } from 'react-query';
 import { useUserConfigState } from '../contexts/UserConfigContext';
 import { useHistory } from 'react-router-dom';
 import { Search } from '@material-ui/icons';
+import { types } from '../types/types';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -41,30 +41,26 @@ export const NavBar = () => {
     const history = useHistory();
     const [isMenuOpen, setMenuOpen] = useState(null);
     const { userConfig, setUserConfig } = useUserConfigState();
-    const { setUiState } = useUiState();
-    const { authState } = useAuthState();
-
-    const { setAuthState } = useAuthState();
+    const { dispatch } = useUiState();
+    const { authState, logout } = useAuthState();
     const [filter, setFilter] = useState('');
 
     const handleLogout = () => {
         queryClient.clear();
         setMenuOpen(null);
-        logout(setAuthState);
+        logout();
     };
 
     const handleOpenLoginModal = () => {
-        setUiState((prevState) => ({
-            ...prevState,
-            isLoginModalOpen: true
-        }));
+        dispatch({
+            type: types.ui.toggleLoginModal
+        });
     };
 
     const handleOpenRegisterModal = () => {
-        setUiState((prevState) => ({
-            ...prevState,
-            isRegisterModalOpen: true
-        }));
+        dispatch({
+            type: types.ui.toggleRegisterModal
+        });
     };
 
     const handleClose = () => {

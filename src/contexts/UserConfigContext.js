@@ -8,7 +8,7 @@ const UserConfigContext = createContext();
 export function useUserConfigState() {
 	const context = useContext(UserConfigContext);
 	if (context === undefined) {
-		throw new Error('useThemeState must be used within a AuthProvider');
+		throw new Error('useUserConfigState must be used within a UserConfigProvider');
 	}
 	return context;
 }
