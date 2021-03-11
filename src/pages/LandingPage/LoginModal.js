@@ -31,12 +31,13 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: '10%',
         marginRight: '10%',
         width: '80%',
+        overflow: 'auto',
     },
     logo: {
         display: 'block',
         marginLeft: 'auto',
         marginRight: 'auto',
-        width: 250,
+        width: '30%',
         marginTop: 15,
         marginBottom: 15,
     },
@@ -49,10 +50,26 @@ const useStyles = makeStyles((theme) => ({
         paddingTop: 30,
         paddingBottom: 15,
     },
-
     link: {
         marginTop: 10,
         marginBottom: 10,
+    },
+    '@global': {
+        //Ancho del scrollbar    
+        '*::-webkit-scrollbar': {
+            width: '0.4em'
+        },
+        //Sombra del scrollbar
+        '*::-webkit-scrollbar-track': {
+            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)'
+            
+        },
+        //Scrollbar
+        '*::-webkit-scrollbar-thumb': {
+            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
+            borderRadius: '15px',
+            backgroundColor: 'rgba(0,0,0,.1)',
+        }
     }
 }));
 
@@ -134,7 +151,8 @@ export const LoginModal = () => {
 
     const handleClose = () => {
         dispatch({
-            type: types.ui.toggleLoginModal
+            type: types.ui.toggleModal,
+            payload: 'Login',
         });
         reset();
     };
@@ -156,7 +174,8 @@ export const LoginModal = () => {
         e.preventDefault();
         handleClose();
         dispatch({
-            type: types.ui.toggleRegisterModal
+            type: types.ui.toggleModal,
+            payload: 'Register',
         });
     };
 

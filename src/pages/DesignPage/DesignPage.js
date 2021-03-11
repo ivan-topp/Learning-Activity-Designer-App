@@ -7,6 +7,8 @@ import { formatName, getUserInitials } from 'utils/textFormatters';
 import { DesignWorkspace } from 'pages/DesignPage/Workspace/DesignWorkspace';
 import { DesignMetadata } from 'pages/DesignPage/Metadata/DesignMetadata';
 import { TabPanel } from 'components/TabPanel';
+import { useDesignState } from 'contexts/design/DesignContext';
+import { types } from 'types/types';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -58,10 +60,13 @@ export const DesignPage = () => {
     const { id } = useParams();
     const isMounted = useRef(true);
     const { authState } = useAuthState();
-    const { socket/*, online*/ } = useSocketState();
+    const { socket, online } = useSocketState();
     const [users, setUsersList] = useState([]);
     const [value, setValue] = useState(0);
-    const [design, setDesign] = useState(null);
+    const { designState, dispatch } = useDesignState();
+    const { design } = designState;
+
+    
 
     useEffect(()=>{
         return () => {
@@ -70,15 +75,29 @@ export const DesignPage = () => {
     }, []);
 
     useEffect(() => {
-        socket.emit('join-to-design', { user: authState.user, designId: id }, (res) => {
-            if (res.ok){
-                if(isMounted.current) setDesign(res.data.design);
-            } 
-            else console.log(res);
-        });
+        if(online){
+            socket.emit('join-to-design', { user: authState.user, designId: id }, (res) => {
+                if (res.ok){
+                    if(isMounted.current) {
+                        dispatch({
+                            type: types.design.updateDesign,
+                            payload: res.data.design
+                        });
+                    }
+                } 
+                else console.log(res);
+            });
+        }
+    }, [socket, authState.user, id, online, dispatch]);
+
+    useEffect(() => {
         socket.on('update-design', (design) => {
-            //console.log(design.data.tlas);
-            if(isMounted.current) setDesign(design);
+            if(isMounted.current) {
+                dispatch({
+                    type: types.design.updateDesign,
+                    payload: design
+                });
+            }
         });
         socket.on('users', (users) => {
             if(isMounted.current) setUsersList(users);
@@ -88,7 +107,7 @@ export const DesignPage = () => {
             socket.off('updateDesign');
             socket.off('users');
         };
-    }, [socket, authState.user, id, setDesign]);
+    }, [socket, authState.user, id, dispatch]);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -128,10 +147,10 @@ export const DesignPage = () => {
                 <Grid item xs={12} md={3} lg={2}></Grid>
             </Grid>
             <TabPanel value={value} index={0}>
-                <DesignMetadata design={ design }/>
+                <DesignMetadata />
             </TabPanel>
             <TabPanel value={value} index={1}>
-                <DesignWorkspace design={design} />
+                <DesignWorkspace/>
             </TabPanel>
         </>
     )

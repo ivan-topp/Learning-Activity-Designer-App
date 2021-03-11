@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'block',
         marginLeft: 'auto',
         marginRight: 'auto',
-        width: 250,
+        width: '30%',
         marginTop: 15,
         marginBottom: 15,
     },
@@ -37,6 +37,23 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         paddingTop: 30,
         paddingBottom: 15,
+    },
+    '@global': {
+        //Ancho del scrollbar    
+        '*::-webkit-scrollbar': {
+            width: '0.4em'
+        },
+        //Sombra del scrollbar
+        '*::-webkit-scrollbar-track': {
+            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)'
+            
+        },
+        //Scrollbar
+        '*::-webkit-scrollbar-thumb': {
+            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
+            borderRadius: '15px',
+            backgroundColor: 'rgba(0,0,0,.1)',
+        }
     }
 }));
 
@@ -65,7 +82,10 @@ export const RegisterModal = React.memo(() => {
     const { nameError, lastnameError, emailError, passwordError, confirmPasswordError } = formErrors;
     
     const handleClose = () => {
-        dispatch({ type: types.ui.toggleRegisterModal});
+        dispatch({ 
+            type: types.ui.toggleModal,
+            payload: 'Register'
+        });
         reset();
         setFormErrors(initialErrors);
         setErrorFromServer(null);
@@ -128,7 +148,10 @@ export const RegisterModal = React.memo(() => {
     const toLogin = (e) => {
         e.preventDefault();
         handleClose();
-        dispatch({ type: types.ui.toggleLoginModal});
+        dispatch({ 
+            type: types.ui.toggleModal,
+            payload: 'Login'
+        });
     };
 
     return (

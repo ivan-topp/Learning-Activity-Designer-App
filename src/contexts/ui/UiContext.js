@@ -16,6 +16,7 @@ const initialState = {
 	folderPath: '/',
 	isLoginModalOpen: false,
 	isRegisterModalOpen: false,
+	isLearningResultModalOpen: false,
 };
 
 export const UiProvider = ({ children }) => {

@@ -1,6 +1,6 @@
-import { Breadcrumbs, Link, makeStyles, Typography } from '@material-ui/core';
+import { Breadcrumbs, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useUiState } from 'contexts/ui/UiContext';
 
 const useStyles = makeStyles((theme) => ({
@@ -12,11 +12,16 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 3,
         backgroundColor: theme.palette.background.default
     },
+    link:{
+        textDecoration: 'none',
+        '&:hover': {
+            textDecoration: 'underline'
+        }
+    }
 }));
 
 export const DesignsBreadcrumbs = () => {
     const classes = useStyles();
-    const history = useHistory();
     const { uiState } = useUiState();
     const path = uiState.folderPath;
 
@@ -32,29 +37,18 @@ export const DesignsBreadcrumbs = () => {
                     {
                         (path === folderPath)
                             ? <Typography color="textPrimary">{folderName} </Typography>
-                            : <Link color="inherit" href="/" onClick={(e) => {
-                                handleOpenFolder(e, folderPath);
-                            }}>
-                                {folderName}
-                            </Link>
+                            : <Typography className={classes.link} color="inherit" component={Link} to={`/my-designs${folderPath}`} >{folderName} </Typography>
                     }
                 </div>);
             });
         }
     };
 
-    const handleOpenFolder = (e, path) => {
-        e.preventDefault();
-        history.push('/my-designs' + path);
-    };
-
     return (
         <Breadcrumbs className={classes.root}>
             {
                 path.length !== 1
-                    ? <Link color="inherit" href="/" onClick={(e) => handleOpenFolder(e, '')}>
-                        <Typography > Mis Diseños </Typography>
-                    </Link>
+                    ? <Typography className={classes.link} color="inherit" component={Link} to="/my-designs"> Mis Diseños </Typography>
                     : <Typography color="textPrimary"> Mis Diseños </Typography>
             }
             {

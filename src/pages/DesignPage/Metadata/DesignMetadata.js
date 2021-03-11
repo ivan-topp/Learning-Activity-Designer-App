@@ -8,6 +8,9 @@ import TimeFormatter from 'utils/timeFormatters';
 import { getCategories } from 'services/CategoryService';
 import { LearningResult } from 'pages/DesignPage/Metadata/LearningResult';
 import { LearningResultModal } from 'pages/DesignPage/Metadata/LearningResultModal';
+import { useDesignState } from 'contexts/design/DesignContext';
+import { useUiState } from 'contexts/ui/UiContext';
+import { types } from 'types/types';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -56,12 +59,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const DesignMetadata = ({ design }) => {
+export const DesignMetadata = () => {
     const classes = useStyles();
     const { socket/*, online*/ } = useSocketState();
-    //const { id } = useParams();
+    const { uiState, dispatch } = useUiState();
+    const { designState } = useDesignState();
+    const { design } = designState;
     const { metadata } = design;
-    const [isLearningResultModalOpen, setLearningResultModalOpen] = useState(false);
     const [verb, setVerb] = useState('');
     const [_description, setDescription] = useState('');
 
@@ -94,7 +98,7 @@ export const DesignMetadata = ({ design }) => {
             isPublic: metadata.isPublic
         });
     }, [design, setValues, metadata]);
-
+    
     const { name, category, classSize, workingTimeDesignHours, workingTimeDesignMinutes, workingTimeHours, workingTimeMinutes, priorKnowledge, description, objective, isPublic } = form;
 
     const { isLoading, isError, data, error } = useQuery('categories', async () => {
@@ -124,7 +128,10 @@ export const DesignMetadata = ({ design }) => {
     const handleClose = (e) => {
         setVerb('');
         setDescription('');
-        setLearningResultModalOpen(false);
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'LearningResult',
+        });
     };
 
     const handleChangeCategory = (e) => {
@@ -144,7 +151,10 @@ export const DesignMetadata = ({ design }) => {
     const handleEdit = (verb, description) => {
         setVerb(verb);
         setDescription(description);
-        setLearningResultModalOpen(true);
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'LearningResult',
+        });
     };
 
     const handleDelete = (verb, description) => {
@@ -329,7 +339,10 @@ export const DesignMetadata = ({ design }) => {
                     </Grid>
                     <div className={classes.title}>
                         <Typography variant='h4'>Resultados de aprendizaje</Typography>
-                        <Button variant='outlined' color='default' onClick={() => setLearningResultModalOpen(true)}>Agregar</Button>
+                        <Button variant='outlined' color='default' onClick={() => dispatch({
+                                type: types.ui.toggleModal,
+                                payload: 'LearningResult',
+                            })}>Agregar</Button>
                     </div>
                     <Divider />
                     <div className={classes.content}>
@@ -347,7 +360,7 @@ export const DesignMetadata = ({ design }) => {
                 </Grid>
                 <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
             </Grid>
-            <LearningResultModal design={design} isOpen={isLearningResultModalOpen} handleClose={handleClose} _verb={verb} _description={_description} />
+            <LearningResultModal design={design} isOpen={uiState.isLearningResultModalOpen} handleClose={handleClose} _verb={verb} _description={_description} />
         </>
     )
 }
