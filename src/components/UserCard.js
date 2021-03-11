@@ -2,6 +2,7 @@ import React from 'react';
 import { Avatar, makeStyles, Typography } from '@material-ui/core';
 import { formatName, getUserInitials } from '../utils/textFormatters';
 import { useHistory } from 'react-router-dom';
+import { useUiState } from '../contexts/UiContext';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -42,12 +43,17 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const UserCard = ({ _id, name, lastname, city, country, scoreMean, img }) => {
+export const UserCard = ({ _id, name, lastname, city, country, scoreMean, img, occupation }) => {
     const classes = useStyles();
     const history = useHistory();
+    const { setUiState } = useUiState();
 
     const handleViewUser = (e, id) => {
         e.stopPropagation();
+        setUiState((prevState) => ({
+            ...prevState,
+            isContactsModalOpen: false,
+        }));
         history.push(`/profile/${id}`);
     };
 
@@ -75,6 +81,15 @@ export const UserCard = ({ _id, name, lastname, city, country, scoreMean, img })
                                 city && country 
                                     ? city + ', ' + country
                                     : city ?? country ?? 'Sin locación'
+                            }
+                        </Typography>
+                    </div>
+                    <div >
+                        <Typography variant='subtitle1' color='textSecondary'>
+                            {
+                                occupation
+                                    ? occupation
+                                    : 'Sin ocupación'
                             }
                         </Typography>
                     </div>

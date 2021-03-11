@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Typography, Avatar, makeStyles, Button, Divider, } from '@material-ui/core';
+import { Grid, Typography, Avatar, makeStyles, Button, Divider, IconButton, } from '@material-ui/core';
 import StarIcon from '@material-ui/icons/Star';
 import ApartmentIcon from '@material-ui/icons/Apartment';
 import GroupIcon from '@material-ui/icons/Group';
@@ -7,6 +7,7 @@ import EmailIcon from '@material-ui/icons/Email';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import EditIcon from '@material-ui/icons/Edit';
 import CloseIcon from '@material-ui/icons/Close';
+import RoomIcon from '@material-ui/icons/Room';
 import { useAuthState } from '../../contexts/AuthContext';
 import {  getUser, updateContact } from '../../services/UserService';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from 'react-query';
@@ -14,6 +15,9 @@ import { useParams } from 'react-router-dom';
 import { getPublicDesignsByUser } from '../../services/DesignService';
 import { DesignsContainer } from '../../components/DesignsContainer';
 import { Alert } from '@material-ui/lab';
+import { EditProfileModal } from './EditProfileModal';
+import { useUiState } from '../../contexts/UiContext';
+import { ShowContactsModal } from './ShowContactsModal';
 
 const useStyles = makeStyles((theme) => ({
     designPanel:{
@@ -72,6 +76,7 @@ export const UserProfile = () => {
     const classes = useStyles();
     const queryClient = useQueryClient();
     const { authState, setAuthState } = useAuthState();
+    const { setUiState } = useUiState();
     const urlparams = useParams();
     const uid = urlparams.uid;
 
@@ -115,7 +120,17 @@ export const UserProfile = () => {
     };
 
     const handleEditProfile = () => {
-        console.log('Editar perfil');
+        setUiState((prevState) => ({
+            ...prevState,
+            isEditProfileModalOpen: true
+        }));
+    };
+
+    const handleShowContacts = () => {
+        setUiState((prevState) => ({
+            ...prevState,
+            isContactsModalOpen: true
+        }));
     };
 
     const handleAddContact = async (e) => {
@@ -154,7 +169,13 @@ export const UserProfile = () => {
                 </Grid> 
                 <Grid container alignItems='center' justify='center' className={classes.spaceFirstData}>
                     <Grid item >
-                        <GroupIcon/>
+                        { data.contacts.length > 0 ? 
+                            <IconButton onClick={ handleShowContacts }>
+                                <GroupIcon />
+                            </IconButton>
+                            :
+                            <GroupIcon />
+                        }
                     </Grid>
                     <Grid item >
                         <Typography style={{ marginLeft: 8 }}> {data.contacts.length}</Typography>
@@ -191,7 +212,7 @@ export const UserProfile = () => {
                     { data && data.city && data.country &&(
                         <Grid container className={classes.spaceSecondData} >
                             <Grid item >
-                                <ApartmentIcon className={classes.spaceIcons}/>
+                                <RoomIcon className={classes.spaceIcons}/>
                             </Grid>
                             <Grid item >
                             <Typography className={classes.spaceFirstData} color='textSecondary'>{data.city + ', ' + data.country}</Typography>
@@ -222,11 +243,19 @@ export const UserProfile = () => {
                 </Grid>
             </Grid>
             <Grid item xs={12} sm={9} className={classes.designPanel}>
+               
                 <Grid className={classes.spaceDesign}>
                     <Typography variant='h4'>
                         Diseños Públicos
                     </Typography>
                     <Divider />
+                    {   
+                        (authState.user.uid === uid) && 
+                            <>
+                                <EditProfileModal /> 
+                            </> 
+                    }
+                    <ShowContactsModal/> 
                     <DesignsContainer {...designsQuery}/>
                 </Grid>
             </Grid>

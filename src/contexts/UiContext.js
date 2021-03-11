@@ -16,6 +16,8 @@ export const UiProvider = ({ children }) => {
 	const [uiState, setUiState] = useState({
 		isLoginModalOpen: false,
 		isRegisterModalOpen: false,
+		isEditProfileModalOpen: false,
+		isContactsModalOpen: false,
     });
 
 	return (
