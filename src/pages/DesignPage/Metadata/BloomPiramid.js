@@ -1,7 +1,9 @@
 import { makeStyles } from '@material-ui/core';
+import { useDesignState } from 'contexts/design/DesignContext';
 import React from 'react';
 import { useQuery } from 'react-query';
 import { getBloomCategories } from 'services/BloomService';
+import types from 'types';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -50,8 +52,10 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const BloomPiramid = ({index, setCategory}) => {
+export const BloomPiramid = () => {
     const classes = useStyles();
+    const { designState, dispatch } = useDesignState();
+    const active = designState.currentLearningResult.category;
 
     const { isLoading, isError, data} = useQuery('bloom-categories', async () => {
         return await getBloomCategories();
@@ -65,13 +69,23 @@ export const BloomPiramid = ({index, setCategory}) => {
         return (<div>Error al intentar obtener las categorías de bloom.</div>);
     }
 
+    const handleSelectOption = ( value ) => {
+        dispatch({
+            type: types.design.setCurrentLearningResultField,
+            payload: {
+                field: 'category',
+                value,
+            }
+        });
+    };
+
     const createOptionList = () => {
         return data.bloomCategories.map( option => {
-            const isActive = index === option._id;
+            const isActive = active === option._id;
             return (
                 <div 
                     key={option._id}
-                    onClick={()=> setCategory(isActive ? null : option._id)}
+                    onClick={()=> handleSelectOption(isActive ? null : option._id)}
                     className={`${classes.option} ${classes[option.name.toLowerCase()]} ${isActive && classes.active}`}
                 >
                     { option.name }

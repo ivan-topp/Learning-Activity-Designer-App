@@ -10,7 +10,7 @@ import { LearningResult } from 'pages/DesignPage/Metadata/LearningResult';
 import { LearningResultModal } from 'pages/DesignPage/Metadata/LearningResultModal';
 import { useDesignState } from 'contexts/design/DesignContext';
 import { useUiState } from 'contexts/ui/UiContext';
-import { types } from 'types/types';
+import types from 'types';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {

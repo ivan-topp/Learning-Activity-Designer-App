@@ -8,7 +8,7 @@ import { getfolderByPath } from 'services/FolderService';
 import { FoldersContainer } from 'components/FoldersContainer';
 import { useAuthState } from 'contexts/AuthContext';
 import { useUiState } from 'contexts/ui/UiContext';
-import { types } from 'types/types';
+import types from 'types';
 import { LeftPanel } from 'pages/Navigation/LeftPanel';
 import { DesignsBreadcrumbs } from 'pages/Navigation/MyDesigns/DesignsBreadcrumbs';
 import { RecentDesigns } from 'pages/Navigation/MyDesigns/RecentDesigns';

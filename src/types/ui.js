@@ -6,11 +6,4 @@ const ui = {
     updateFolderPath: '[UI] update folder path',
 };
 
-const design = {
-    updateDesign: '[DESIGN] toggle login modal',
-};
-
-export const types = {
-    ui,
-    design
-};
+export default ui;

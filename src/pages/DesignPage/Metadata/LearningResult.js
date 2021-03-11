@@ -1,6 +1,7 @@
 import React from 'react';
 import { IconButton, makeStyles, Typography } from '@material-ui/core';
 import { Delete, Edit } from '@material-ui/icons';
+//import { useDesignState } from 'contexts/design/DesignContext';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -25,6 +26,13 @@ const useStyles = makeStyles((theme) => ({
 
 export const LearningResult = ({ verb, description, handleEdit, handleDelete}) => {
     const classes = useStyles();
+    //const { designState, dispatch } = useDesignState();
+
+    /*const _handleEdit = () =>  {
+        dispatch({
+            type:
+        });
+    };*/
 
     return (
         <div className={classes.root}>

@@ -14,7 +14,8 @@ import { useForm } from 'hooks/useForm';
 import { useUiState } from 'contexts/ui/UiContext';
 import { ModalFormWithImage } from 'components/ModalFormWithImage';
 import { useAuthState } from 'contexts/AuthContext';
-import { types } from 'types/types';
+import types from 'types';
+
 const useStyles = makeStyles((theme) => ({
     formcontrol: {
         display: 'flex',
@@ -147,6 +148,10 @@ export const LoginModal = () => {
         if (!isPasswordValid()) return;
         const resp = await login(email, password);
         if (!resp.ok) setErrorFromServer(resp.message);
+        else dispatch({
+            type: types.ui.toggleModal,
+            payload: 'Login',
+        });
     };
 
     const handleClose = () => {

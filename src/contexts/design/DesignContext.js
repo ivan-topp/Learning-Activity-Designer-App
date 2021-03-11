@@ -14,6 +14,11 @@ export function useDesignState() {
 
 const initialState = {
 	design: null,
+	currentLearningResult: {
+		category: null,
+		verb: null,
+		description: null,
+	},
 };
 
 export const DesignProvider = ({ children }) => {

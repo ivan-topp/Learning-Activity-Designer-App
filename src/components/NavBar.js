@@ -9,7 +9,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import { useUiState } from 'contexts/ui/UiContext';
 import { useAuthState } from 'contexts/AuthContext';
 import { useUserConfigState } from 'contexts/UserConfigContext';
-import { types } from 'types/types';
+import types from 'types';
 
 const useStyles = makeStyles((theme) => ({
     root: {

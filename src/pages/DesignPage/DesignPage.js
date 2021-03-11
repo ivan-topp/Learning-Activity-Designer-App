@@ -8,7 +8,7 @@ import { DesignWorkspace } from 'pages/DesignPage/Workspace/DesignWorkspace';
 import { DesignMetadata } from 'pages/DesignPage/Metadata/DesignMetadata';
 import { TabPanel } from 'components/TabPanel';
 import { useDesignState } from 'contexts/design/DesignContext';
-import { types } from 'types/types';
+import types from 'types';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {

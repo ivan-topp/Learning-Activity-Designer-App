@@ -11,7 +11,7 @@ import { ModalFormWithImage } from 'components/ModalFormWithImage';
 import { useForm } from 'hooks/useForm';
 import { useAuthState } from 'contexts/AuthContext';
 import { useUiState } from 'contexts/ui/UiContext';
-import { types } from 'types/types';
+import types from 'types';
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -143,6 +143,10 @@ export const RegisterModal = React.memo(() => {
         if (!paswordsMatchs()) return;
         let resp = await register( formData );
         if (!resp.ok) setErrorFromServer(resp.message);
+        else dispatch({
+            type: types.ui.toggleModal,
+            payload: 'Register',
+        });
     };
 
     const toLogin = (e) => {

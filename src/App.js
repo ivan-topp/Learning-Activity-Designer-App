@@ -13,13 +13,13 @@ function LearningActivityDesigner() {
     return (
         <QueryClientProvider client={queryClient}>
             <UiProvider>
-                <DesignProvider>
-                    <SocketProvider>
-                        <AuthProvider>
+                <AuthProvider>
+                    <DesignProvider>
+                        <SocketProvider>
                             <AppRouter />
-                        </AuthProvider>
-                    </SocketProvider>
-                </DesignProvider>
+                        </SocketProvider>
+                    </DesignProvider>
+                </AuthProvider>
             </UiProvider>
         </QueryClientProvider>
     );
