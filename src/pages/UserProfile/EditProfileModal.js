@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { Avatar, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, makeStyles, TextField, } from '@material-ui/core';
+import { Avatar, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, makeStyles, TextField, Typography, } from '@material-ui/core';
 import { useUiState } from '../../contexts/UiContext';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useAuthState } from '../../contexts/AuthContext';
@@ -8,6 +8,7 @@ import { getUser, updateProfileInformation } from '../../services/UserService';
 import { useParams } from 'react-router';
 import { useForm } from '../../hooks/useForm';
 import CloseIcon from '@material-ui/icons/Close';
+import { Alert } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
     closeButton: {
@@ -22,6 +23,19 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
     },
+    errorContainer: {
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'center',
+    },
+    error: {
+        marginTop: 15,
+        minWidth: '50%',
+        display:'flex',
+        justifyContent: 'center',
+        textAlign: 'justify',
+        alignItems:'center',
+    }
 
 }));
 
@@ -33,36 +47,9 @@ export const EditProfileModal = React.memo(() => {
     const urlparams = useParams();
     const uid = urlparams.uid;
 
-    const { data } = useQuery('user-profile', async () => {
+    const { isLoading, isError, data } = useQuery(['user-profile', uid], async () => {
         return await getUser(uid);
     }, { refetchOnWindowFocus: false });
-
-    const updateProfileInformationMutation = useMutation(updateProfileInformation, {
-        onMutate: async () =>{
-            // Cancela consultas con la key especificada
-            await queryClient.cancelQueries('user-profile');
-            // Guarda los datos antes de la eliminación por si algo sale mal
-            const previousUserProfile = queryClient.getQueryData('user-profile');
-            // Actualiza de manera optimista (Suponiendo que el servidor responde correctamente)
-            queryClient.setQueryData('user-profile', oldData =>{
-                console.log(oldData);
-                const newData = Object.assign({}, { ...oldData, uid, name, lastname, occupation, institution, country, city, description});
-                return newData;
-            });
-            // Retorna un contexto con los datos previos a la eliminación para restaurar la consulta si es que algo sale mal
-            return { previousUserProfile };
-        },
-        // Si la mutación falla, usa los datos previos desde el contexto retornado en onMutate para restaurar los datos
-        onError: (error, context) => {
-            // TODO: Emitir notificación para retroalimentar
-            console.log(error);
-            queryClient.setQueryData('user-profile', context.previousUserProfile);
-        },
-        onSettled: () => {
-            // Invalida las queries para que todas las queries con estas keys se actualicen por cambios
-            queryClient.invalidateQueries('user-profile');
-        },
-    });
 
     const [ formData, handleInputChange, reset] = useForm({
         name: data.name,
@@ -73,9 +60,49 @@ export const EditProfileModal = React.memo(() => {
         city: data.city,
         description: data.description,
     });
-
-    const { name, lastname, occupation, institution, country, city, description } = formData;
     
+    const { name, lastname, occupation, institution, country, city, description } = formData;
+
+    const updateProfileInformationMutation = useMutation(updateProfileInformation, {
+        onMutate: async () =>{
+            // Cancela consultas con la key especificada
+            await queryClient.cancelQueries(['user-profile', uid]);
+            // Guarda los datos antes de la eliminación por si algo sale mal
+            const previousUserProfile = queryClient.getQueryData(['user-profile', uid]);
+            // Actualiza de manera optimista (Suponiendo que el servidor responde correctamente)
+            let keys = ['user-profile', uid]
+            queryClient.setQueryData(keys, oldData =>{
+                const newData = Object.assign({}, { ...oldData, uid, name, lastname, occupation, institution, country, city, description});
+                return newData;
+            });
+            // Retorna un contexto con los datos previos a la eliminación para restaurar la consulta si es que algo sale mal
+            return { previousUserProfile };
+        },
+        // Si la mutación falla, usa los datos previos desde el contexto retornado en onMutate para restaurar los datos
+        onError: (error, context) => {
+            // TODO: Emitir notificación para retroalimentar
+            console.log(error);
+            queryClient.setQueryData(['user-profile', uid], context.previousUserProfile);
+        },
+        onSettled: () => {
+            // Invalida las queries para que todas las queries con estas keys se actualicen por cambios
+            queryClient.invalidateQueries(['user-profile', uid]);
+        },
+    });
+    
+    if(isError){
+        return (<div className={ classes.errorContainer }>
+            <Alert severity='error' className={ classes.error }>
+                Ha ocurrido un problema al intentar obtener el usuario en la base de datos. Esto probablemente se deba a un problema de conexión, por favor revise que su equipo tenga conexión a internet e intente más tarde.
+                Si el problema persiste, por favor comuníquese con el equipo de soporte.
+            </Alert>
+        </div>);
+    };
+
+    if(isLoading){
+        return (<Typography>Cargando...</Typography>);
+    };
+
     const handleClose = () => {
         setUiState((prevState) => ({
             ...prevState,
@@ -104,6 +131,7 @@ export const EditProfileModal = React.memo(() => {
                 </DialogTitle>
                 <DialogContent dividers>
                     <Grid container spacing={1}>
+                        
                         <Grid container alignItems='center' justify='center'>
                             <Avatar alt={data.name + ' ' + data.lastname} className={classes.photoProfile} src={ data.img ?? ''}/>
                         </Grid>

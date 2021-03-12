@@ -80,7 +80,7 @@ export const UserProfile = () => {
     const urlparams = useParams();
     const uid = urlparams.uid;
 
-    const { isLoading, isError, data, error, refetch } = useQuery("user-profile", async () => {
+    const { isLoading, isError, data, error, refetch } = useQuery(['user-profile', uid], async () => {
         return await getUser(uid);
     }, { refetchOnWindowFocus: false });
 
@@ -96,14 +96,11 @@ export const UserProfile = () => {
     
     const updateConctactMutation = useMutation(updateContact, {
         onSuccess: (data, {uid, contacts}, context) => {
-            console.log(data);
-            console.log(uid, contacts);
-            console.log(context);
             setAuthState((prevState)=>({
                 ...prevState, 
                 user: Object.assign({}, {...prevState.user, contacts})
             }));
-            queryClient.invalidateQueries('user-profile');
+            queryClient.invalidateQueries(['user-profile', uid]);
         }
     });
     if(isError){
@@ -136,16 +133,14 @@ export const UserProfile = () => {
     const handleAddContact = async (e) => {
         e.preventDefault();
         await updateConctactMutation.mutate({uid: authState.user.uid, contacts:[...authState.user.contacts, uid]});
-        queryClient.invalidateQueries('user-profile');
+        queryClient.invalidateQueries(['user-profile', uid]);
         await refetch();
     };
 
     const handleDeleteContact = async (e) =>{
         e.preventDefault();
-        console.log(authState.user)
-        console.log(authState.user.uid, authState.user.contacts.filter(contact=>contact!==uid));
         await updateConctactMutation.mutate({uid: authState.user.uid, contacts: authState.user.contacts.filter(contact=>contact!==uid)});
-        queryClient.invalidateQueries('user-profile');
+        queryClient.invalidateQueries(['user-profile', uid]);
     };
     
     if(isError){

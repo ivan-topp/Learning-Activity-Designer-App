@@ -22,7 +22,7 @@ export const ShowContactsModal = () => {
     const urlparams = useParams();
     const uid = urlparams.uid;
 
-    const { data } = useQuery('user-profile', async () => {
+    const { data } = useQuery(['user-profile', uid], async () => {
         return await getUser(uid);
     }, { refetchOnWindowFocus: false });
     
