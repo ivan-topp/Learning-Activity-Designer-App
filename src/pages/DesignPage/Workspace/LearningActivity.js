@@ -161,6 +161,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
                                     margin='dense'
                                     variant="outlined"
                                     name="description"
+                                    placeholder='Descripción'
                                     value={description}
                                     onChange={handleInputChange}
                                     type="text"

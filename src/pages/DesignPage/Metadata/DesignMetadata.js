@@ -11,6 +11,7 @@ import { LearningResultModal } from 'pages/DesignPage/Metadata/LearningResultMod
 import { useDesignState } from 'contexts/design/DesignContext';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
+import { useAuthState } from 'contexts/AuthContext';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -62,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
 export const DesignMetadata = () => {
     const classes = useStyles();
     const { socket/*, online*/ } = useSocketState();
+    const { authState } = useAuthState();
     const { uiState, dispatch } = useUiState();
     const { designState } = useDesignState();
     const { design } = designState;
@@ -166,7 +168,12 @@ export const DesignMetadata = () => {
                             <div>
                                 <Typography variant='body2'>Visibilidad</Typography>
                                 <FormControlLabel
-                                    control={<Switch name='isPublic' checked={isPublic} onChange={handleTogglePublic} />}
+                                    control={<Switch 
+                                        name='isPublic' 
+                                        checked={isPublic} 
+                                        onChange={handleTogglePublic} 
+                                        disabled={!(design.owner === authState.user.uid)}
+                                    />}
                                     label={isPublic ? 'Público' : 'Privado'}
                                 />
                             </div>

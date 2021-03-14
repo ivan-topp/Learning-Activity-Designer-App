@@ -225,7 +225,7 @@ export const Task = ({ learningActivityIndex, index, task }) => {
                                             margin='dense'
                                             variant="outlined"
                                             name="description"
-                                            label="Descripción"
+                                            placeholder="Descripción"
                                             value={description}
                                             onChange={handleInputChange}
                                             type="text"
@@ -235,7 +235,6 @@ export const Task = ({ learningActivityIndex, index, task }) => {
                                     </Grid>
                                 </Grid>
                             </Grid>
-
                         </Grid>
                     </Grid>
                 </Paper>

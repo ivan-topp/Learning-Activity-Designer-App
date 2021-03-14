@@ -46,7 +46,9 @@ const useStyles = makeStyles((theme) => ({
         height: '16.6%'
     },
     active: {
-        boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.2), 0 0px 20px 0 rgba(0, 0, 0, 0.19)'
+        boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.2), 0 0px 20px 0 rgba(0, 0, 0, 0.19)',
+        backgroundColor: theme.palette.secondary.light,
+        color: 'white',
     }
 }));
 
