@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, ButtonGroup, Divider, Grid, makeStyles, Typography } from '@material-ui/core';
 import { DesignGraphic } from 'pages/DesignPage/Workspace/DesignGraphic';
-import { DesignUnit } from 'pages/DesignPage/Workspace/DesignUnit';
+import { LearningActivity } from 'pages/DesignPage/Workspace/LearningActivity';
 import { useSocketState } from 'contexts/SocketContext';
 import { useDesignState } from 'contexts/design/DesignContext';
 
@@ -77,7 +77,7 @@ export const DesignWorkspace = () => {
     };
 
     const handleNewUA = () => {
-        socket.emit('new-tla', { designId: design._id });    
+        socket.emit('new-learningActivity', { designId: design._id });    
     };
     
     return (
@@ -199,7 +199,7 @@ export const DesignWorkspace = () => {
                         <Button size="small" variant = "outlined" onClick={handleNewUA}>Agregar Unidad de Aprendizaje</Button>
                         <Grid >
                             {
-                                design.data.tlas && design.data.tlas.map((tla, index) => <DesignUnit key={`tla-${index}`} index={index} tla={tla}/> )
+                                design.data.learningActivities && design.data.learningActivities.map((learningActivity, index) => <LearningActivity key={`learningActivity-${index}`} index={index} learningActivity={learningActivity}/> )
                             }
                         </Grid>
                     </Grid>

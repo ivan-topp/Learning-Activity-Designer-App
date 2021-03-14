@@ -325,7 +325,7 @@ export const DesignMetadata = () => {
                                     Este diseño aún no tiene resultados de aprendizaje. Agrega el primer resultado de aprendizaje haciendo click aquí!
                                 </Alert>
                                 : metadata.results.map((result, index) => (
-                                    <LearningResult key={`learning-result-${index}`} {...result} />
+                                    <LearningResult key={`learning-result-${index}`} index={index} {...result} />
                                 ))
 
                         }

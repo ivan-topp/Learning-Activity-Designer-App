@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Button, Checkbox, Divider, FormControlLabel, Grid, IconButton, makeStyles, Paper, TextField, Tooltip, Typography } from '@material-ui/core'
-import { DesignActivity } from 'pages/DesignPage/Workspace/DesignActivity';
+import { Task } from 'pages/DesignPage/Workspace/Task';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { useSocketState } from 'contexts/SocketContext';
 import { StackedBar } from 'components/StackedBar';
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     trashIcon: {
         marginLeft: "auto",
     },
-    spacingDescriptionTLA: {
+    spacingDescriptionlearningActivity: {
         marginTop: theme.spacing(1),
     },
     spacingDescription: {
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(1),
         marginLeft: "auto",
     },
-    gridActivity: {
+    gridTask: {
         marginTop: theme.spacing(1),
         marginLeft: theme.spacing(1),
     },
@@ -57,23 +57,23 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const DesignUnit = ({ index, tla }) => {
+export const LearningActivity = ({ index, learningActivity }) => {
     const classes = useStyles();
     const { designState } = useDesignState();
     const { design } = designState;
     const { socket } = useSocketState();
 
     const [form, handleInputChange, , setValues] = useForm({
-        title: tla.title,
-        description: tla.description,
+        title: learningActivity.title,
+        description: learningActivity.description,
     });
 
     useEffect(() => {
         setValues({
-            title: tla.title,
-            description: tla.description,
+            title: learningActivity.title,
+            description: learningActivity.description,
         });
-    }, [design, setValues, tla]);
+    }, [design, setValues, learningActivity]);
 
     const { title, description } = form;
 
@@ -82,27 +82,27 @@ export const DesignUnit = ({ index, tla }) => {
     };
 
     const handleDeleteUnit = () => {
-        socket.emit('delete-tla', { designId: design._id, index });
+        socket.emit('delete-learningActivity', { designId: design._id, index });
     };
 
-    const handleAddActivity = () => {
-        socket.emit('new-activity', { designId: design._id, index });
+    const handleAddTask = () => {
+        socket.emit('new-task', { designId: design._id, index });
     };
 
     const handleToggleLearningResult = (e, isSelected, result) => {
         if(isSelected){
             let indexLearningResults = 0;
-            tla.learningResults.forEach((r, _indexLearningResults) => {
+            learningActivity.learningResults.forEach((r, _indexLearningResults) => {
                 if (r.verb === result.verb && r.description === result.description) indexLearningResults = _indexLearningResults;
             });
 
-            socket.emit('delete-learning-result-from-tla', {
+            socket.emit('delete-learning-result-from-learningActivity', {
                 designId: design._id,
                 index,
                 indexLearningResults
             });
         }else{
-            socket.emit('add-learning-result-to-tla', {
+            socket.emit('add-learning-result-to-learningActivity', {
                 designId: design._id,
                 index,
                 result
@@ -110,7 +110,7 @@ export const DesignUnit = ({ index, tla }) => {
         }
     };
 
-    const listTlaArray = () => {
+    const listlearningActivityArray = () => {
         return (
             <Grid key={index}>
                 <Paper className={classes.unitSpacing}>
@@ -141,20 +141,20 @@ export const DesignUnit = ({ index, tla }) => {
                     <Divider />
                     <Grid container spacing={2} >
                         <Grid item xs={12} sm={8}>
-                            <Grid className={classes.gridActivity}>
+                            <Grid className={classes.gridTask}>
                                 { 
-                                    design.data.tlas[index] && design.data.tlas[index].activities && design.data.tlas[index].activities.map((activity, i)=> <DesignActivity key={`activity-${i}-tla-${index}`} index={i} activity={activity} tlaIndex={index}/> ) 
+                                    design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i)=> <Task key={`task-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index}/> ) 
                                 }
                             </Grid>
                             <Grid container>
                                 <Grid item />
                                 <Grid item className={classes.buttonPos}>
-                                    <Button size="small" variant="outlined" onClick={handleAddActivity}> Agregar Tarea </Button>
+                                    <Button size="small" variant="outlined" onClick={handleAddTask}> Agregar Tarea </Button>
                                 </Grid>
                             </Grid>
                         </Grid>
                         <Grid item xs={12} sm={4} >
-                            <Typography variant="body2" className={classes.spacingDescriptionTLA} color="textSecondary"> Descripción Unidad de aprendizaje </Typography>
+                            <Typography variant="body2" className={classes.spacingDescriptionlearningActivity} color="textSecondary"> Descripción Unidad de aprendizaje </Typography>
                             <Grid className={classes.spacingDescription}>
                                 <TextField
                                     multiline
@@ -177,9 +177,9 @@ export const DesignUnit = ({ index, tla }) => {
                                             key={`learning-result-${result.verb}`}
                                             control={
                                                 <Checkbox 
-                                                    checked={!!tla.learningResults.find(lr=> lr.verb === result.verb)} 
+                                                    checked={!!learningActivity.learningResults.find(lr=> lr.verb === result.verb)} 
                                                     onChange={(e)=>handleToggleLearningResult(e, 
-                                                        !!tla.learningResults.find(lr=> lr.verb === result.verb),
+                                                        !!learningActivity.learningResults.find(lr=> lr.verb === result.verb),
                                                         result
                                                     )} 
                                                 />
@@ -199,7 +199,7 @@ export const DesignUnit = ({ index, tla }) => {
     return (
         <>
             {
-                listTlaArray()
+                listlearningActivityArray()
             }
         </>
     )

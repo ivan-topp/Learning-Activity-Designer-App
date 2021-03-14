@@ -24,6 +24,7 @@ export const designReducer = ( state, action ) => {
                     verb: null,
                     description: null,
                     editing: false,
+                    index: null,
                 }
             }
         case types.design.setCurrentLearningResult:

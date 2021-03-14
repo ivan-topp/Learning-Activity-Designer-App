@@ -19,6 +19,7 @@ const initialState = {
 		verb: null,
 		description: null,
 		editing: false,
+		index: null,
 	},
 	bloomCategories: [],
 	bloomVerbs: [],

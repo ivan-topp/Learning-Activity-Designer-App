@@ -6,22 +6,22 @@ import { useForm } from 'hooks/useForm';
 import TimeFormatter from 'utils/timeFormatters';
 import { useDesignState } from 'contexts/design/DesignContext';
 const useStyles = makeStyles((theme) => ({
-    activitySpacing: {
+    taskSpacing: {
         marginLeft: theme.spacing(2),
         marginTop: theme.spacing(1)
     },
     trashIcon: {
         display: 'flex',
     },
-    activitiesSpacing: {
+    tasksSpacing: {
         marginTop: theme.spacing(1),
         background: theme.palette.background.workSpace
     },
-    activitySpacingDescription: {
+    taskSpacingDescription: {
         marginLeft: theme.spacing(2),
         marginTop: theme.spacing(2),
     },
-    activitySpacingDescriptionBD: {
+    taskSpacingDescriptionBD: {
         marginBottom: theme.spacing(1),
     },
     colorLearningType: {
@@ -39,79 +39,79 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const DesignActivity = ({ tlaIndex, index, activity }) => {
+export const Task = ({ learningActivityIndex, index, task }) => {
     const classes = useStyles();
     const { socket } = useSocketState();
     const { designState } = useDesignState();
     const { design } = designState;
 
     const [form, handleInputChange, , setValues] = useForm({
-        description: activity.description,
-        learningType: activity.learningType ? activity.learningType : 'Seleccionar',
-        modality: activity.modality ? activity.modality :'Seleccionar',
-        format: activity.format ? activity.format :'Seleccionar',
-        timeHours: TimeFormatter.toHoursAndMinutes(activity.duration)[0],
-        timeMinutes: TimeFormatter.toHoursAndMinutes(activity.duration)[1],
+        description: task.description,
+        learningType: task.learningType ? task.learningType : 'Seleccionar',
+        modality: task.modality ? task.modality :'Seleccionar',
+        format: task.format ? task.format :'Seleccionar',
+        timeHours: TimeFormatter.toHoursAndMinutes(task.duration)[0],
+        timeMinutes: TimeFormatter.toHoursAndMinutes(task.duration)[1],
     });
 
     useEffect(() => {
         setValues({
-            description: activity.description,
-            learningType: activity.learningType ? activity.learningType : 'Seleccionar',
-            modality: activity.modality ? activity.modality :'Seleccionar',
-            format: activity.format ? activity.format :'Seleccionar',
-            timeHours: TimeFormatter.toHoursAndMinutes(activity.duration)[0],
-            timeMinutes: TimeFormatter.toHoursAndMinutes(activity.duration)[1],
+            description: task.description,
+            learningType: task.learningType ? task.learningType : 'Seleccionar',
+            modality: task.modality ? task.modality :'Seleccionar',
+            format: task.format ? task.format :'Seleccionar',
+            timeHours: TimeFormatter.toHoursAndMinutes(task.duration)[0],
+            timeMinutes: TimeFormatter.toHoursAndMinutes(task.duration)[1],
         });
-    }, [design, setValues, activity]);
+    }, [design, setValues, task]);
 
     const { description, learningType, modality, format, timeHours, timeMinutes,  } = form;
 
-    const editActivity = ({ target }) => {
+    const editTask = ({ target }) => {
         if (target.name === 'timeHours' || target.name === 'timeMinutes') {
-            socket.emit('edit-activity-field', { designId: design._id, tlaIndex, index, field: 'duration', value: TimeFormatter.toMinutes(timeHours, timeMinutes) });
+            socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field: 'duration', value: TimeFormatter.toMinutes(timeHours, timeMinutes) });
         } else {
-            socket.emit('edit-activity-field', { designId: design._id, tlaIndex, index, field: target.name, value: form[target.name] });
+            socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field: target.name, value: form[target.name] });
         }
     };
 
-    const handleDeleteActivity = () => {
-        socket.emit('delete-activity', { designId: design._id, tlaIndex, index });
+    const handleDeleteTask = () => {
+        socket.emit('delete-task', { designId: design._id, learningActivityIndex, index });
     };
 
     const handleChangeDropdown = (e) => {
         handleInputChange(e);
-        socket.emit('edit-activity-field', { designId: design._id, tlaIndex, index, field: e.target.name, value: e.target.value });
+        socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field: e.target.name, value: e.target.value });
     };
 
-    const listActivitiesArray = () => {
+    const listtasksArray = () => {
         return (
             <Grid key={index}>
-                <Paper square className={classes.activitiesSpacing}>
+                <Paper square className={classes.tasksSpacing}>
                     <Grid container >
                         <Grid item xs={1}>
                             {(() => {
-                                if (activity.learningType === 'Investigación') {
+                                if (task.learningType === 'Investigación') {
                                     return (
                                         <div className={classes.colorLearningType} style={{ backgroundColor: '#57A8E7' }}></div>
                                     )
-                                } else if (activity.learningType === 'Adquisición') {
+                                } else if (task.learningType === 'Adquisición') {
                                     return (
                                         <div className={classes.colorLearningType} style={{ backgroundColor: '#E95D5D' }}></div>
                                     )
-                                }else if (activity.learningType === 'Producción') {
+                                }else if (task.learningType === 'Producción') {
                                     return (
                                         <div className={classes.colorLearningType} style={{ backgroundColor: '#C8951F' }}></div>
                                     )
-                                }else if (activity.learningType === 'Discusión') {
+                                }else if (task.learningType === 'Discusión') {
                                     return (
                                         <div className={classes.colorLearningType} style={{ backgroundColor: '#087A4C' }}></div>
                                     )
-                                }else if (activity.learningType === 'Colaboración') {
+                                }else if (task.learningType === 'Colaboración') {
                                     return (
                                         <div className={classes.colorLearningType} style={{ backgroundColor: '#DFDF3F' }}></div>
                                     )
-                                }else if (activity.learningType === 'Práctica') {
+                                }else if (task.learningType === 'Práctica') {
                                     return (
                                         <div className={classes.colorLearningType} style={{ backgroundColor: '#A75BCD' }}></div>
                                     )
@@ -119,7 +119,7 @@ export const DesignActivity = ({ tlaIndex, index, activity }) => {
                             })()}
                         </Grid>
                         <Grid item xs={11}>
-                            <Grid container className={classes.activitySpacing}>
+                            <Grid container className={classes.taskSpacing}>
                                 <Grid item xs={12} sm={5}>
                                     <FormControl variant='outlined' size='small' style={{width: '90%'}}>
                                     <Typography variant="body2" color="textSecondary" > Aprendizaje </Typography>
@@ -155,13 +155,13 @@ export const DesignActivity = ({ tlaIndex, index, activity }) => {
                                         </Select>
                                     </FormControl>
                                     <Tooltip title="Delete">
-                                        <IconButton onClick={() => handleDeleteActivity(index)}>
+                                        <IconButton onClick={() => handleDeleteTask(index)}>
                                             <DeleteForeverIcon fontSize="small" />
                                         </IconButton>
                                     </Tooltip>
                                 </Grid>
                             </Grid>
-                            <Grid container className={classes.activitySpacing}>
+                            <Grid container className={classes.taskSpacing}>
                                 <Grid item xs={12} sm={6} className={classes.grid}>
                                     <div style={{ width: '100%' }}>
                                         <Typography variant="body2" color="textSecondary"> Tiempo de trabajo </Typography>
@@ -174,7 +174,7 @@ export const DesignActivity = ({ tlaIndex, index, activity }) => {
                                                 onChange={handleInputChange}
                                                 label="Horas"
                                                 type="number"
-                                                onBlur={editActivity}
+                                                onBlur={editTask}
                                                 inputProps={{
                                                     min: 0,
                                                     max: 59
@@ -190,7 +190,7 @@ export const DesignActivity = ({ tlaIndex, index, activity }) => {
                                                 onChange={handleInputChange}
                                                 label="Minutos"
                                                 type="number"
-                                                onBlur={editActivity}
+                                                onBlur={editTask}
                                                 inputProps={{
                                                     min: 0,
                                                     max: 59
@@ -216,10 +216,10 @@ export const DesignActivity = ({ tlaIndex, index, activity }) => {
                                         </FormControl>
                                 </Grid>
                             </Grid>
-                            <Grid container className={classes.activitySpacingDescription}>
+                            <Grid container className={classes.taskSpacingDescription}>
                                 <Grid item sm={11}>
                                     <Typography variant="body2" color="textSecondary" > Descripción </Typography>
-                                    <Grid className={classes.activitySpacingDescriptionBD}>
+                                    <Grid className={classes.taskSpacingDescriptionBD}>
                                         <TextField
                                             multiline
                                             margin='dense'
@@ -229,7 +229,7 @@ export const DesignActivity = ({ tlaIndex, index, activity }) => {
                                             value={description}
                                             onChange={handleInputChange}
                                             type="text"
-                                            onBlur={editActivity}
+                                            onBlur={editTask}
                                             fullWidth
                                         />
                                     </Grid>
@@ -245,7 +245,7 @@ export const DesignActivity = ({ tlaIndex, index, activity }) => {
     return (
         <>
             {
-                listActivitiesArray()
+                listtasksArray()
             }
 
 

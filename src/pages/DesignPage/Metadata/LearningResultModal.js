@@ -21,12 +21,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const LearningResultModal = ({ design, isOpen, _verb, _description }) => {
+export const LearningResultModal = ({ design, isOpen }) => {
     const classes = useStyles();
     const { socket/*, online*/ } = useSocketState();
     const { designState, dispatch: designDispatch } = useDesignState();
     const { dispatch: uiDispatch } = useUiState();
-    const { category, verb, editing } = designState.currentLearningResult;
+    const { category, verb, editing, index } = designState.currentLearningResult;
     const [ description, setDescription ] = useState(designState.currentLearningResult.description ?? '');
     const [activeStep, setActiveStep] = useState(0);
     const steps = ['Selecciona una categoría de bloom', 'Selecciona un verbo', 'Proporciona una descripción'];
@@ -69,10 +69,6 @@ export const LearningResultModal = ({ design, isOpen, _verb, _description }) => 
         });
         if(!editing) socket.emit('add-learning-result', { designId: design._id, learningResult: { verb, description } });
         else if (editing){
-            let index = 0;
-            design.metadata.results.forEach((result, _index) => {
-                if(result.verb === _verb && result.description === _description) index = _index; 
-            });
             socket.emit('edit-learning-result', { designId: design._id, index, learningResult: { verb, description } });
         }
         handleCloseModal();
@@ -83,7 +79,7 @@ export const LearningResultModal = ({ design, isOpen, _verb, _description }) => 
             <div className={classes.title}>
                 <DialogTitle id="form-dialog-title" onClose={handleCloseModal} >
                     {
-                        !_verb ? 'Nuevo resultado de aprendizaje' : 'Editar resultado de aprendizaje'
+                        !editing ? 'Nuevo resultado de aprendizaje' : 'Editar resultado de aprendizaje'
                     }
                 </DialogTitle>
                 <IconButton className={classes.close} aria-label="close" onClick={handleCloseModal}>

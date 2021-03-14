@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const LearningResult = ({ verb, description}) => {
+export const LearningResult = ({ verb, description, index}) => {
     const classes = useStyles();
     const { socket/*, online*/ } = useSocketState();
     const { dispatch: uiDispatch } = useUiState();
@@ -44,6 +44,7 @@ export const LearningResult = ({ verb, description}) => {
                 verb,
                 description,
                 editing: true,
+                index,
             }
         });
         uiDispatch({

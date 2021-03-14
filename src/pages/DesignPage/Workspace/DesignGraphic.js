@@ -7,7 +7,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
     },
-    spaceActivities: {
+    spaceTasks: {
         marginBottom: theme.spacing(2),
     },
 }));
@@ -15,24 +15,24 @@ const useStyles = makeStyles((theme) => ({
 export const DesignGraphic = ({ design }) => {
     
     const classes = useStyles();
-    //const tlaArray = design.data.tlas
-    //let activitiesArrayNew = ""
+    //const learningtasksArray = design.data.learningtasks
+    //let tasksArrayNew = ""
     //let modality = ""
 
-    const activitiesModalityOA = 1;
-    const activitiesModalityOS= 2;
-    const activitiesModalityPA= 0;
-    const activitiesModalityPS= 0;
+    const tasksModalityOA = 1;
+    const tasksModalityOS= 2;
+    const tasksModalityPA= 0;
+    const tasksModalityPS= 0;
     
-    //const activitiesArray = tlaArray.forEach((tla) => {
-    //    if(tla.activities!==undefined){
-    //        activitiesArrayNew = tla.activities
+    //const tasksArray = learningtasksArray.forEach((learningActivity) => {
+    //    if(learningActivity.tasks!==undefined){
+    //        tasksArrayNew = learningActivity.tasks
     //    } 
     //});
 
-    //const ModalityArray = activitiesArrayNew.forEach((activities) => {
-    //    if(activities.modality!==undefined){
-    //        modality = activities.modality
+    //const ModalityArray = tasksArrayNew.forEach((tasks) => {
+    //    if(tasks.modality!==undefined){
+    //        modality = tasks.modality
     //    } 
     //});
 
@@ -41,14 +41,14 @@ export const DesignGraphic = ({ design }) => {
 
     //useEffect(() => {
     //    if( modality === "Online-Sincrono" ){
-    //        activitiesModalityOS = activitiesModalityOS + 1
+    //        tasksModalityOS = tasksModalityOS + 1
     //    }
-    //}, [modality, activitiesModalityOS])
+    //}, [modality, tasksModalityOS])
     
     
-    const activitiesFormatGroup = 2
-    const activitiesFormatSingle = 1
-    const activitiesFormatAllClass = 0
+    const tasksFormatGroup = 2
+    const tasksFormatSingle = 1
+    const tasksFormatAllClass = 0
     
     useEffect(() => {
         learningResultPie();
@@ -109,19 +109,19 @@ export const DesignGraphic = ({ design }) => {
                 labels: ['Formato'],
                 datasets: [{
                     label: 'Grupal',
-                    data: [activitiesFormatGroup],
+                    data: [tasksFormatGroup],
                     backgroundColor: [
                         'rgba(61, 156, 65, 0.8)',
                     ],
                 },{
                     label: 'Individual',
-                    data: [activitiesFormatSingle],
+                    data: [tasksFormatSingle],
                     backgroundColor: [
                         'rgba(224, 243, 225, 0.8)',
                     ],
                 },{
                     label: 'Toda la clase',
-                    data: [activitiesFormatAllClass],
+                    data: [tasksFormatAllClass],
                     backgroundColor: [
                         'rgba(102, 242, 108, 0.75)',
                     ],
@@ -163,25 +163,25 @@ export const DesignGraphic = ({ design }) => {
                 labels: ['Modalidad'],
                 datasets: [{
                     label: 'Online-Asincrono',
-                    data: [activitiesModalityOA],
+                    data: [tasksModalityOA],
                     backgroundColor: [
                         '#A6CAF6',
                     ],
                 },{
                     label: 'Online-Sincrono',
-                    data: [activitiesModalityOS],
+                    data: [tasksModalityOS],
                     backgroundColor: [
                         '#6996CD',
                     ],
                 },{
                     label: 'Presencial-Asincrono',
-                    data: [activitiesModalityPA],
+                    data: [tasksModalityPA],
                     backgroundColor: [
                         '#5FA2EF',
                     ],
                 },{
                     label: 'Presencial-Sincrono',
-                    data: [activitiesModalityPS],
+                    data: [tasksModalityPS],
                     backgroundColor: [
                         '#135BB3',
                     ],
@@ -235,7 +235,7 @@ export const DesignGraphic = ({ design }) => {
             <Grid container alignItems='center' justify='center' >
                 <Typography color="textSecondary">Actividades</Typography>
                 
-                <Grid className={classes.spaceActivities}>
+                <Grid className={classes.spaceTasks}>
                     <canvas id="formatBar"></canvas>
                 </Grid>
                 <canvas id="modalityBar"></canvas>
