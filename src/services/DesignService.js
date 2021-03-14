@@ -32,7 +32,6 @@ export const getPublicDesignsByUser = async ( id, pageParam ) => {
 };
 
 export const createDesign = async (path) => {
-    console.log(path);
     const resp = await fetchWithToken(`design`, { path }, 'POST');
     if (!resp.ok) {
         throw new Error(resp.message);

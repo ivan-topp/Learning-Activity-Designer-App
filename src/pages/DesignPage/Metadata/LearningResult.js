@@ -1,7 +1,10 @@
 import React from 'react';
 import { IconButton, makeStyles, Typography } from '@material-ui/core';
 import { Delete, Edit } from '@material-ui/icons';
-//import { useDesignState } from 'contexts/design/DesignContext';
+import { useDesignState } from 'contexts/design/DesignContext';
+import { useUiState } from 'contexts/ui/UiContext';
+import types from 'types';
+import { useSocketState } from 'contexts/SocketContext';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -24,15 +27,38 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const LearningResult = ({ verb, description, handleEdit, handleDelete}) => {
+export const LearningResult = ({ verb, description}) => {
     const classes = useStyles();
-    //const { designState, dispatch } = useDesignState();
+    const { socket/*, online*/ } = useSocketState();
+    const { dispatch: uiDispatch } = useUiState();
+    const { designState, dispatch: designDispatch } = useDesignState();
+    const { design } = designState;
 
-    /*const _handleEdit = () =>  {
-        dispatch({
-            type:
+    const handleEdit = () => {
+        const { bloomVerbs, bloomCategories } = designState;
+        const category = bloomCategories.find((category) => category._id === bloomVerbs.find((v) => v.name === verb).category)._id;
+        designDispatch({
+            type: types.design.setCurrentLearningResult,
+            payload: {
+                category,
+                verb,
+                description,
+                editing: true,
+            }
         });
-    };*/
+        uiDispatch({
+            type: types.ui.toggleModal,
+            payload: 'LearningResult',
+        });
+    };
+
+    const handleDelete = () => {
+        let index = 0;
+        design.metadata.results.forEach((result, _index) => {
+            if (result.verb === verb && result.description === description) index = _index;
+        });
+        socket.emit('delete-learning-result', { designId: design._id, index });
+    };
 
     return (
         <div className={classes.root}>
@@ -41,10 +67,10 @@ export const LearningResult = ({ verb, description, handleEdit, handleDelete}) =
             <Typography color="textSecondary" gutterBottom variant='caption'>Descripción</Typography>
             <Typography className={classes.description} variant='body2'>{description}</Typography>
             <div className={classes.actions}>
-                <IconButton className={classes.deleteIcon} onClick={()=>handleEdit(verb, description)}>
+                <IconButton className={classes.deleteIcon} onClick={handleEdit}>
                     <Edit />
                 </IconButton>
-                <IconButton className={classes.deleteIcon} onClick={()=>handleDelete(verb, description)}>
+                <IconButton className={classes.deleteIcon} onClick={handleDelete}>
                     <Delete />
                 </IconButton>
             </div>

@@ -1,8 +1,6 @@
+import React from 'react';
 import { makeStyles } from '@material-ui/core';
 import { useDesignState } from 'contexts/design/DesignContext';
-import React from 'react';
-import { useQuery } from 'react-query';
-import { getBloomCategories } from 'services/BloomService';
 import types from 'types';
 
 const useStyles = makeStyles((theme) => ({
@@ -56,18 +54,7 @@ export const BloomPiramid = () => {
     const classes = useStyles();
     const { designState, dispatch } = useDesignState();
     const active = designState.currentLearningResult.category;
-
-    const { isLoading, isError, data} = useQuery('bloom-categories', async () => {
-        return await getBloomCategories();
-    }, { refetchOnWindowFocus: false });
-
-    if(isLoading){
-        return (<div>Cargando categorías de bloom...</div>);
-    }
-
-    if(isError){
-        return (<div>Error al intentar obtener las categorías de bloom.</div>);
-    }
+    const { bloomCategories } = designState;
 
     const handleSelectOption = ( value ) => {
         dispatch({
@@ -80,7 +67,7 @@ export const BloomPiramid = () => {
     };
 
     const createOptionList = () => {
-        return data.bloomCategories.map( option => {
+        return bloomCategories.map( option => {
             const isActive = active === option._id;
             return (
                 <div 

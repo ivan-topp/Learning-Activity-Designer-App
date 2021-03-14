@@ -18,7 +18,10 @@ const initialState = {
 		category: null,
 		verb: null,
 		description: null,
+		editing: false,
 	},
+	bloomCategories: [],
+	bloomVerbs: [],
 };
 
 export const DesignProvider = ({ children }) => {

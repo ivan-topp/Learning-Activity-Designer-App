@@ -21,7 +21,6 @@ export const searchUsers = async ( filter, pageParam ) => {
 
 export const updateContact = async(  {uid, contacts} ) => {
     try {
-        console.log(contacts, uid)
         const resp = await fetchWithToken(`user/${uid}`, { 
             newData: { contacts }
          }, 'PUT');

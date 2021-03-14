@@ -23,7 +23,23 @@ export const designReducer = ( state, action ) => {
                     category: null,
                     verb: null,
                     description: null,
+                    editing: false,
                 }
+            }
+        case types.design.setCurrentLearningResult:
+            return {
+                ...state,
+                currentLearningResult: action.payload
+            }
+        case types.design.setBloomCategories:
+            return {
+                ...state,
+                bloomCategories: action.payload
+            }
+        case types.design.setBloomVerbs:
+            return {
+                ...state,
+                bloomVerbs: action.payload
             }
         default:
             return state;

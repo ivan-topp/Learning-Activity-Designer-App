@@ -1,8 +1,6 @@
+import React from 'react';
 import { FormControlLabel, makeStyles, Radio } from '@material-ui/core';
 import { useDesignState } from 'contexts/design/DesignContext';
-import React from 'react'
-import { useQuery } from 'react-query';
-import { getBloomVerbs } from 'services/BloomService';
 import types from 'types';
 
 const useStyles = makeStyles((theme) => ({
@@ -20,21 +18,9 @@ const useStyles = makeStyles((theme) => ({
 export const BloomVerbList = () => {
     const classes = useStyles();
     const { designState, dispatch } = useDesignState();
-    const results = designState.design.metadata.results;
     const category = designState.currentLearningResult.category;
     const active = designState.currentLearningResult.verb;
-    
-    const { isLoading, isError, data } = useQuery('bloom-verbs', async () => {
-        return await getBloomVerbs(category);
-    }, { refetchOnWindowFocus: false, retry: true});
-
-    if(isLoading){
-        return (<div>Cargando los verbos de bloom...</div>);
-    }
-
-    if(isError){
-        return (<div>Error al intentar obtener los verbos de bloom.</div>);
-    }
+    const { bloomVerbs } = designState;
     
     const handleSelectOption = ( value ) => {
         dispatch({
@@ -47,16 +33,14 @@ export const BloomVerbList = () => {
     };
 
     const createOptionList = () => {
-        return data.bloomVerbs.map(option => {
-            const exists = !!results.find(result => option.name === result.verb);
+        return bloomVerbs.filter((verb) => verb.category === category).map(option => {
             const isActive = active === option.name;
             return (
             <FormControlLabel 
                 className={classes.option}
                 key={option._id}
                 value={option.name}
-                control={<Radio 
-                    disabled={exists}
+                control={<Radio
                     checked={isActive}
                     onChange={(e)=> handleSelectOption(option.name)}
                     value={option.name}

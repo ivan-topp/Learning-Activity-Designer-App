@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, makeStyles, Step, StepLabel, Stepper, TextField } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import { BloomPiramid } from 'pages/DesignPage/Metadata/BloomPiramid';
@@ -6,6 +6,7 @@ import { BloomVerbList } from 'pages/DesignPage/Metadata/BloomVerbList';
 import { useSocketState } from 'contexts/SocketContext';
 import { useDesignState } from 'contexts/design/DesignContext';
 import types from 'types';
+import { useUiState } from 'contexts/ui/UiContext';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -20,14 +21,19 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const LearningResultModal = ({ design, isOpen, handleClose, _verb, _description }) => {
+export const LearningResultModal = ({ design, isOpen, _verb, _description }) => {
     const classes = useStyles();
     const { socket/*, online*/ } = useSocketState();
-    const { designState, dispatch } = useDesignState();
-    const { category, verb } = designState.currentLearningResult;
-    const [ description, setDescription ] = useState(designState.currentLearningResult.description);
+    const { designState, dispatch: designDispatch } = useDesignState();
+    const { dispatch: uiDispatch } = useUiState();
+    const { category, verb, editing } = designState.currentLearningResult;
+    const [ description, setDescription ] = useState(designState.currentLearningResult.description ?? '');
     const [activeStep, setActiveStep] = useState(0);
     const steps = ['Selecciona una categoría de bloom', 'Selecciona un verbo', 'Proporciona una descripción'];
+
+    useEffect(() => {
+        setDescription(designState.currentLearningResult.description);
+    }, [setDescription, designState.currentLearningResult.description]);
 
     const handleNext = () => {
         if(activeStep === 0 && category === null) return console.log('No ha seleccionado una categoría de bloom.');
@@ -39,25 +45,30 @@ export const LearningResultModal = ({ design, isOpen, handleClose, _verb, _descr
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
+    const handleClose = (e) => {
+        uiDispatch({
+            type: types.ui.toggleModal,
+            payload: 'LearningResult',
+        });
+    };
+
     const handleCloseModal = () => {
         handleClose();
         setActiveStep(0);
-        dispatch({ type: types.design.clearCurrentLearningResult });
+        designDispatch({ type: types.design.clearCurrentLearningResult });
     };
 
     const handleFinish = () => {
         if(description.trim() === '') return console.log('No se ha ingresado una descripción.');
-        dispatch({
+        designDispatch({
             type: types.design.setCurrentLearningResultField,
             payload: {
                 field: 'description',
                 value: description,
             }
         });
-        console.log(category, verb, description);
-
-        if(!_verb) socket.emit('add-learning-result', { designId: design._id, learningResult: { verb, description } });
-        else if (_verb){
+        if(!editing) socket.emit('add-learning-result', { designId: design._id, learningResult: { verb, description } });
+        else if (editing){
             let index = 0;
             design.metadata.results.forEach((result, _index) => {
                 if(result.verb === _verb && result.description === _description) index = _index; 
@@ -65,7 +76,6 @@ export const LearningResultModal = ({ design, isOpen, handleClose, _verb, _descr
             socket.emit('edit-learning-result', { designId: design._id, index, learningResult: { verb, description } });
         }
         handleCloseModal();
-        
     };
 
     return (

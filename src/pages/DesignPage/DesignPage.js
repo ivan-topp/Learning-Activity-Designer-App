@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Grid, makeStyles, Avatar, Tabs, Tab, Typography } from '@material-ui/core';
 import { useSocketState } from 'contexts/SocketContext';
@@ -8,7 +8,9 @@ import { DesignWorkspace } from 'pages/DesignPage/Workspace/DesignWorkspace';
 import { DesignMetadata } from 'pages/DesignPage/Metadata/DesignMetadata';
 import { TabPanel } from 'components/TabPanel';
 import { useDesignState } from 'contexts/design/DesignContext';
+import { getBloomCategories, getBloomVerbs } from 'services/BloomService';
 import types from 'types';
+import { Alert } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -45,7 +47,15 @@ const useStyles = makeStyles((theme) => ({
     },
     usersConnecteds: {
         display: 'flex',
-    }
+        flexDirection: 'column',
+    },
+    error: {
+        display: 'flex',
+        justifyContent: 'center',
+        padding: 20,
+        alignItems: 'start',
+        minHeight: 'calc(100vh - 128px)',
+    },
 }));
 
 const a11yProps = (index) => {
@@ -62,11 +72,31 @@ export const DesignPage = () => {
     const { authState } = useAuthState();
     const { socket, online } = useSocketState();
     const [users, setUsersList] = useState([]);
-    const [value, setValue] = useState(0);
+    const [tabIndex, setTabIndex] = useState(0);
     const { designState, dispatch } = useDesignState();
     const { design } = designState;
-
+    const [error, setError] = useState(null);
     
+    const prefetchBloomCategories = useCallback(async () => {
+        const data = await getBloomCategories();
+        dispatch({
+            type: types.design.setBloomCategories,
+            payload: data.bloomCategories,
+        });
+    }, [dispatch]);
+
+    const prefetchBloomVerbs = useCallback(async () => {
+        const data = await getBloomVerbs('');
+        dispatch({
+            type: types.design.setBloomVerbs,
+            payload: data.bloomVerbs,
+        });
+    }, [dispatch]);
+
+    useEffect(()=>{
+        prefetchBloomCategories();
+        prefetchBloomVerbs();
+    }, [prefetchBloomCategories, prefetchBloomVerbs]);
 
     useEffect(()=>{
         return () => {
@@ -76,7 +106,7 @@ export const DesignPage = () => {
 
     useEffect(() => {
         if(online){
-            socket.emit('join-to-design', { user: authState.user, designId: id }, (res) => {
+            socket?.emit('join-to-design', { user: authState.user, designId: id }, (res) => {
                 if (res.ok){
                     if(isMounted.current) {
                         dispatch({
@@ -85,13 +115,13 @@ export const DesignPage = () => {
                         });
                     }
                 } 
-                else console.log(res);
+                else setError(res.message);
             });
         }
     }, [socket, authState.user, id, online, dispatch]);
 
     useEffect(() => {
-        socket.on('update-design', (design) => {
+        socket?.on('update-design', (design) => {
             if(isMounted.current) {
                 dispatch({
                     type: types.design.updateDesign,
@@ -99,23 +129,34 @@ export const DesignPage = () => {
                 });
             }
         });
-        socket.on('users', (users) => {
+        socket?.on('users', (users) => {
             if(isMounted.current) setUsersList(users);
         });
         return () => {
-            socket.emit('leave-from-design', { user: authState.user, designId: id });
-            socket.off('updateDesign');
-            socket.off('users');
+            socket?.emit('leave-from-design', { user: authState.user, designId: id });
+            socket?.off('updateDesign');
+            socket?.off('users');
         };
     }, [socket, authState.user, id, dispatch]);
 
     const handleChange = (event, newValue) => {
-        setValue(newValue);
+        setTabIndex(newValue);
     };
+    
+    if(error){
+        return (
+            <div className={classes.error}>
+                <Alert severity='error'>
+                    { error }
+                </Alert>
+            </div>
+        );
+    }
 
     if (!design) {
         return (<Typography>Cargando...</Typography>);
     }
+
 
     return (
         <>
@@ -123,7 +164,7 @@ export const DesignPage = () => {
                 <Grid item xs={12} md={3} lg={2} />
                 <Grid item xs={12} md={6} lg={8} className={classes.tabBar}>
                     <Tabs
-                        value={value}
+                        value={tabIndex}
                         onChange={handleChange}
                         aria-label="full width tabs example"
                     >
@@ -146,10 +187,10 @@ export const DesignPage = () => {
                 </Grid>
                 <Grid item xs={12} md={3} lg={2}></Grid>
             </Grid>
-            <TabPanel value={value} index={0}>
+            <TabPanel value={tabIndex} index={0}>
                 <DesignMetadata />
             </TabPanel>
-            <TabPanel value={value} index={1}>
+            <TabPanel value={tabIndex} index={1}>
                 <DesignWorkspace/>
             </TabPanel>
         </>

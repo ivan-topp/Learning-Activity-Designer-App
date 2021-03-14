@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Button, Divider, FormControl, FormControlLabel, Grid, InputLabel, makeStyles, MenuItem, Select, Switch, TextField, Typography } from '@material-ui/core'
 import { useQuery } from 'react-query';
 import { Alert } from '@material-ui/lab';
@@ -66,8 +66,6 @@ export const DesignMetadata = () => {
     const { designState } = useDesignState();
     const { design } = designState;
     const { metadata } = design;
-    const [verb, setVerb] = useState('');
-    const [_description, setDescription] = useState('');
 
     const [form, handleInputChange, , setValues] = useForm({
         name: metadata.name,
@@ -125,14 +123,6 @@ export const DesignMetadata = () => {
             socket.emit('edit-metadata-field', { designId: design._id, field: target.name, value: form[target.name] });
         }
     };
-    const handleClose = (e) => {
-        setVerb('');
-        setDescription('');
-        dispatch({
-            type: types.ui.toggleModal,
-            payload: 'LearningResult',
-        });
-    };
 
     const handleChangeCategory = (e) => {
         handleInputChange(e);
@@ -146,23 +136,6 @@ export const DesignMetadata = () => {
 
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
-    };
-
-    const handleEdit = (verb, description) => {
-        setVerb(verb);
-        setDescription(description);
-        dispatch({
-            type: types.ui.toggleModal,
-            payload: 'LearningResult',
-        });
-    };
-
-    const handleDelete = (verb, description) => {
-        let index = 0;
-        design.metadata.results.forEach((result, _index) => {
-            if (result.verb === verb && result.description === description) index = _index;
-        });
-        socket.emit('delete-learning-result', { designId: design._id, index });
     };
 
     return (
@@ -352,7 +325,7 @@ export const DesignMetadata = () => {
                                     Este diseño aún no tiene resultados de aprendizaje. Agrega el primer resultado de aprendizaje haciendo click aquí!
                                 </Alert>
                                 : metadata.results.map((result, index) => (
-                                    <LearningResult key={`learning-result-${index}`} {...result} handleEdit={handleEdit} handleDelete={handleDelete} />
+                                    <LearningResult key={`learning-result-${index}`} {...result} />
                                 ))
 
                         }
@@ -360,7 +333,7 @@ export const DesignMetadata = () => {
                 </Grid>
                 <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
             </Grid>
-            <LearningResultModal design={design} isOpen={uiState.isLearningResultModalOpen} handleClose={handleClose} _verb={verb} _description={_description} />
+            <LearningResultModal design={design} isOpen={uiState.isLearningResultModalOpen}/>
         </>
     )
 }
