@@ -1,13 +1,12 @@
-import { fetchWithToken } from "../utils/fetch";
+import { fetchWithToken } from "utils/fetch";
 
 
 export const getRecentDesigns = async () => {
     const resp = await fetchWithToken('design/recent');
-    const body = await resp.json();
-    if (!body.ok) {
-        throw new Error(body.message);
+    if (!resp.ok) {
+        throw new Error(resp.message);
     }
-    return body.data;
+    return resp.data;
 };
 
 export const getDesignsByFolder = async ( path, pageParam ) => {
@@ -15,11 +14,10 @@ export const getDesignsByFolder = async ( path, pageParam ) => {
         path,
         from: pageParam,
     }, 'POST');
-    const body = await resp.json();
-    if (!body.ok) {
-        throw new Error(body.message);
+    if (!resp.ok) {
+        throw new Error(resp.message);
     }
-    return body.data;
+    return resp.data;
 };
 
 export const getPublicDesignsByUser = async ( id, pageParam ) => {
@@ -27,30 +25,26 @@ export const getPublicDesignsByUser = async ( id, pageParam ) => {
         id,
         from: pageParam,
     }, 'POST');
-    const body = await resp.json();
-    if (!body.ok) {
-        throw new Error(body.message);
+    if (!resp.ok) {
+        throw new Error(resp.message);
     }
-    return body.data;
+    return resp.data;
 };
 
 export const createDesign = async (path) => {
-    console.log(path);
     const resp = await fetchWithToken(`design`, { path }, 'POST');
-    const body = await resp.json();
-    if (!body.ok) {
-        throw new Error(body.message);
+    if (!resp.ok) {
+        throw new Error(resp.message);
     }
-    return body.data;
+    return resp.data;
 };
 
 export const deleteDesignById = async ({ id }) => {
     const resp = await fetchWithToken(`design/${ id }`, {}, 'DELETE');
-    const body = await resp.json();
-    if (!body.ok) {
-        throw new Error(body.message);
+    if (!resp.ok) {
+        throw new Error(resp.message);
     }
-    return body.data;
+    return resp.data;
 };
 
 

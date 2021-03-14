@@ -1,14 +1,14 @@
 import { ThemeProvider } from '@material-ui/core';
-import React, { useState, useContext, createContext, useEffect } from 'react'
-import { useAuthState } from '../contexts/AuthContext';
-import { getTheme } from '../theme/theme';
+import React, { useState, useContext, createContext, useEffect } from 'react';
+import { useAuthState } from 'contexts/AuthContext';
+import { getTheme } from 'theme/theme';
 
 const UserConfigContext = createContext();
 
 export function useUserConfigState() {
 	const context = useContext(UserConfigContext);
 	if (context === undefined) {
-		throw new Error('useThemeState must be used within a AuthProvider');
+		throw new Error('useUserConfigState must be used within a UserConfigProvider');
 	}
 	return context;
 }

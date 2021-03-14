@@ -1,9 +1,10 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { Avatar, Button, ButtonBase, Grid, makeStyles, Typography } from '@material-ui/core';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import { formatName, getUserInitials } from '../utils/textFormatters';
-import { useHistory } from 'react-router-dom';
-import { useUiState } from '../contexts/UiContext';
+import { formatName, getUserInitials } from 'utils/textFormatters';
+import { useUiState } from 'contexts/ui/UiContext';
+import types from 'types';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -44,15 +45,15 @@ const useStyles = makeStyles((theme) => ({
 export const UserCard = ({ _id, name, lastname, city, country, scoreMean, img, occupation }) => {
     const classes = useStyles();
     const history = useHistory();
-    const { uiState, setUiState } = useUiState();
+    const { uiState, dispatch } = useUiState();
 
     const handleViewUser = (e, id) => {
         e.stopPropagation();
         history.push(`/profile/${id}`);
-        setUiState((prevState) => ({
-            ...prevState,
-            isContactsModalOpen: false,
-        }));
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'Contacts',
+        });
     };
     const handleAddContact = () => {
         console.log('Agregar');

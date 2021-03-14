@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react';
 import { Grid, IconButton, makeStyles, Typography, Tooltip, Paper, TextField, MenuItem, FormControl, Select } from '@material-ui/core';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import { useSocketState } from '../../contexts/SocketContext';
-import { useForm } from '../../hooks/useForm';
-import TimeFormatter from '../../utils/timeFormatters';
+import { useSocketState } from 'contexts/SocketContext';
+import { useForm } from 'hooks/useForm';
+import TimeFormatter from 'utils/timeFormatters';
+import { useDesignState } from 'contexts/design/DesignContext';
 const useStyles = makeStyles((theme) => ({
     activitySpacing: {
         marginLeft: theme.spacing(2),
@@ -38,9 +39,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const DesignActivity = ({ design, tlaIndex, index, activity }) => {
+export const DesignActivity = ({ tlaIndex, index, activity }) => {
     const classes = useStyles();
     const { socket } = useSocketState();
+    const { designState } = useDesignState();
+    const { design } = designState;
 
     const [form, handleInputChange, , setValues] = useForm({
         description: activity.description,
@@ -222,6 +225,7 @@ export const DesignActivity = ({ design, tlaIndex, index, activity }) => {
                                             margin='dense'
                                             variant="outlined"
                                             name="description"
+                                            label="Descripción"
                                             value={description}
                                             onChange={handleInputChange}
                                             type="text"

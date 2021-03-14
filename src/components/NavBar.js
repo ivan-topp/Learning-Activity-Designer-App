@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Logo from '../assets/img/Logo.png';
-import { Avatar, Typography, Toolbar, AppBar, Button, ButtonGroup, IconButton, Menu, MenuItem, Switch, FormControlLabel, OutlinedInput } from '@material-ui/core';
-import SettingsIcon from '@material-ui/icons/Settings';
-import { useUiState } from '../contexts/UiContext';
-import { useAuthState } from '../contexts/AuthContext';
-import { logout } from '../services/AuthService';
+import { Link, useHistory } from 'react-router-dom';
 import { useQueryClient } from 'react-query';
-import { useUserConfigState } from '../contexts/UserConfigContext';
-import { useHistory } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
 import { Search } from '@material-ui/icons';
+import Logo from 'assets/img/Logo.png';
+import { Avatar, Typography, Toolbar, AppBar, Button, ButtonGroup, IconButton, Menu, MenuItem, Switch, FormControlLabel, OutlinedInput, Box } from '@material-ui/core';
+import SettingsIcon from '@material-ui/icons/Settings';
+import { useUiState } from 'contexts/ui/UiContext';
+import { useAuthState } from 'contexts/AuthContext';
+import { useUserConfigState } from 'contexts/UserConfigContext';
+import types from 'types';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -24,10 +24,16 @@ const useStyles = makeStyles((theme) => ({
         height: theme.spacing(5),
         margin: 'auto',
     },
+    brand: {
+        display: "flex",
+        alignItems: 'center',
+        textDecoration: 'none',
+    },
     navbarColor: {
         background: theme.palette.background.navbar,
     },
     navbarLetter: {
+        textDecoration: 'none',
         color: theme.palette.text.primary,
         cursor: 'pointer'
     },
@@ -41,30 +47,28 @@ export const NavBar = () => {
     const history = useHistory();
     const [isMenuOpen, setMenuOpen] = useState(null);
     const { userConfig, setUserConfig } = useUserConfigState();
-    const { setUiState } = useUiState();
-    const { authState } = useAuthState();
-
-    const { setAuthState } = useAuthState();
+    const { dispatch } = useUiState();
+    const { authState, logout } = useAuthState();
     const [filter, setFilter] = useState('');
 
     const handleLogout = () => {
         queryClient.clear();
         setMenuOpen(null);
-        logout(setAuthState);
+        logout();
     };
 
     const handleOpenLoginModal = () => {
-        setUiState((prevState) => ({
-            ...prevState,
-            isLoginModalOpen: true
-        }));
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'Login',
+        });
     };
 
     const handleOpenRegisterModal = () => {
-        setUiState((prevState) => ({
-            ...prevState,
-            isRegisterModalOpen: true
-        }));
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'Register',
+        });
     };
 
     const handleClose = () => {
@@ -97,12 +101,12 @@ export const NavBar = () => {
         <div className={classes.root}>
             <AppBar position="static" className={classes.navbarColor} elevation={0}>
                 <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div style={{ display: "flex", alignItems: 'center', cursor: 'pointer' }} onClick={(e) => history.push('/')}>
+                    <Box className={classes.brand} component={Link} to='/'>
                         <Avatar className={classes.logo} src={Logo} alt="Logo" />
                         <Typography variant="h6" className={classes.title}>
                             LAD
                         </Typography>
-                    </div>
+                    </Box>
                     {
                         (!authState.token) ?
                             <ButtonGroup variant="text" aria-label="text primary button group">
@@ -131,7 +135,7 @@ export const NavBar = () => {
                                     </form>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <Typography className={classes.navbarLetter} onClick={(e) => history.push(`/profile/${authState.user.uid}`)}>
+                                    <Typography className={classes.navbarLetter}  component={Link} to={`/profile/${authState.user.uid}`} >
                                         { authState.user.name }
                                     </Typography>
                                     <IconButton onClick={ handleMenu }>

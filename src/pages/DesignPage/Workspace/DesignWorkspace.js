@@ -1,8 +1,9 @@
-import { Button, ButtonGroup, Divider, Grid, makeStyles, Typography } from '@material-ui/core'
-import React from 'react'
-import { DesignGraphic } from './DesignGraphic';
-import { DesignUnit } from './DesignUnit';
-import { useSocketState } from '../../contexts/SocketContext';
+import React from 'react';
+import { Button, ButtonGroup, Divider, Grid, makeStyles, Typography } from '@material-ui/core';
+import { DesignGraphic } from 'pages/DesignPage/Workspace/DesignGraphic';
+import { DesignUnit } from 'pages/DesignPage/Workspace/DesignUnit';
+import { useSocketState } from 'contexts/SocketContext';
+import { useDesignState } from 'contexts/design/DesignContext';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -64,8 +65,10 @@ const useStyles = makeStyles((theme) => ({
       
 }));
 
-export const DesignWorkspace = ({ design }) => {
+export const DesignWorkspace = () => {
     const classes = useStyles();
+    const { designState } = useDesignState();
+    const { design } = designState;
     const { metadata } = design;
     const { socket } = useSocketState();
 
@@ -196,7 +199,7 @@ export const DesignWorkspace = ({ design }) => {
                         <Button size="small" variant = "outlined" onClick={handleNewUA}>Agregar Unidad de Aprendizaje</Button>
                         <Grid >
                             {
-                                design.data.tlas && design.data.tlas.map((tla, index) => <DesignUnit key={`tla-${index}`} design={design} index={index} tla={tla}/> )
+                                design.data.tlas && design.data.tlas.map((tla, index) => <DesignUnit key={`tla-${index}`} index={index} tla={tla}/> )
                             }
                         </Grid>
                     </Grid>

@@ -1,36 +1,33 @@
-import { fetchWithToken } from "../utils/fetch";
+import { fetchWithToken } from "utils/fetch";
 
 export const getUser = async ( id ) => {
-    const res = await fetchWithToken(`user/${id}`);
-    const body = await res.json();
-    if(!body.ok){
-        throw new Error(body.message);
+    const resp = await fetchWithToken(`user/${id}`);
+    if(!resp.ok){
+        throw new Error(resp.message);
     }
-	return body.data;
+	return resp.data;
 };
 
 export const searchUsers = async ( filter, pageParam ) => {
-    const res = await fetchWithToken('user/search/', {
+    const resp = await fetchWithToken('user/search/', {
         filter,
         from: pageParam,
     }, 'POST');
-    const body = await res.json();
-    if(!body.ok){
-        throw new Error(body.message);
+    if(!resp.ok){
+        throw new Error(resp.message);
     }
-	return body.data;
+	return resp.data;
 };
 
 export const updateContact = async(  {uid, contacts} ) => {
     try {
-        const res = await fetchWithToken(`user/${uid}`, { 
+        const resp = await fetchWithToken(`user/${uid}`, { 
             newData: { contacts }
          }, 'PUT');
-        const body = await res.json();
-        if(!body.ok){
-            throw new Error(body.message);
+        if(!resp.ok){
+            throw new Error(resp.message);
         }
-        return body.data;
+        return resp.data;
     } catch (error) {
         console.log(error);
     }

@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
 import React from 'react';
-import { LoginModal } from './LoginModal';
-import { RegisterModal } from './RegisterModal';
+import { LoginModal } from 'pages/LandingPage/LoginModal';
+import { RegisterModal } from 'pages/LandingPage/RegisterModal';
 
 const useStyles = makeStyles((theme) => ({
     root: {

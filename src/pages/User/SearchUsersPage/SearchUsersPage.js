@@ -1,12 +1,12 @@
 import React from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import { useInfiniteQuery } from 'react-query';
 import queryString from 'query-string';
 import { Button, Divider, Grid, List, ListItem, ListItemText, makeStyles, Typography } from '@material-ui/core';
 import { Group, Home, Public } from '@material-ui/icons';
-import { useHistory, useLocation } from 'react-router-dom';
-import { useInfiniteQuery } from 'react-query';
-import { searchUsers } from '../../services/UserService';
+import { searchUsers } from 'services/UserService';
 import { Alert } from '@material-ui/lab';
-import { UserCard } from '../../components/UserCard';
+import { UserCard } from 'components/UserCard';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {

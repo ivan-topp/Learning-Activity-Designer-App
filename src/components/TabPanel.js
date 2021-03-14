@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import { Typography } from '@material-ui/core';
 
-export const TabPanel = (props) => {
-    const { children, value, index, ...other } = props;
+export const TabPanel = ({ children, value, index, ...other }) => {
     return (
       <div
         role="tabpanel"

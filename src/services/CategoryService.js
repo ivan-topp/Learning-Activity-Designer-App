@@ -1,10 +1,9 @@
-import { fetchWithToken } from "../utils/fetch";
+import { fetchWithToken } from "utils/fetch";
 
 export const getCategories = async () => {
-    const res = await fetchWithToken('category');
-    const body = await res.json();
-    if(!body.ok){
-        throw new Error(body.message);
+    const resp = await fetchWithToken('category');
+    if(!resp.ok){
+        throw new Error(resp.message);
     }
-    return body.data;
+    return resp.data;
 };

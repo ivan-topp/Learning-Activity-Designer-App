@@ -1,23 +1,21 @@
 import React from 'react';
 import { Grid, Typography, Avatar, makeStyles, Button, Divider, IconButton, } from '@material-ui/core';
-import StarIcon from '@material-ui/icons/Star';
-import ApartmentIcon from '@material-ui/icons/Apartment';
-import GroupIcon from '@material-ui/icons/Group';
-import EmailIcon from '@material-ui/icons/Email';
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import EditIcon from '@material-ui/icons/Edit';
-import CloseIcon from '@material-ui/icons/Close';
 import RoomIcon from '@material-ui/icons/Room';
-import { useAuthState } from '../../contexts/AuthContext';
-import {  getUser, updateContact } from '../../services/UserService';
+import { useAuthState } from 'contexts/AuthContext';
+import { getUser, updateContact } from 'services/UserService';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
-import { getPublicDesignsByUser } from '../../services/DesignService';
-import { DesignsContainer } from '../../components/DesignsContainer';
+import { Star, Apartment, Group, Email, PersonAdd, Edit, Close } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
-import { EditProfileModal } from './EditProfileModal';
-import { useUiState } from '../../contexts/UiContext';
-import { ShowContactsModal } from './ShowContactsModal';
+
+
+import { EditProfileModal } from 'pages/User/UserProfile/EditProfileModal';
+import { useUiState } from 'contexts/ui/UiContext';
+import { ShowContactsModal } from 'pages/User/UserProfile/ShowContactsModal';
+
+import { getPublicDesignsByUser } from 'services/DesignService';
+import { DesignsContainer } from 'components/DesignsContainer';
+import types from 'types';
 
 const useStyles = makeStyles((theme) => ({
     designPanel:{
@@ -76,7 +74,7 @@ export const UserProfile = () => {
     const classes = useStyles();
     const queryClient = useQueryClient();
     const { authState, setAuthState } = useAuthState();
-    const { setUiState } = useUiState();
+    const { dispatch } = useUiState();
     const urlparams = useParams();
     const uid = urlparams.uid;
 
@@ -117,17 +115,17 @@ export const UserProfile = () => {
     };
 
     const handleEditProfile = () => {
-        setUiState((prevState) => ({
-            ...prevState,
-            isEditProfileModalOpen: true
-        }));
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'EditProfile',
+        });
     };
 
     const handleShowContacts = () => {
-        setUiState((prevState) => ({
-            ...prevState,
-            isContactsModalOpen: true
-        }));
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'Contacts',
+        });
     };
 
     const handleAddContact = async (e) => {
@@ -166,10 +164,10 @@ export const UserProfile = () => {
                     <Grid item >
                         { data.contacts.length > 0 ? 
                             <IconButton onClick={ handleShowContacts }>
-                                <GroupIcon />
+                                <Group />
                             </IconButton>
                             :
-                            <GroupIcon />
+                            <Group />
                         }
                     </Grid>
                     <Grid item >
@@ -177,7 +175,7 @@ export const UserProfile = () => {
                     </Grid>
                     ・
                     <Grid item >
-                    <StarIcon/>
+                    <Star/>
                     </Grid>
                     <Grid item>
                         <Typography style={{ marginLeft: 8 }}> {data.scoreMean}</Typography>
@@ -185,19 +183,19 @@ export const UserProfile = () => {
                 </Grid>
                 <Grid container alignItems='center' justify='center' className={classes.spaceSecondData}>
                     {(authState.user.uid===uid) ? 
-                        <Button variant ='outlined' size='small' onClick={handleEditProfile} startIcon={<EditIcon />}>Editar perfil</Button> 
+                        <Button variant ='outlined' size='small' onClick={handleEditProfile} startIcon={<Edit />}>Editar perfil</Button> 
                         :
                         (authState.user.contacts.includes(uid)) ? 
-                        <Button variant ='outlined' size='small' onClick={handleDeleteContact} startIcon={<CloseIcon />}>Eliminar de mis contactos</Button> 
+                        <Button variant ='outlined' size='small' onClick={handleDeleteContact} startIcon={<Close />}>Eliminar de mis contactos</Button> 
                         : 
-                        <Button variant ='outlined' size='small' onClick={handleAddContact} startIcon={<PersonAddIcon />} >Agregar a mis contactos</Button>}  
+                        <Button variant ='outlined' size='small' onClick={handleAddContact} startIcon={<PersonAdd />} >Agregar a mis contactos</Button>}  
                 </Grid>
                 <Divider className={classes.spaceData}/>
                 <Grid className={classes.spaceData}>
                     { data && data.institution && (
                         <Grid container className={classes.spaceSecondData} >
                             <Grid item >
-                                <ApartmentIcon className={classes.spaceIcons}/>
+                                <Apartment className={classes.spaceIcons}/>
                             </Grid>
                             <Grid item >
                             <Typography className={classes.spaceFirstData} color='textSecondary'>{data.institution}</Typography>
@@ -217,7 +215,7 @@ export const UserProfile = () => {
                     { data && (
                         <Grid container className={classes.spaceSecondData} >
                             <Grid item >
-                                <EmailIcon className={classes.spaceIcons}/>
+                                <Email className={classes.spaceIcons}/>
                             </Grid>
                             <Grid item >
                             <Typography className={classes.spaceFirstData} color='textSecondary'>{data.email}</Typography>

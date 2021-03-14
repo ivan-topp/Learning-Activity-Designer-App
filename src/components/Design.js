@@ -1,11 +1,12 @@
 import React from 'react';
 import { Avatar, Card, CardActionArea, CardActions, CardContent, IconButton, makeStyles, Typography } from '@material-ui/core';
 import { Delete, Description, Star } from '@material-ui/icons';
-import { useAuthState } from '../contexts/AuthContext';
-import { formatName, getUserInitials } from '../utils/textFormatters';
-import { deleteDesignById } from '../services/DesignService';
+import { useAuthState } from 'contexts/AuthContext';
+import { formatName, getUserInitials } from 'utils/textFormatters';
+import { deleteDesignById } from 'services/DesignService';
 import { useMutation, useQueryClient } from 'react-query';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import TimeFormatter from '../utils/timeFormatters';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -65,6 +66,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, canDele
     const queryClient = useQueryClient();
     const { authState } = useAuthState();
     const history = useHistory();
+    const [hours, minutes] = TimeFormatter.toHoursAndMinutes(metadata.workingTime ?? 0);
 
     const deleteMutation = useMutation(deleteDesignById, {
         onMutate: async () => {
@@ -113,67 +115,57 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, canDele
 
     const classes = useStyles();
 
-    const handleOpenDesign = (e) => {
-        e.stopPropagation();
-        history.push(`/designs/${_id}`);
-    };
-
     const handleDeleteDesign = async (e) => {
         e.stopPropagation();
         await deleteMutation.mutate({ id: _id });
     };
 
-    const handleViewUser = (e, id) => {
-        e.stopPropagation();
-        history.push(`/profile/${id}`);
-    };
-
     return (
-        <Card className={classes.root} elevation={ 0 }>
-                <CardActionArea onClick={handleOpenDesign}>
-                    <CardContent>
-                        <div className={classes.row} style={{ width: '100%' }}>
-                            <Description className={classes.designIcon} />
-                            <div className={classes.col}>
-                                <div className={classes.row}>
-                                    <Typography className={classes.ellipsis} variant='h5' component="h2" >{title}</Typography>
-                                </div>
-                                <div className={classes.row}>
-                                    <Typography className={classes.ellipsis} variant="body1" component="p">{metadata.category ? metadata.category.name : 'Sin categoría'}</Typography>
-                                </div>
+        <Card className={classes.root} elevation={0}>
+            <CardActionArea component={Link} to={`/designs/${_id}`}>
+                <CardContent>
+                    <div className={classes.row} style={{ width: '100%' }}>
+                        <Description className={classes.designIcon} />
+                        <div className={classes.col}>
+                            <div className={classes.row}>
+                                <Typography className={classes.ellipsis} variant='h5' component="h2" >{title}</Typography>
+                            </div>
+                            <div className={classes.row}>
+                                <Typography className={classes.ellipsis} variant="body1" component="p">{metadata.category ? metadata.category.name : 'Sin categoría'}</Typography>
                             </div>
                         </div>
-                        <div className={classes.rowJustified}>
-                            <Typography variant="body1" component="p">Tiempo de diseño: {'100:30 Hrs'}</Typography>
+                    </div>
+                    <div className={classes.rowJustified}>
+                        <Typography variant="body1" component="p">Tiempo de diseño: {`${hours}:${minutes}`} Hrs</Typography>
+                    </div>
+                    <div className={classes.rowJustified} style={{ marginTop: 10, marginBottom: -5 }}>
+                        <Typography color="textSecondary" variant='body2'>Última modificación: {new Date(updatedAt).toLocaleDateString()}</Typography>
+                        <div className={classes.row} style={{ marginRight: 4 }}>
+                            <Star fontSize='small' />
+                            <Typography variant='body2'> 4.6</Typography>
                         </div>
-                        <div className={classes.rowJustified} style={{ marginTop: 10, marginBottom: -5 }}>
-                            <Typography color="textSecondary" variant='body2'>Última modificación: {new Date(updatedAt).toLocaleDateString()}</Typography>
-                            <div className={classes.row} style={{ marginRight: 4 }}>
-                                <Star fontSize='small' />
-                                <Typography variant='body2'> 4.6</Typography>
-                            </div>
-                        </div>
-                    </CardContent>
-                </CardActionArea>
-                {
-                    canDelete && authState.user.uid === owner._id && (<IconButton className={classes.deleteIcon} onClick={handleDeleteDesign}>
-                        <Delete />
-                    </IconButton>)
-                }
-            <CardActionArea>
+                    </div>
+                </CardContent>
+            </CardActionArea>
+            {
+                canDelete && authState.user.uid === owner._id && (<IconButton className={classes.deleteIcon} onClick={handleDeleteDesign}>
+                    <Delete />
+                </IconButton>)
+            }
+            <CardActionArea component={Link} to={`/profile/${owner._id}`}>
 
-            <CardActions className={classes.ownerInfo} onClick={(e) => handleViewUser(e, owner._id)}>
-                <Avatar
-                    alt={formatName(owner.name, owner.lastname)}
-                //src='https://i.pinimg.com/400x300/d6/e6/28/d6e6281bb90621d9be0a9e53d882c2c6.jpg'
-                >
-                    {getUserInitials(owner.name, owner.lastname)}
-                </Avatar>
-                <div>
-                    <Typography color='textPrimary'>{formatName(owner.name, owner.lastname)}</Typography>
-                    <Typography color="textSecondary">{owner.occupation ?? 'Sin ocupación'}</Typography>
-                </div>
-            </CardActions>
+                <CardActions className={classes.ownerInfo}>
+                    <Avatar
+                        alt={formatName(owner.name, owner.lastname)}
+                    //src='https://i.pinimg.com/400x300/d6/e6/28/d6e6281bb90621d9be0a9e53d882c2c6.jpg'
+                    >
+                        {getUserInitials(owner.name, owner.lastname)}
+                    </Avatar>
+                    <div>
+                        <Typography color='textPrimary'>{formatName(owner.name, owner.lastname)}</Typography>
+                        <Typography color="textSecondary">{owner.occupation ?? 'Sin ocupación'}</Typography>
+                    </div>
+                </CardActions>
             </CardActionArea>
         </Card>
     );

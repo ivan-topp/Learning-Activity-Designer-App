@@ -1,10 +1,11 @@
-import { Box, Button, Checkbox, Divider, FormControlLabel, Grid, IconButton, makeStyles, Paper, TextField, Tooltip, Typography } from '@material-ui/core'
-import React, { useEffect, useState } from 'react'
-import { DesignActivity } from './DesignActivity';
+import React, { useEffect } from 'react';
+import { Button, Checkbox, Divider, FormControlLabel, Grid, IconButton, makeStyles, Paper, TextField, Tooltip, Typography } from '@material-ui/core'
+import { DesignActivity } from 'pages/DesignPage/Workspace/DesignActivity';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import { useSocketState } from '../../contexts/SocketContext';
-import { StackedBar } from '../../components/StackedBar';
-import { useForm } from '../../hooks/useForm';
+import { useSocketState } from 'contexts/SocketContext';
+import { StackedBar } from 'components/StackedBar';
+import { useForm } from 'hooks/useForm';
+import { useDesignState } from 'contexts/design/DesignContext';
 
 const useStyles = makeStyles((theme) => ({
     unitSpacing: {
@@ -56,8 +57,10 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const DesignUnit = ({ design, index, tla }) => {
+export const DesignUnit = ({ index, tla }) => {
     const classes = useStyles();
+    const { designState } = useDesignState();
+    const { design } = designState;
     const { socket } = useSocketState();
 
     const [form, handleInputChange, , setValues] = useForm({
@@ -117,6 +120,7 @@ export const DesignUnit = ({ design, index, tla }) => {
                                 margin='dense'
                                 variant="outlined"
                                 name="title"
+                                label='Título'
                                 value={title}
                                 onChange={handleInputChange}
                                 type="text"
@@ -139,7 +143,7 @@ export const DesignUnit = ({ design, index, tla }) => {
                         <Grid item xs={12} sm={8}>
                             <Grid className={classes.gridActivity}>
                                 { 
-                                    design.data.tlas[index] && design.data.tlas[index].activities.map((activity, i)=> <DesignActivity key={`activity-${i}-tla-${index}`} design={design} index={i} activity={activity} tlaIndex={index}/> ) 
+                                    design.data.tlas[index] && design.data.tlas[index].activities && design.data.tlas[index].activities.map((activity, i)=> <DesignActivity key={`activity-${i}-tla-${index}`} index={i} activity={activity} tlaIndex={index}/> ) 
                                 }
                             </Grid>
                             <Grid container>

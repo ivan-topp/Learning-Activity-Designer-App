@@ -1,10 +1,10 @@
-import { Divider, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
-import { Design } from '../../components/Design';
-import ScrollContainer from 'react-indiana-drag-scroll';
+import { Divider, makeStyles, Typography } from '@material-ui/core';
 import { useQuery } from 'react-query';
-import { DesignSkeleton } from '../../components/DesignSkeleton';
-import { getRecentDesigns } from '../../services/DesignService';
+import ScrollContainer from 'react-indiana-drag-scroll';
+import { Design } from 'components/Design';
+import { DesignSkeleton } from 'components/DesignSkeleton';
+import { getRecentDesigns } from 'services/DesignService';
 
 const useStyles = makeStyles({
     root:{

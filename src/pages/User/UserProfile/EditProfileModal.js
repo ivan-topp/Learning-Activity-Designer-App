@@ -1,14 +1,15 @@
 
 import React from 'react'
 import { Avatar, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, makeStyles, TextField, Typography, } from '@material-ui/core';
-import { useUiState } from '../../contexts/UiContext';
+import { useUiState } from 'contexts/ui/UiContext';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { useAuthState } from '../../contexts/AuthContext';
-import { getUser, updateProfileInformation } from '../../services/UserService';
+import { useAuthState } from 'contexts/AuthContext';
+import { getUser, updateProfileInformation } from 'services/UserService';
 import { useParams } from 'react-router';
-import { useForm } from '../../hooks/useForm';
+import { useForm } from 'hooks/useForm';
 import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
+import types from 'types';
 
 const useStyles = makeStyles((theme) => ({
     closeButton: {
@@ -42,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 export const EditProfileModal = React.memo(() => {
     const classes = useStyles();
     const queryClient = useQueryClient();
-    const { uiState, setUiState } = useUiState();
+    const { uiState, dispatch } = useUiState();
     const { authState } = useAuthState();
     const urlparams = useParams();
     const uid = urlparams.uid;
@@ -104,27 +105,27 @@ export const EditProfileModal = React.memo(() => {
     };
 
     const handleClose = () => {
-        setUiState((prevState) => ({
-            ...prevState,
-            isEditProfileModalOpen: false,
-        }));
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'EditProfile',
+        });
         reset();
     };
 
     const handleSaveInformation = async (e) => {
         e.preventDefault();
         await updateProfileInformationMutation.mutate({uid: authState.user.uid, name, lastname, occupation, institution, country, city, description});
-        setUiState((prevState) => ({
-            ...prevState,
-            isEditProfileModalOpen: false,
-        }));
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'EditProfile',
+        });
         //Mensaje de guardado con exito
     };
     return (
         <>  
             <Dialog onClose={handleClose} aria-labelledby='customized-dialog-title' open={uiState.isEditProfileModalOpen}>
                 <DialogTitle id='customized-dialog-title' onClose={handleClose}>
-                    Editar perfil.
+                    Editar perfil
                     <IconButton aria-label='close' className={classes.closeButton} onClick={handleClose}>
                         <CloseIcon />
                     </IconButton>

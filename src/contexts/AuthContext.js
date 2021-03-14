@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext, createContext } from 'react';
-import { checkingToken } from '../services/AuthService';
+import React, { useState, useEffect, useContext, createContext, useCallback } from 'react';
+import { fetchWithoutToken, fetchWithToken } from 'utils/fetch';
 
 const AuthContext = createContext();
 
@@ -12,38 +12,78 @@ export function useAuthState() {
 	return context;
 }
 
+const initialState = {
+    checking: true,
+	user: null,
+	token: null,
+};
+
 export const AuthProvider = ({ children }) => {
+	const [authState, setAuthState] = useState(initialState);
 
-	const [authState, setAuthState] = useState({
-		checking: true,
-		user: null,
-		token: null,
-	});
+	const login = async ( email, password ) => {
+        const resp = await fetchWithoutToken('auth/login', { email, password }, 'POST');
+        if(resp.ok){
+            const { user, token } = resp.data;
+            setAuthState({
+                user: user,
+                token: token,
+                checking: false,
+            });
+        }
+        return resp;
+    };
 
-	useEffect(() => {
-		const checking = async () => {
-			const user = JSON.parse(localStorage.getItem('user'));
-			const token = localStorage.getItem('token');
-	
-			if (user !== null && token !== null) {
-				await checkingToken(setAuthState);
-			} else {
-				setAuthState((prevState) => ({
-					...prevState,
-					checking: false,
-				}));
-			}
-		};
-		checking();
-	}, []);
+	const register = async (userData) => {
+        const resp = await fetchWithoutToken('auth/register', userData, 'POST');
+        if(resp.ok){
+            const { user, token } = resp.data;
+            setAuthState({
+                user: user,
+                token: token,
+                checking: false,
+            });
+        }
+        return resp;
+    };
 
-	useEffect(() => {
-		if (authState.user === null) {
-			localStorage.removeItem('user');
-		} else {
-			localStorage.setItem('user', JSON.stringify(authState.user));
-		}
-	}, [authState.user]);
+	const logout = () => {
+        setAuthState({
+            checking: false,
+            user: null,
+			token: null,
+        });
+    };
+
+	const verifyToken = useCallback( async () => {
+        const token = localStorage.getItem('token');
+        if(!token){
+            setAuthState({
+				user: null,
+                token: null,
+                checking: false,
+            });
+            return false;
+        }
+        const resp = await fetchWithToken('auth/renew');
+        if(resp.ok){
+            const { user, token } = resp.data;
+            localStorage.setItem('token', token);
+            setAuthState({
+                user: user,
+                token: token,
+                checking: false,
+            });
+            return true;
+        } else {
+            setAuthState({
+                user: null,
+                token: null,
+                checking: false,
+            });
+            return false;
+        }
+    }, []);
 
 	useEffect(() => {
 		if (authState.token === null) {
@@ -54,7 +94,14 @@ export const AuthProvider = ({ children }) => {
 	}, [authState.token]);
 
 	return (
-		<AuthContext.Provider value={{ authState, setAuthState }}>
+		<AuthContext.Provider value={{ 
+			authState,
+			login,
+			register,
+			logout,
+			verifyToken,
+			setAuthState 
+		}}>
 			{children}
 		</AuthContext.Provider>
 	);

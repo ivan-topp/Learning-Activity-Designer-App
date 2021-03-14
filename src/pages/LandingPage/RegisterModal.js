@@ -5,13 +5,13 @@ import {
     TextField,
     Link,
 } from '@material-ui/core';
-import Logo from '../../assets/img/Logo.png';
+import Logo from 'assets/img/Logo.png';
 import Alert from '@material-ui/lab/Alert';
-import { ModalFormWithImage } from '../../components/ModalFormWithImage';
-import { useForm } from '../../hooks/useForm';
-import { register } from '../../services/AuthService';
-import { useAuthState } from '../../contexts/AuthContext';
-import { useUiState } from '../../contexts/UiContext';
+import { ModalFormWithImage } from 'components/ModalFormWithImage';
+import { useForm } from 'hooks/useForm';
+import { useAuthState } from 'contexts/AuthContext';
+import { useUiState } from 'contexts/ui/UiContext';
+import types from 'types';
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'block',
         marginLeft: 'auto',
         marginRight: 'auto',
-        width: 250,
+        width: '30%',
         marginTop: 15,
         marginBottom: 15,
     },
@@ -37,6 +37,23 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         paddingTop: 30,
         paddingBottom: 15,
+    },
+    '@global': {
+        //Ancho del scrollbar    
+        '*::-webkit-scrollbar': {
+            width: '0.4em'
+        },
+        //Sombra del scrollbar
+        '*::-webkit-scrollbar-track': {
+            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)'
+            
+        },
+        //Scrollbar
+        '*::-webkit-scrollbar-thumb': {
+            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
+            borderRadius: '15px',
+            backgroundColor: 'rgba(0,0,0,.1)',
+        }
     }
 }));
 
@@ -50,8 +67,8 @@ const initialErrors = {
 
 export const RegisterModal = React.memo(() => {
     const classes = useStyles();
-    const { uiState, setUiState } = useUiState();
-    const { setAuthState } = useAuthState();
+    const { uiState, dispatch } = useUiState();
+    const { register } = useAuthState();
     const [ errorFromServer, setErrorFromServer ] = useState(null);
     const [ formErrors, setFormErrors ] = useState(initialErrors);
     const [ formData, handleInputChange, reset ] = useForm({
@@ -65,10 +82,10 @@ export const RegisterModal = React.memo(() => {
     const { nameError, lastnameError, emailError, passwordError, confirmPasswordError } = formErrors;
     
     const handleClose = () => {
-        setUiState((prevState) => ({
-            ...prevState,
-            isRegisterModalOpen: false,
-        }));
+        dispatch({ 
+            type: types.ui.toggleModal,
+            payload: 'Register'
+        });
         reset();
         setFormErrors(initialErrors);
         setErrorFromServer(null);
@@ -125,26 +142,20 @@ export const RegisterModal = React.memo(() => {
         if (!isFormComplete()) return;
         if (!paswordsMatchs()) return;
         let resp = await register( formData );
-        if (resp.ok) {
-            handleClose();
-            setAuthState((prevState)=>({
-				...prevState,
-				user: resp.data.user,
-				token: resp.data.token,
-				checking: false,
-			}));
-        } else {
-            setErrorFromServer(resp.message);
-        }
+        if (!resp.ok) setErrorFromServer(resp.message);
+        else dispatch({
+            type: types.ui.toggleModal,
+            payload: 'Register',
+        });
     };
 
     const toLogin = (e) => {
         e.preventDefault();
         handleClose();
-        setUiState((prevState) => ({
-            ...prevState,
-            isLoginModalOpen: true,
-        }));
+        dispatch({ 
+            type: types.ui.toggleModal,
+            payload: 'Login'
+        });
     };
 
     return (
