@@ -29,7 +29,7 @@ export const ShowContactsModal = () => {
     
     const contactList = () => {
         return data.contacts.map(( contact ) => {
-            return <UserCard key={contact._id} {...contact}/>
+            return <UserCard key={contact._id} {...contact} onClick={handleClose}/>
         });
     };
 

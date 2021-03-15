@@ -15,7 +15,7 @@ export const useSocketState = () => {
 export const SocketProvider = ({ children }) => {
 
     const { authState } = useAuthState();
-    const { socket, online, connectSocket, disconnectSocket } = useSocket('http://localhost:4000');
+    const { socket, online, connectSocket, disconnectSocket } = useSocket(process.env.REACT_APP_SOCKET_URL);
     
     useEffect(() => {
         const logged = !!authState.token;

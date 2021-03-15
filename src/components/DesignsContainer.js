@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, makeStyles } from '@material-ui/core';
+import { Button, Link, makeStyles } from '@material-ui/core';
 import { Design } from 'components/Design';
 import { Alert } from '@material-ui/lab';
 import { useAuthState } from 'contexts/AuthContext';
@@ -29,10 +29,17 @@ const useStyles = makeStyles({
     },
     loadMore: {
         marginBottom: 50,
+    },
+    clickHere: {
+        textDecoration: 'none',
+        cursor: 'pointer',
+        '&:hover': {
+            textDecoration: 'underline'
+        }
     }
 });
 
-export const DesignsContainer = ({ data, status, isFetchingNextPage, fetchNextPage, hasNextPage }) => {
+export const DesignsContainer = ({ data, status, isFetchingNextPage, fetchNextPage, hasNextPage, handleCreateDesign }) => {
     const classes = useStyles();
     const { authState } = useAuthState();
 
@@ -57,7 +64,9 @@ export const DesignsContainer = ({ data, status, isFetchingNextPage, fetchNextPa
                         ? designList()
                         : (data.pages[0].ownerId === authState.user.uid)
                             ? <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                                No se han encontrado diseños. Crea tu primer diseños haciendo click aquí!
+                                No se han encontrado diseños en este directorio. Crea tu primer diseño haciendo click {' '}
+                                {<Link className={classes.clickHere} onClick={handleCreateDesign}>aquí</Link>}
+                                !
                             </Alert>
                             : <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                                 Este usuario no cuenta con diseños públicos.

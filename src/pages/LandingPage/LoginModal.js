@@ -88,8 +88,8 @@ export const LoginModal = () => {
     const [errorFromServer, setErrorFromServer] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [formLoginValues, handleInputChange, reset] = useForm({
-        email: 'aguzman2016@alu.uct.cl',
-        password: 'Mameluco123'
+        email: '',
+        password: ''
     });
     const { email, password } = formLoginValues;
     const { emailError, passwordError } = formErrors;

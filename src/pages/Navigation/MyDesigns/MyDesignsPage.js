@@ -137,7 +137,7 @@ export const MyDesignsPage = () => {
                         </div>
                         <Divider />
                         <FoldersContainer {...foldersQuery}/>
-                        <DesignsContainer {...designsQuery} />
+                        <DesignsContainer {...designsQuery} handleCreateDesign={(e)=>handleCreateDesign(e, path)}/>
                     </div>
                 </Grid>
                 <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Button, Divider, FormControl, FormControlLabel, Grid, InputLabel, makeStyles, MenuItem, Select, Switch, TextField, Typography } from '@material-ui/core'
+import { Button, Divider, FormControl, FormControlLabel, Grid, InputLabel, Link, makeStyles, MenuItem, Select, Switch, TextField, Typography } from '@material-ui/core'
 import { useQuery } from 'react-query';
 import { Alert } from '@material-ui/lab';
 import { useForm } from 'hooks/useForm';
@@ -58,6 +58,13 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
     },
+    clickHere: {
+        textDecoration: 'none',
+        cursor: 'pointer',
+        '&:hover': {
+            textDecoration: 'underline'
+        }
+    }
 }));
 
 export const DesignMetadata = () => {
@@ -139,6 +146,11 @@ export const DesignMetadata = () => {
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
     };
+
+    const handleOpenLearningResultmodal = () => dispatch({
+        type: types.ui.toggleModal,
+        payload: 'LearningResult',
+    });
 
     return (
         <>
@@ -319,17 +331,16 @@ export const DesignMetadata = () => {
                     </Grid>
                     <div className={classes.title}>
                         <Typography variant='h4'>Resultados de aprendizaje</Typography>
-                        <Button variant='outlined' color='default' onClick={() => dispatch({
-                                type: types.ui.toggleModal,
-                                payload: 'LearningResult',
-                            })}>Agregar</Button>
+                        <Button variant='outlined' color='default' onClick={handleOpenLearningResultmodal}>Agregar</Button>
                     </div>
                     <Divider />
                     <div className={classes.content}>
                         {
                             metadata.results.length === 0
                                 ? <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                                    Este diseño aún no tiene resultados de aprendizaje. Agrega el primer resultado de aprendizaje haciendo click aquí!
+                                    Este diseño aún no tiene resultados de aprendizaje. Agrega el primer resultado de aprendizaje haciendo click {' '}
+                                    {<Link className={classes.clickHere} onClick={handleOpenLearningResultmodal}>aquí</Link>}
+                                    !
                                 </Alert>
                                 : metadata.results.map((result, index) => (
                                     <LearningResult key={`learning-result-${index}`} index={index} {...result} />
