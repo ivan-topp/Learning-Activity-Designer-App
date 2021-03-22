@@ -10,6 +10,7 @@ import { useForm } from 'hooks/useForm';
 import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
 import types from 'types';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     closeButton: {
@@ -47,7 +48,8 @@ export const EditProfileModal = React.memo(() => {
     const { authState } = useAuthState();
     const urlparams = useParams();
     const uid = urlparams.uid;
-
+    const { enqueueSnackbar } = useSnackbar();
+    
     const { isLoading, isError, data } = useQuery(['user-profile', uid], async () => {
         return await getUser(uid);
     }, { refetchOnWindowFocus: false });
@@ -90,7 +92,7 @@ export const EditProfileModal = React.memo(() => {
             queryClient.invalidateQueries(['user-profile', uid]);
         },
     });
-    
+
     if(isError){
         return (<div className={ classes.errorContainer }>
             <Alert severity='error' className={ classes.error }>
@@ -111,7 +113,7 @@ export const EditProfileModal = React.memo(() => {
         });
         reset();
     };
-
+    
     const handleSaveInformation = async (e) => {
         e.preventDefault();
         await updateProfileInformationMutation.mutate({uid: authState.user.uid, name, lastname, occupation, institution, country, city, description});
@@ -119,8 +121,9 @@ export const EditProfileModal = React.memo(() => {
             type: types.ui.toggleModal,
             payload: 'EditProfile',
         });
-        //Mensaje de guardado con exito
+        enqueueSnackbar('Su perfil se ha guardado correctamente',  {variant: 'success', autoHideDuration: 2000},   );
     };
+
     return (
         <>  
             <Dialog onClose={handleClose} aria-labelledby='customized-dialog-title' open={uiState.isEditProfileModalOpen}>

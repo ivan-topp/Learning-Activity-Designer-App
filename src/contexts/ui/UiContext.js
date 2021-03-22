@@ -19,6 +19,9 @@ const initialState = {
 	isLearningResultModalOpen: false,
 	isEditProfileModalOpen: false,
 	isContactsModalOpen: false,
+	isConfirmationModalOpen: false,
+	isOtherConfirmationModalOpen: false,
+	setWichOpenModal: false,
 };
 
 export const UiProvider = ({ children }) => {

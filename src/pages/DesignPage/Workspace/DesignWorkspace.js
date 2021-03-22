@@ -4,6 +4,7 @@ import { DesignGraphic } from 'pages/DesignPage/Workspace/DesignGraphic';
 import { LearningActivity } from 'pages/DesignPage/Workspace/LearningActivity';
 import { useSocketState } from 'contexts/SocketContext';
 import { useDesignState } from 'contexts/design/DesignContext';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -71,9 +72,11 @@ export const DesignWorkspace = () => {
     const { design } = designState;
     const { metadata } = design;
     const { socket } = useSocketState();
+    const { enqueueSnackbar } = useSnackbar();
 
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
+        enqueueSnackbar('Su diseño se ha guardado correctamente',  {variant: 'success', autoHideDuration: 2000});
     };
 
     const handleNewUA = () => {

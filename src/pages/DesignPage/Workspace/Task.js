@@ -5,6 +5,11 @@ import { useSocketState } from 'contexts/SocketContext';
 import { useForm } from 'hooks/useForm';
 import TimeFormatter from 'utils/timeFormatters';
 import { useDesignState } from 'contexts/design/DesignContext';
+import { ConfirmationModal } from 'components/ConfirmationModal';
+import { useUiState } from 'contexts/ui/UiContext';
+import types from 'types';
+import { useSnackbar } from 'notistack';
+
 const useStyles = makeStyles((theme) => ({
     taskSpacing: {
         marginLeft: theme.spacing(2),
@@ -44,6 +49,8 @@ export const Task = ({ learningActivityIndex, index, task }) => {
     const { socket } = useSocketState();
     const { designState } = useDesignState();
     const { design } = designState;
+    const { uiState, dispatch } = useUiState();
+    const { enqueueSnackbar } = useSnackbar();
 
     const [form, handleInputChange, , setValues] = useForm({
         description: task.description,
@@ -66,7 +73,7 @@ export const Task = ({ learningActivityIndex, index, task }) => {
     }, [design, setValues, task]);
 
     const { description, learningType, modality, format, timeHours, timeMinutes,  } = form;
-
+    
     const editTask = ({ target }) => {
         if (target.name === 'timeHours' || target.name === 'timeMinutes') {
             socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field: 'duration', value: TimeFormatter.toMinutes(timeHours, timeMinutes) });
@@ -74,9 +81,17 @@ export const Task = ({ learningActivityIndex, index, task }) => {
             socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field: target.name, value: form[target.name] });
         }
     };
-
+    
     const handleDeleteTask = () => {
-        socket.emit('delete-task', { designId: design._id, learningActivityIndex, index });
+        if (description === "" && learningType === 'Seleccionar' && modality === 'Seleccionar' && format === 'Seleccionar' && timeHours === 0 && timeMinutes === 0 ){
+            socket.emit('delete-task', { designId: design._id, learningActivityIndex, index });
+            enqueueSnackbar('Su tarea se ha eliminado',  {variant: 'success', autoHideDuration: 2000});
+        } else {
+            dispatch({
+                type: types.ui.toggleModal,
+                payload: 'OtherConfirmation',
+            });
+        }
     };
 
     const handleChangeDropdown = (e) => {
@@ -238,6 +253,9 @@ export const Task = ({ learningActivityIndex, index, task }) => {
                         </Grid>
                     </Grid>
                 </Paper>
+                {
+                    (uiState.isOtherConfirmationModalOpen) && <ConfirmationModal type = {'tarea'} args = {{ designId: design._id, learningActivityIndex, index }} />
+                }
             </Grid>
         )
     }
@@ -246,8 +264,6 @@ export const Task = ({ learningActivityIndex, index, task }) => {
             {
                 listtasksArray()
             }
-
-
         </>
     )
 }

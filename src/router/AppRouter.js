@@ -13,11 +13,12 @@ import { useAuthState } from 'contexts/AuthContext';
 import { NavBar } from 'components/NavBar';
 import { UserConfigProvider} from 'contexts/UserConfigContext';
 import { Footer } from 'components/Footer';
-import { CssBaseline } from '@material-ui/core';
+import { CssBaseline, Grow } from '@material-ui/core';
 import { SharedWithMePage } from 'pages/Navigation/SharedWithMe/SharedWithMePage';
 import { PublicRepositoryPage } from 'pages/Navigation/PublicRepository/PublicRepositoryPage';
 import { SearchUsersPage } from 'pages/User/SearchUsersPage/SearchUsersPage';
 import { DesignPage } from 'pages/DesignPage/DesignPage';
+import { SnackbarProvider } from 'notistack';
 
 export const AppRouter = () => {
     const { authState, verifyToken } = useAuthState();
@@ -37,17 +38,19 @@ export const AppRouter = () => {
                 <UserConfigProvider>
                     <CssBaseline/>
                     <NavBar />
-                    <Switch>
-                        <PublicRoute exact path="/" component={ LandingPage } isAuthenticated={!checking && !!token }/>
-                        <PrivateRoute exact path="/profile/:uid" component={ UserProfile } isAuthenticated={ !checking && !!token }/>
-                        <PrivateRoute exact path="/my-designs" component={MyDesignsPage} isAuthenticated={!checking && !!token }/>
-                        <PrivateRoute path="/my-designs/:urlPath+/" component={MyDesignsPage} isAuthenticated={!checking && !!token }/>
-                        <PrivateRoute exact path="/shared-with-me" component={SharedWithMePage} isAuthenticated={!checking && !!token }/>
-                        <PrivateRoute exact path="/public-repository" component={PublicRepositoryPage} isAuthenticated={!checking && !!token }/>
-                        <PrivateRoute exact path="/users/search" component={SearchUsersPage} isAuthenticated={!checking && !!token }/>
-                        <PrivateRoute exact path="/designs/:id" component={DesignPage} isAuthenticated={!checking && !!token }/>
-                        <Redirect to="/" />
-                    </Switch>
+                    <SnackbarProvider maxSnack={3} anchorOrigin={{vertical: 'bottom',horizontal: 'left',}} TransitionComponent={Grow}>
+                        <Switch>
+                            <PublicRoute exact path="/" component={ LandingPage } isAuthenticated={!checking && !!token }/>
+                            <PrivateRoute exact path="/profile/:uid" component={ UserProfile } isAuthenticated={ !checking && !!token }/>
+                            <PrivateRoute exact path="/my-designs" component={MyDesignsPage} isAuthenticated={!checking && !!token }/>
+                            <PrivateRoute path="/my-designs/:urlPath+/" component={MyDesignsPage} isAuthenticated={!checking && !!token }/>
+                            <PrivateRoute exact path="/shared-with-me" component={SharedWithMePage} isAuthenticated={!checking && !!token }/>
+                            <PrivateRoute exact path="/public-repository" component={PublicRepositoryPage} isAuthenticated={!checking && !!token }/>
+                            <PrivateRoute exact path="/users/search" component={SearchUsersPage} isAuthenticated={!checking && !!token }/>
+                            <PrivateRoute exact path="/designs/:id" component={DesignPage} isAuthenticated={!checking && !!token }/>
+                            <Redirect to="/" />
+                        </Switch>
+                    </SnackbarProvider>
                     <Footer />
                 </UserConfigProvider>
             </div>

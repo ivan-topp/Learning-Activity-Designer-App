@@ -6,6 +6,10 @@ import { useSocketState } from 'contexts/SocketContext';
 import { StackedBar } from 'components/StackedBar';
 import { useForm } from 'hooks/useForm';
 import { useDesignState } from 'contexts/design/DesignContext';
+import { ConfirmationModal } from 'components/ConfirmationModal';
+import { useUiState } from 'contexts/ui/UiContext';
+import types from 'types';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     unitSpacing: {
@@ -62,6 +66,8 @@ export const LearningActivity = ({ index, learningActivity }) => {
     const { designState } = useDesignState();
     const { design } = designState;
     const { socket } = useSocketState();
+    const { uiState, dispatch } = useUiState();
+    const { enqueueSnackbar } = useSnackbar();
 
     const [form, handleInputChange, , setValues] = useForm({
         title: learningActivity.title,
@@ -82,7 +88,16 @@ export const LearningActivity = ({ index, learningActivity }) => {
     };
 
     const handleDeleteUnit = () => {
-        socket.emit('delete-learningActivity', { designId: design._id, index });
+        console.log(learningActivity, learningActivity.learningResults)
+        if(title === "" && description === "" && learningActivity.learningResults.length === 0 && learningActivity.task.length === 0 && (learningActivity.tasks === undefined || learningActivity.tasks.length === 0)){
+            socket.emit('delete-learningActivity', { designId: design._id, index });
+            enqueueSnackbar('Su actividad se ha eliminado',  {variant: 'success', autoHideDuration: 2000});
+        }else {
+            dispatch({
+                type: types.ui.toggleModal,
+                payload: 'Confirmation',
+            });
+        }
     };
 
     const handleAddTask = () => {
@@ -143,7 +158,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
                         <Grid item xs={12} sm={8}>
                             <Grid className={classes.gridTask}>
                                 { 
-                                    design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i)=> <Task key={`task-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index}/> ) 
+                                    design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i)=> <Task key={`task-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index} /> ) 
                                 }
                             </Grid>
                             <Grid container>
@@ -193,6 +208,9 @@ export const LearningActivity = ({ index, learningActivity }) => {
                         </Grid>
                     </Grid>
                 </Paper>
+                {
+                    (uiState.isConfirmationModalOpen) && <ConfirmationModal type = {'actividad'} args = {{designId: design._id, index}} />
+                }
             </Grid>
         )
     }

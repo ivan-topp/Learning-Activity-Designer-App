@@ -35,14 +35,13 @@ export const updateContact = async(  {uid, contacts} ) => {
 
 export const updateProfileInformation = async(  {uid, name, lastname, occupation, institution, country, city, description} ) => {
     try {
-        const res = await fetchWithToken(`user/${uid}`, { 
+        const resp = await fetchWithToken(`user/${uid}`, { 
            newData: { uid, name, lastname, occupation, institution, country, city, description }
         }, 'PUT');
-        const body = await res.json();
-        if(!body.ok){
-            throw new Error(body.message);
+        if(!resp.ok){
+            throw new Error(resp.message);
         }
-        return body.data;
+        return resp.data;
     } catch (error) {
         console.log(error);
     }
