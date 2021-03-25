@@ -10,6 +10,8 @@
     "@testing-library/react": "^11.2.3",
     "@testing-library/user-event": "^12.6.2",
     "chart.js": "^2.9.4",
+    "devextreme": "20.2.6",
+    "devextreme-react": "20.2.6",
     "notistack": "^1.0.5",
     "query-string": "^6.14.0",
     "react": "^17.0.1",
@@ -44,5 +46,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "devextreme-themebuilder": "^20.2.4"
   }
 }

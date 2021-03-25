@@ -163,10 +163,10 @@ export const Task = ({ learningActivityIndex, index, task }) => {
                                             onChange={handleChangeDropdown}
                                         >
                                             <MenuItem value={'Seleccionar'}> Seleccionar </MenuItem>
-                                            <MenuItem value={'Presencial-Asincrono'}> Presencial-Asincrono</MenuItem>
-                                            <MenuItem value={'Presencial-Sincrono'}> Presencial-Sincrono</MenuItem>
-                                            <MenuItem value={'Online-Asincrono'}> Online-Asincrono</MenuItem>
-                                            <MenuItem value={'Online-Sincrono'}> Online-Sincrono</MenuItem>
+                                            <MenuItem value={'Presencial-Asíncrono'}> Presencial-Asíncrono</MenuItem>
+                                            <MenuItem value={'Presencial-Síncrono'}> Presencial-Síncrono</MenuItem>
+                                            <MenuItem value={'Online-Asíncrono'}> Online-Asíncrono</MenuItem>
+                                            <MenuItem value={'Online-Síncrono'}> Online-Síncrono</MenuItem>
                                         </Select>
                                     </FormControl>
                                     <Tooltip title="Delete">
