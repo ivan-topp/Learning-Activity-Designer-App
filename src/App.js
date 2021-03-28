@@ -5,6 +5,7 @@ import { SocketProvider } from "contexts/SocketContext";
 import { UiProvider } from "contexts/ui/UiContext";
 import { AppRouter } from "router/AppRouter";
 import { DesignProvider } from "contexts/design/DesignContext";
+import { SharedDocProvider } from "contexts/SharedDocContext";
 
 const queryClient = new QueryClient()
 
@@ -16,7 +17,9 @@ function LearningActivityDesigner() {
                 <AuthProvider>
                     <DesignProvider>
                         <SocketProvider>
-                            <AppRouter />
+                            <SharedDocProvider>
+                                <AppRouter />
+                            </SharedDocProvider>
                         </SocketProvider>
                     </DesignProvider>
                 </AuthProvider>

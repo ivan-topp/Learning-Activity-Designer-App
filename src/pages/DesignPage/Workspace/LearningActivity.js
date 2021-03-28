@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
-import { Button, Checkbox, Divider, FormControlLabel, Grid, IconButton, makeStyles, Paper, TextField, Tooltip, Typography } from '@material-ui/core'
+import React, { useEffect, useRef } from 'react';
+import { Button, Checkbox, Divider, FormControlLabel, Grid, IconButton, makeStyles, Paper, Tooltip, Typography } from '@material-ui/core'
 import { Task } from 'pages/DesignPage/Workspace/Task';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { useSocketState } from 'contexts/SocketContext';
 import { StackedBar } from 'components/StackedBar';
 import { useForm } from 'hooks/useForm';
 import { useDesignState } from 'contexts/design/DesignContext';
+import { SharedTextFieldTipTapEditor } from 'components/SharedTextFieldTipTapEditor';
 
 const useStyles = makeStyles((theme) => ({
     unitSpacing: {
@@ -63,6 +64,10 @@ export const LearningActivity = ({ index, learningActivity }) => {
     const { design } = designState;
     const { socket } = useSocketState();
 
+    const titleRef = useRef();
+    const descriptionRef = useRef();
+    const taskRefs = useRef([]);
+
     const [form, handleInputChange, , setValues] = useForm({
         title: learningActivity.title,
         description: learningActivity.description,
@@ -76,12 +81,11 @@ export const LearningActivity = ({ index, learningActivity }) => {
     }, [design, setValues, learningActivity]);
 
     const { title, description } = form;
-
-    const editUnit = ({target}) => {
-        socket.emit('edit-unit-field', { designId: design._id, index, field: target.name, value: form[target.name] });
-    };
-
+    
     const handleDeleteUnit = () => {
+        taskRefs?.current.forEach(task => task?.clearTexts());
+        titleRef?.current.clearText();
+        descriptionRef?.current.clearText();
         socket.emit('delete-learningActivity', { designId: design._id, index });
     };
 
@@ -95,7 +99,6 @@ export const LearningActivity = ({ index, learningActivity }) => {
             learningActivity.learningResults.forEach((r, _indexLearningResults) => {
                 if (r.verb === result.verb && r.description === result.description) indexLearningResults = _indexLearningResults;
             });
-
             socket.emit('delete-learning-result-from-learningActivity', {
                 designId: design._id,
                 index,
@@ -110,23 +113,26 @@ export const LearningActivity = ({ index, learningActivity }) => {
         }
     };
 
+    const handleEditLearningActivityField = ({ target }) => {
+        let field = target.name;
+        if(target.name.includes('title')) field = 'title';
+        else if (target.name.includes('description')) field = 'description';
+        socket.emit('edit-unit-field', { designId: design._id, index, field, value: target.value });
+        handleInputChange({ target: {...target, name: field} });
+    };
+
     const listlearningActivityArray = () => {
         return (
             <Grid key={index}>
                 <Paper className={classes.unitSpacing}>
                     <Grid container>
                         <Grid item xs={12} sm={5} className={classes.titleUnitSpacing}>
-                            <TextField
-                                margin='dense'
-                                variant="outlined"
-                                name="title"
-                                label='Título'
-                                value={title}
-                                onChange={handleInputChange}
-                                type="text"
-                                onBlur={editUnit}
-                                inputProps={{ maxLength: 30 }}
-                                fullWidth
+                            <SharedTextFieldTipTapEditor 
+                                ref={titleRef}
+                                name={`title-learning-activity-${index}`} // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
+                                placeholder='Título'
+                                initialvalue={title}
+                                onChange={handleEditLearningActivityField}
                             />
                         </Grid>
                         <Grid item xs={12} sm={7} className={classes.graphicUnitSpacing}>
@@ -143,7 +149,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
                         <Grid item xs={12} sm={8}>
                             <Grid className={classes.gridTask}>
                                 { 
-                                    design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i)=> <Task key={`task-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index}/> ) 
+                                    design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i)=> <Task ref={(ref) => taskRefs.current.push(ref)} key={`task-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index}/> ) 
                                 }
                             </Grid>
                             <Grid container>
@@ -156,17 +162,15 @@ export const LearningActivity = ({ index, learningActivity }) => {
                         <Grid item xs={12} sm={4} >
                             <Typography variant="body2" className={classes.spacingDescriptionlearningActivity} color="textSecondary"> Descripción Unidad de aprendizaje </Typography>
                             <Grid className={classes.spacingDescription}>
-                                <TextField
+                                <SharedTextFieldTipTapEditor 
+                                    ref={descriptionRef}
+                                    name={`description-learning-activity-${index}`} // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
+                                    placeholder='Título'
+                                    initialvalue={description}
+                                    onChange={(e)=>handleEditLearningActivityField}
+                                    rowMax={3}
                                     multiline
-                                    margin='dense'
-                                    variant="outlined"
-                                    name="description"
-                                    placeholder='Descripción'
-                                    value={description}
-                                    onChange={handleInputChange}
-                                    type="text"
-                                    onBlur={editUnit}
-                                    fullWidth
+                                    //deleteOnRemove
                                 />
                             </Grid>
                             <Typography variant="body2" className={classes.spacingLinkedResults} color="textSecondary"> Resultados Vinculados </Typography>

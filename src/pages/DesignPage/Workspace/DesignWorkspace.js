@@ -113,7 +113,7 @@ export const DesignWorkspace = () => {
                             { metadata && metadata.workingTime &&(
                                     <>
                                         <Typography variant="body2" color='textSecondary' className={classes.textLefPanelMetadata}> Tiempo de trabajo </Typography>
-                                        <Typography variant="body2"> { metadata.workingTime } </Typography>
+                                        <Typography variant="body2"> { metadata.workingTime.hours } : {metadata.workingTime.minutes}</Typography>
                                         <Divider/>
                                     </>
                                 )
@@ -123,7 +123,7 @@ export const DesignWorkspace = () => {
                             { metadata && metadata.workingTimeDesign &&(
                                     <>
                                         <Typography variant="body2" color='textSecondary' className={classes.textLefPanelMetadata}>Tiempo de trabajo Diseño</Typography>
-                                        <Typography variant="body2"> { metadata.workingTimeDesign } </Typography>
+                                        <Typography variant="body2"> { metadata.workingTimeDesign }</Typography>
                                         <Divider/>
                                     </>
                                 )

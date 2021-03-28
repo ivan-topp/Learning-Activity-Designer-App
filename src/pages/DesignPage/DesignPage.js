@@ -11,6 +11,7 @@ import { useDesignState } from 'contexts/design/DesignContext';
 import { getBloomCategories, getBloomVerbs } from 'services/BloomService';
 import types from 'types';
 import { Alert } from '@material-ui/lab';
+import { useSharedDocContext } from 'contexts/SharedDocContext';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -47,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
     },
     usersConnecteds: {
         display: 'flex',
-        flexDirection: 'column',
     },
     error: {
         display: 'flex',
@@ -67,15 +67,16 @@ const a11yProps = (index) => {
 
 export const DesignPage = () => {
     const classes = useStyles();
-    const { id } = useParams();
     const isMounted = useRef(true);
+    const { id } = useParams();
+    const { doc, provider, connectToDesign } = useSharedDocContext();
     const { authState } = useAuthState();
     const { socket, online } = useSocketState();
-    const [users, setUsersList] = useState([]);
-    const [tabIndex, setTabIndex] = useState(0);
+    const [ users, setUsersList ] = useState([]);
+    const [ tabIndex, setTabIndex ] = useState(0);
     const { designState, dispatch } = useDesignState();
     const { design } = designState;
-    const [error, setError] = useState(null);
+    const [ error, setError ] = useState(null);
     
     const prefetchBloomCategories = useCallback(async () => {
         const data = await getBloomCategories();
@@ -106,6 +107,7 @@ export const DesignPage = () => {
 
     useEffect(() => {
         if(online){
+            
             socket?.emit('join-to-design', { user: authState.user, designId: id }, (res) => {
                 if (res.ok){
                     if(isMounted.current) {
@@ -113,12 +115,13 @@ export const DesignPage = () => {
                             type: types.design.updateDesign,
                             payload: res.data.design
                         });
+                        connectToDesign(id);
                     }
                 } 
                 else setError(res.message);
             });
         }
-    }, [socket, authState.user, id, online, dispatch]);
+    }, [socket, authState.user, online, id, dispatch, connectToDesign]);
 
     useEffect(() => {
         socket?.on('update-design', (design) => {
@@ -129,12 +132,30 @@ export const DesignPage = () => {
                 });
             }
         });
+        socket?.on('edit-metadata-field', ({ field, value, subfield }) => {
+            if(isMounted.current) {
+                dispatch({
+                    type: types.design.changeMetadataField,
+                    payload: { field, value, subfield },
+                });
+            }
+        });
+        socket?.on('edit-task-field', ({ learningActivityIndex, index, field, value, subfield }) => {
+            if(isMounted.current) {
+                dispatch({
+                    type: types.design.changeTaskField,
+                    payload: { learningActivityIndex, index, field, value, subfield },
+                });
+            }
+        });
         socket?.on('users', (users) => {
             if(isMounted.current) setUsersList(users);
         });
         return () => {
             socket?.emit('leave-from-design', { user: authState.user, designId: id });
             socket?.off('updateDesign');
+            socket?.off('edit-metadata-field');
+            socket?.off('edit-task-field');
             socket?.off('users');
         };
     }, [socket, authState.user, id, dispatch]);
@@ -153,10 +174,10 @@ export const DesignPage = () => {
         );
     }
 
-    if (!design) {
+    if (!design || !doc || !provider) {
+        
         return (<Typography>Cargando...</Typography>);
     }
-
 
     return (
         <>

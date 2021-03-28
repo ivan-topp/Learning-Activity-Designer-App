@@ -6,7 +6,6 @@ import { formatName, getUserInitials } from 'utils/textFormatters';
 import { deleteDesignById } from 'services/DesignService';
 import { useMutation, useQueryClient } from 'react-query';
 import { Link, useHistory } from 'react-router-dom';
-import TimeFormatter from '../utils/timeFormatters';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -66,7 +65,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, canDele
     const queryClient = useQueryClient();
     const { authState } = useAuthState();
     const history = useHistory();
-    const [hours, minutes] = TimeFormatter.toHoursAndMinutes(metadata.workingTime ?? 0);
+    //const [hours, minutes] = TimeFormatter.toHoursAndMinutes(metadata.workingTime ?? 0);
 
     const deleteMutation = useMutation(deleteDesignById, {
         onMutate: async () => {
@@ -136,7 +135,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, canDele
                         </div>
                     </div>
                     <div className={classes.rowJustified}>
-                        <Typography variant="body1" component="p">Tiempo de diseño: {`${hours}:${minutes}`} Hrs</Typography>
+                        <Typography variant="body1" component="p">Tiempo de diseño: {`${metadata.workingTime.hours ?? 0}:${metadata.workingTime.minutes ?? 0}`} Hrs</Typography>
                     </div>
                     <div className={classes.rowJustified} style={{ marginTop: 10, marginBottom: -5 }}>
                         <Typography color="textSecondary" variant='body2'>Última modificación: {new Date(updatedAt).toLocaleDateString()}</Typography>

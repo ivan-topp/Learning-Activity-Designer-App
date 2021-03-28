@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import { Grid, IconButton, makeStyles, Typography, Tooltip, Paper, TextField, MenuItem, FormControl, Select } from '@material-ui/core';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { Grid, IconButton, makeStyles, Typography, Tooltip, Paper, MenuItem, FormControl, Select } from '@material-ui/core';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { useSocketState } from 'contexts/SocketContext';
 import { useForm } from 'hooks/useForm';
-import TimeFormatter from 'utils/timeFormatters';
 import { useDesignState } from 'contexts/design/DesignContext';
+import { SharedTextFieldTipTapEditor } from 'components/SharedTextFieldTipTapEditor';
 const useStyles = makeStyles((theme) => ({
     taskSpacing: {
         marginLeft: theme.spacing(2),
@@ -39,49 +39,137 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const Task = ({ learningActivityIndex, index, task }) => {
+export const Task = forwardRef(({ learningActivityIndex, index, task }, ref) => {
     const classes = useStyles();
     const { socket } = useSocketState();
+    const isMounted = useRef(true);
+    const hoursRef = useRef();
+    const minutesRef = useRef();
+    const descriptionRef = useRef();
     const { designState } = useDesignState();
     const { design } = designState;
 
     const [form, handleInputChange, , setValues] = useForm({
         description: task.description,
-        learningType: task.learningType ? task.learningType : 'Seleccionar',
-        modality: task.modality ? task.modality :'Seleccionar',
-        format: task.format ? task.format :'Seleccionar',
-        timeHours: TimeFormatter.toHoursAndMinutes(task.duration)[0],
-        timeMinutes: TimeFormatter.toHoursAndMinutes(task.duration)[1],
+        learningType: task.learningType && task.learningType.trim() !== '' ? task.learningType : 'Seleccionar',
+        modality: task.modality && task.modality.trim() !== '' ? task.modality :'Seleccionar',
+        format: task.format && task.format.trim() !== '' ? task.format :'Seleccionar',
+        timeHours: task.duration.hours ?? 0,
+        timeMinutes: task.duration.minutes ?? 0,
     });
 
+    useImperativeHandle(
+        ref,
+        () => ({
+            clearTexts: () => {
+                hoursRef?.current.clearText();
+                minutesRef?.current.clearText();
+                descriptionRef?.current.clearText();
+            }
+        }),
+    );
+
+    useEffect(()=>{
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
     useEffect(() => {
-        setValues({
-            description: task.description,
-            learningType: task.learningType ? task.learningType : 'Seleccionar',
-            modality: task.modality ? task.modality :'Seleccionar',
-            format: task.format ? task.format :'Seleccionar',
-            timeHours: TimeFormatter.toHoursAndMinutes(task.duration)[0],
-            timeMinutes: TimeFormatter.toHoursAndMinutes(task.duration)[1],
-        });
-    }, [design, setValues, task]);
-
-    const { description, learningType, modality, format, timeHours, timeMinutes,  } = form;
-
-    const editTask = ({ target }) => {
-        if (target.name === 'timeHours' || target.name === 'timeMinutes') {
-            socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field: 'duration', value: TimeFormatter.toMinutes(timeHours, timeMinutes) });
-        } else {
-            socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field: target.name, value: form[target.name] });
+        if(isMounted.current){
+            if(form.description !== task.description){
+                setValues((prevState) => ({
+                    ...prevState,
+                    description: task.description,
+                }));
+            }
         }
+    }, [form.description, task.description, setValues]);
+
+    useEffect(() => {
+        if(isMounted.current){
+            if(form.learningType !== task.learningType){
+                setValues((prevState) => ({
+                    ...prevState,
+                    learningType: task.learningType && task.learningType.trim() !== '' ? task.learningType : 'Seleccionar',
+                }));
+            }
+        }
+    }, [form.learningType, task.learningType, setValues]);
+
+    useEffect(() => {
+        if(isMounted.current){
+            if(form.modality !== task.modality){
+                setValues((prevState) => ({
+                    ...prevState,
+                    modality: task.modality && task.modality.trim() !== '' ? task.modality : 'Seleccionar',
+                }));
+            }
+        }
+    }, [form.modality, task.modality, setValues]);
+
+    useEffect(() => {
+        if(isMounted.current){
+            if(form.format !== task.format){
+                setValues((prevState) => ({
+                    ...prevState,
+                    format: task.format && task.format.trim() !== '' ? task.format : 'Seleccionar',
+                }));
+            }
+        }
+    }, [form.format, task.format, setValues]);
+
+    useEffect(() => {
+        if(isMounted.current){
+            if(form.timeHours !== task.duration.hours){
+                setValues((prevState) => ({
+                    ...prevState,
+                    timeHours: task.duration.hours ?? 0,
+                }));
+            }
+        }
+    }, [form.timeHours, task.duration.hours, setValues]);
+
+    useEffect(() => {
+        if(isMounted.current){
+            if(form.timeMinutes !== task.duration.minutes){
+                setValues((prevState) => ({
+                    ...prevState,
+                    timeMinutes: task.duration.minutes ?? 0,
+                }));
+            }
+        }
+    }, [form.timeMinutes, task.duration.minutes, setValues]);
+    
+    const { description, learningType, modality, format, timeHours, timeMinutes,  } = form;
+    
+    const handleEditTaskField = ({ target }) => {
+        let { name: field, value } = target;
+        let subfield = null;
+        if(field.includes('description')) field = 'description';
+        else if (field.includes('timeHours')){
+            field = 'duration';
+            subfield = 'hours';
+            value = isNaN(value) ? 0 : value;
+        }else if (field.includes('timeMinutes')){
+            field = 'duration';
+            subfield = 'minutes';
+            value = isNaN(value) ? 0 : value;
+        }
+        handleInputChange({ target });
+        socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field, value, subfield });
     };
 
     const handleDeleteTask = () => {
+        hoursRef?.current.clearText();
+        minutesRef?.current.clearText();
+        descriptionRef?.current.clearText();
         socket.emit('delete-task', { designId: design._id, learningActivityIndex, index });
     };
 
     const handleChangeDropdown = (e) => {
         handleInputChange(e);
-        socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field: e.target.name, value: e.target.value });
+        socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field: e.target.name, value: e.target.value, subfield: null });
     };
 
     const listtasksArray = () => {
@@ -121,7 +209,7 @@ export const Task = ({ learningActivityIndex, index, task }) => {
                         <Grid item xs={11}>
                             <Grid container className={classes.taskSpacing}>
                                 <Grid item xs={12} sm={5}>
-                                    <FormControl variant='outlined' size='small' style={{width: '90%'}}>
+                                    <FormControl variant='outlined' style={{width: '90%'}}>
                                     <Typography variant="body2" color="textSecondary" > Aprendizaje </Typography>
                                         <Select
                                             name='learningType'
@@ -140,7 +228,7 @@ export const Task = ({ learningActivityIndex, index, task }) => {
                                     </FormControl>
                                 </Grid>
                                 <Grid item xs={12} sm={6} className={classes.grid} style={{justifyContent: 'space-between'}}>
-                                    <FormControl variant='outlined' size='small' style={{width: '90%'}}>
+                                    <FormControl variant='outlined' style={{width: '90%'}}>
                                     <Typography variant="body2" color="textSecondary" > Modalidad </Typography>
                                         <Select
                                             name='modality'
@@ -166,42 +254,33 @@ export const Task = ({ learningActivityIndex, index, task }) => {
                                     <div style={{ width: '100%' }}>
                                         <Typography variant="body2" color="textSecondary"> Tiempo de trabajo </Typography>
                                         <div className={classes.timeField}>
-                                            <TextField
-                                                margin="dense"
-                                                variant="outlined"
-                                                name="timeHours"
-                                                value={timeHours}
-                                                onChange={handleInputChange}
-                                                label="Horas"
-                                                type="number"
-                                                onBlur={editTask}
-                                                inputProps={{
-                                                    min: 0,
-                                                    max: 59
-                                                }}
-                                                fullWidth
+                                            <SharedTextFieldTipTapEditor 
+                                                ref={hoursRef} 
+                                                name={`timeHours-task-${index}-learning-activity-${learningActivityIndex}`} // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
+                                                placeholder='Horas'
+                                                initialvalue={timeHours}
+                                                onChange={handleEditTaskField}
+                                                type='number'
+                                                min={0}
+                                                //deleteOnRemove
                                             />
                                             <Typography style={{ marginLeft: 10, marginRight: 10 }}> : </Typography>
-                                            <TextField
-                                                margin="dense"
-                                                variant="outlined"
-                                                name="timeMinutes"
-                                                value={timeMinutes}
-                                                onChange={handleInputChange}
-                                                label="Minutos"
-                                                type="number"
-                                                onBlur={editTask}
-                                                inputProps={{
-                                                    min: 0,
-                                                    max: 59
-                                                }}
-                                                fullWidth
+                                            <SharedTextFieldTipTapEditor 
+                                                ref={minutesRef}
+                                                name={`timeMinutes-task-${index}-learning-activity-${learningActivityIndex}`} // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
+                                                placeholder='Minutos'
+                                                initialvalue={timeMinutes}
+                                                onChange={handleEditTaskField}
+                                                type='number'
+                                                min={0}
+                                                max={59}
+                                                //deleteOnRemove
                                             />
                                         </div>
                                     </div>
                                 </Grid>
                                 <Grid item xs={12} sm={6} className={classes.grid}>
-                                        <FormControl variant='outlined' size='small' style={{width: '90%', marginRight: 5}}>
+                                        <FormControl variant='outlined' style={{width: '90%', marginRight: 5}}>
                                         <Typography variant="body2" color="textSecondary" style={{marginBottom: 4, marginRight: 5}}> Formato </Typography>
                                             <Select
                                                 name='format'
@@ -220,17 +299,14 @@ export const Task = ({ learningActivityIndex, index, task }) => {
                                 <Grid item sm={11}>
                                     <Typography variant="body2" color="textSecondary" > Descripción </Typography>
                                     <Grid className={classes.taskSpacingDescriptionBD}>
-                                        <TextField
+                                        <SharedTextFieldTipTapEditor 
+                                            ref={descriptionRef}
+                                            name={`description-task-${index}-learning-activity-${learningActivityIndex}`} // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
+                                            placeholder='Descripción'
+                                            initialvalue={description}
+                                            onChange={handleEditTaskField}
                                             multiline
-                                            margin='dense'
-                                            variant="outlined"
-                                            name="description"
-                                            placeholder="Descripción"
-                                            value={description}
-                                            onChange={handleInputChange}
-                                            type="text"
-                                            onBlur={editTask}
-                                            fullWidth
+                                            //deleteOnRemove
                                         />
                                     </Grid>
                                 </Grid>
@@ -250,4 +326,4 @@ export const Task = ({ learningActivityIndex, index, task }) => {
 
         </>
     )
-}
+})
