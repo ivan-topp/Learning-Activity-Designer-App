@@ -68,8 +68,9 @@ const a11yProps = (index) => {
 export const DesignPage = () => {
     const classes = useStyles();
     const isMounted = useRef(true);
+    const metadataRef = useRef();
     const { id } = useParams();
-    const { doc, provider, connectToDesign } = useSharedDocContext();
+    const { doc, provider, connectToDesign, clearDoc } = useSharedDocContext();
     const { authState } = useAuthState();
     const { socket, online } = useSocketState();
     const [ users, setUsersList ] = useState([]);
@@ -98,16 +99,18 @@ export const DesignPage = () => {
         prefetchBloomCategories();
         prefetchBloomVerbs();
     }, [prefetchBloomCategories, prefetchBloomVerbs]);
-
+    
     useEffect(()=>{
+        let metadataComponent = metadataRef.current;
         return () => {
+            metadataComponent?.clearEditors();
+            clearDoc();
             isMounted.current = false;
         };
-    }, []);
+    }, [clearDoc]);
 
     useEffect(() => {
         if(online){
-            
             socket?.emit('join-to-design', { user: authState.user, designId: id }, (res) => {
                 if (res.ok){
                     if(isMounted.current) {
@@ -209,7 +212,7 @@ export const DesignPage = () => {
                 <Grid item xs={12} md={3} lg={2}></Grid>
             </Grid>
             <TabPanel value={tabIndex} index={0}>
-                <DesignMetadata />
+                <DesignMetadata ref={metadataRef} />
             </TabPanel>
             <TabPanel value={tabIndex} index={1}>
                 <DesignWorkspace/>

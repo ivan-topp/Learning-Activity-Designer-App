@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { Button, Divider, FormControl, FormControlLabel, Grid, InputLabel, Link, makeStyles, MenuItem, Select, Switch, TextField, Typography } from '@material-ui/core'
 import { useQuery } from 'react-query';
 import { Alert } from '@material-ui/lab';
@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const DesignMetadata = () => {
+export const DesignMetadata = forwardRef((props, ref) => {
     const classes = useStyles();
     const { socket/*, online*/ } = useSocketState();
     const { authState } = useAuthState();
@@ -79,6 +79,13 @@ export const DesignMetadata = () => {
     const { design } = designState;
     const { metadata } = design;
     const { enqueueSnackbar } = useSnackbar();
+    const nameRef = useRef();
+    const classSizeRef = useRef();
+    const hoursRef = useRef();
+    const minutesRef = useRef();
+    const priorKnowledgeRef = useRef();
+    const descriptionRef = useRef();
+    const objectiveRef = useRef();
 
     const [form, handleInputChange, , setValues] = useForm({
         name: metadata.name,
@@ -93,6 +100,23 @@ export const DesignMetadata = () => {
         objective: metadata.objective,
         isPublic: metadata.isPublic
     });
+
+
+
+    useImperativeHandle(
+        ref,
+        () => ({
+            clearEditors: () => {
+                nameRef?.current.clearText();
+                classSizeRef?.current.clearText();
+                hoursRef?.current.clearText();
+                minutesRef?.current.clearText();
+                priorKnowledgeRef?.current.clearText();
+                descriptionRef?.current.clearText();
+                objectiveRef?.current.clearText();
+            }
+        }),
+    );
 
     useEffect(()=>{
         return () => {
@@ -290,6 +314,7 @@ export const DesignMetadata = () => {
                         
                         <Grid item className={classes.grid} xs={12} sm={9}  >
                             <SharedTextFieldTipTapEditor 
+                                ref={nameRef}
                                 name='name' 
                                 placeholder='Nombre'
                                 initialvalue={name}
@@ -327,6 +352,7 @@ export const DesignMetadata = () => {
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
                             <SharedTextFieldTipTapEditor 
+                                ref={classSizeRef}
                                 name='classSize' 
                                 placeholder='Tamaño de la clase'
                                 initialvalue={classSize ?? 0}
@@ -340,6 +366,7 @@ export const DesignMetadata = () => {
                                 <Typography > Tiempo de trabajo </Typography>
                                 <div className={classes.timeField}>
                                     <SharedTextFieldTipTapEditor 
+                                        ref={hoursRef}
                                         name='workingTimeHours' 
                                         placeholder='Horas'
                                         initialvalue={workingTimeHours}
@@ -349,6 +376,7 @@ export const DesignMetadata = () => {
                                     />
                                     <Typography style={{ marginLeft: 10, marginRight: 10 }}> : </Typography>
                                     <SharedTextFieldTipTapEditor 
+                                        ref={minutesRef}
                                         name='workingTimeMinutes' 
                                         placeholder='Minutos'
                                         initialvalue={workingTimeMinutes}
@@ -390,6 +418,7 @@ export const DesignMetadata = () => {
                         </Grid>
                         <Grid item className={classes.grid} xs={12}>
                             <SharedTextFieldTipTapEditor 
+                                ref={descriptionRef}
                                 name='description' 
                                 placeholder='Descripción'
                                 initialvalue={description ?? ''}
@@ -400,6 +429,7 @@ export const DesignMetadata = () => {
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
                             <SharedTextFieldTipTapEditor 
+                                ref={priorKnowledgeRef}
                                 name='priorKnowledge' 
                                 placeholder='Conocimiento previo'
                                 initialvalue={priorKnowledge ?? ''}
@@ -410,6 +440,7 @@ export const DesignMetadata = () => {
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
                             <SharedTextFieldTipTapEditor 
+                                ref={objectiveRef}
                                 name='objective' 
                                 placeholder='Objetivos'
                                 initialvalue={objective ?? ''}
@@ -444,4 +475,4 @@ export const DesignMetadata = () => {
             <LearningResultModal design={design} isOpen={uiState.isLearningResultModalOpen}/>
         </>
     )
-}
+})

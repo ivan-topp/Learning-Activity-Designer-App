@@ -19,14 +19,8 @@ export const SharedDocProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const { authState } = useAuthState();
 
-    useEffect(() => {
-        if(doc) return;
-        setDoc(new Y.Doc());
-    }, [setDoc, doc]);
-
     const connectToDesign = useCallback(
         ( id ) => {
-            if (!doc) return false;
             if (provider) return false;
             if (!authState.user) return false;
             const colors = [
@@ -39,13 +33,24 @@ export const SharedDocProvider = ({ children }) => {
                 '#8acb88',
                 '#1be7ff'
             ];
-            setProvider(new WebsocketProvider(process.env.REACT_APP_Y_WEBSOCKET_SERVER, id, doc));
+            const yDoc = new Y.Doc({guid: id});
+            setDoc(yDoc);
+            setProvider(new WebsocketProvider(process.env.REACT_APP_Y_WEBSOCKET_SERVER, id, yDoc));
             setUser({
                 name: authState.user.name,
                 color: colors[Math.floor(Math.random() * colors.length)],
             });
         },
-        [doc, provider, authState.user],
+        [provider, authState.user],
+    );
+
+    const clearDoc = useCallback(
+        () => {
+            setDoc(null);
+            setProvider(null);
+            setUser(null);
+        },
+        [setDoc, setProvider, setUser],
     );
 
     return (
@@ -53,6 +58,7 @@ export const SharedDocProvider = ({ children }) => {
             doc,
             provider,
             connectToDesign,
+            clearDoc,
             user,
         }}>
             {children}
