@@ -7,6 +7,11 @@ import { StackedBar } from 'components/StackedBar';
 import { useForm } from 'hooks/useForm';
 import { useDesignState } from 'contexts/design/DesignContext';
 import { SharedTextFieldTipTapEditor } from 'components/SharedTextFieldTipTapEditor';
+import { ConfirmationModal } from 'components/ConfirmationModal';
+import { useUiState } from 'contexts/ui/UiContext';
+import types from 'types';
+import { useSnackbar } from 'notistack';
+import { itemsLearningType } from 'assets/resource/items'
 
 const useStyles = makeStyles((theme) => ({
     unitSpacing: {
@@ -63,6 +68,8 @@ export const LearningActivity = ({ index, learningActivity }) => {
     const { designState } = useDesignState();
     const { design } = designState;
     const { socket } = useSocketState();
+    const { uiState, dispatch } = useUiState();
+    const { enqueueSnackbar } = useSnackbar();
 
     const titleRef = useRef();
     const descriptionRef = useRef();
@@ -83,10 +90,24 @@ export const LearningActivity = ({ index, learningActivity }) => {
     const { title, description } = form;
     
     const handleDeleteUnit = () => {
-        taskRefs?.current.forEach(task => task?.clearTexts());
-        titleRef?.current.clearText();
-        descriptionRef?.current.clearText();
-        socket.emit('delete-learningActivity', { designId: design._id, index });
+        if(title === "" && description === "" && learningActivity.learningResults.length === 0 && learningActivity.task.length === 0 && (learningActivity.tasks === undefined || learningActivity.tasks.length === 0)){
+            taskRefs?.current.forEach(task => task?.clearTexts());
+            titleRef?.current.clearText();
+            descriptionRef?.current.clearText();
+            socket.emit('delete-learningActivity', { designId: design._id, index });
+            enqueueSnackbar('Su actividad se ha eliminado',  {variant: 'success', autoHideDuration: 2000});
+        }else {
+            dispatch({
+                type: types.ui.toggleModal,
+                payload: 'Confirmation',
+            });
+        }
+    };
+    
+    const resetItems = () =>{
+        itemsLearningType.forEach((item) =>{
+            item.value = 0;
+        });
     };
 
     const handleAddTask = () => {
@@ -135,8 +156,20 @@ export const LearningActivity = ({ index, learningActivity }) => {
                                 onChange={handleEditLearningActivityField}
                             />
                         </Grid>
+                        {resetItems()}
                         <Grid item xs={12} sm={7} className={classes.graphicUnitSpacing}>
-                            <StackedBar />
+                            {   
+                                design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.forEach((task)=>
+                                {   
+                                    itemsLearningType.forEach((item) =>{ 
+                                        if( item.title === task.learningType ){
+                                            item.value = item.value + 1;
+                                        }
+                                    });
+                                } 
+                                )
+                            }
+                            <StackedBar items = {itemsLearningType} type = {'Activity'}/>
                             <Tooltip title="Delete">
                                 <IconButton onClick={handleDeleteUnit}>
                                     <DeleteForeverIcon fontSize="small" />
@@ -197,6 +230,9 @@ export const LearningActivity = ({ index, learningActivity }) => {
                         </Grid>
                     </Grid>
                 </Paper>
+                {
+                    (uiState.isConfirmationModalOpen) && <ConfirmationModal type = {'actividad'} args = {{designId: design._id, index}} />
+                }
             </Grid>
         )
     }

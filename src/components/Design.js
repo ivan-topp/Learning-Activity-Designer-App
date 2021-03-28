@@ -6,6 +6,9 @@ import { formatName, getUserInitials } from 'utils/textFormatters';
 import { deleteDesignById } from 'services/DesignService';
 import { useMutation, useQueryClient } from 'react-query';
 import { Link, useHistory } from 'react-router-dom';
+import { ConfirmationModal } from './ConfirmationModal';
+import { useUiState } from 'contexts/ui/UiContext';
+import types from 'types';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -57,13 +60,20 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         top: 8,
         right: 8,
-    }
+    },
+    closeButton: {
+        position: 'absolute',
+        right: theme.spacing(1),
+        top: theme.spacing(1),
+        color: theme.palette.grey[500],
+    },
 }));
 
 
 export const Design = ({ _id, title, updatedAt, metadata, folder, owner, canDelete = true }) => {
     const queryClient = useQueryClient();
     const { authState } = useAuthState();
+    const { dispatch } = useUiState();
     const history = useHistory();
     //const [hours, minutes] = TimeFormatter.toHoursAndMinutes(metadata.workingTime ?? 0);
 
@@ -116,7 +126,10 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, canDele
 
     const handleDeleteDesign = async (e) => {
         e.stopPropagation();
-        await deleteMutation.mutate({ id: _id });
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'Confirmation',
+        });
     };
 
     return (
@@ -166,6 +179,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, canDele
                     </div>
                 </CardActions>
             </CardActionArea>
+            <ConfirmationModal type = {'diseño'} actionMutation = {deleteMutation} args = {{ id: _id }}/>    
         </Card>
     );
 };

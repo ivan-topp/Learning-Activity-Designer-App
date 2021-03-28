@@ -5,6 +5,11 @@ import { useSocketState } from 'contexts/SocketContext';
 import { useForm } from 'hooks/useForm';
 import { useDesignState } from 'contexts/design/DesignContext';
 import { SharedTextFieldTipTapEditor } from 'components/SharedTextFieldTipTapEditor';
+import { ConfirmationModal } from 'components/ConfirmationModal';
+import { useUiState } from 'contexts/ui/UiContext';
+import types from 'types';
+import { useSnackbar } from 'notistack';
+
 const useStyles = makeStyles((theme) => ({
     taskSpacing: {
         marginLeft: theme.spacing(2),
@@ -48,6 +53,8 @@ export const Task = forwardRef(({ learningActivityIndex, index, task }, ref) => 
     const descriptionRef = useRef();
     const { designState } = useDesignState();
     const { design } = designState;
+    const { uiState, dispatch } = useUiState();
+    const { enqueueSnackbar } = useSnackbar();
 
     const [form, handleInputChange, , setValues] = useForm({
         description: task.description,
@@ -159,12 +166,20 @@ export const Task = forwardRef(({ learningActivityIndex, index, task }, ref) => 
         handleInputChange({ target });
         socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field, value, subfield });
     };
-
+    
     const handleDeleteTask = () => {
-        hoursRef?.current.clearText();
-        minutesRef?.current.clearText();
-        descriptionRef?.current.clearText();
-        socket.emit('delete-task', { designId: design._id, learningActivityIndex, index });
+        if (description === "" && learningType === 'Seleccionar' && modality === 'Seleccionar' && format === 'Seleccionar' && timeHours === 0 && timeMinutes === 0 ){
+            hoursRef?.current.clearText();
+            minutesRef?.current.clearText();
+            descriptionRef?.current.clearText();
+            socket.emit('delete-task', { designId: design._id, learningActivityIndex, index });
+            enqueueSnackbar('Su tarea se ha eliminado',  {variant: 'success', autoHideDuration: 2000});
+        } else {
+            dispatch({
+                type: types.ui.toggleModal,
+                payload: 'OtherConfirmation',
+            });
+        }
     };
 
     const handleChangeDropdown = (e) => {
@@ -236,10 +251,10 @@ export const Task = forwardRef(({ learningActivityIndex, index, task }, ref) => 
                                             onChange={handleChangeDropdown}
                                         >
                                             <MenuItem value={'Seleccionar'}> Seleccionar </MenuItem>
-                                            <MenuItem value={'Presencial-Asincrono'}> Presencial-Asincrono</MenuItem>
-                                            <MenuItem value={'Presencial-Sincrono'}> Presencial-Sincrono</MenuItem>
-                                            <MenuItem value={'Online-Asincrono'}> Online-Asincrono</MenuItem>
-                                            <MenuItem value={'Online-Sincrono'}> Online-Sincrono</MenuItem>
+                                            <MenuItem value={'Presencial-Asíncrono'}> Presencial-Asíncrono</MenuItem>
+                                            <MenuItem value={'Presencial-Síncrono'}> Presencial-Síncrono</MenuItem>
+                                            <MenuItem value={'Online-Asíncrono'}> Online-Asíncrono</MenuItem>
+                                            <MenuItem value={'Online-Síncrono'}> Online-Síncrono</MenuItem>
                                         </Select>
                                     </FormControl>
                                     <Tooltip title="Delete">
@@ -314,6 +329,9 @@ export const Task = forwardRef(({ learningActivityIndex, index, task }, ref) => 
                         </Grid>
                     </Grid>
                 </Paper>
+                {
+                    (uiState.isOtherConfirmationModalOpen) && <ConfirmationModal type = {'tarea'} args = {{ designId: design._id, learningActivityIndex, index }} />
+                }
             </Grid>
         )
     }
@@ -322,8 +340,6 @@ export const Task = forwardRef(({ learningActivityIndex, index, task }, ref) => 
             {
                 listtasksArray()
             }
-
-
         </>
     )
 })

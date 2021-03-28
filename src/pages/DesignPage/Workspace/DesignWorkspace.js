@@ -1,9 +1,12 @@
 import React from 'react';
 import { Button, ButtonGroup, Divider, Grid, makeStyles, Typography } from '@material-ui/core';
-import { DesignGraphic } from 'pages/DesignPage/Workspace/DesignGraphic';
 import { LearningActivity } from 'pages/DesignPage/Workspace/LearningActivity';
 import { useSocketState } from 'contexts/SocketContext';
 import { useDesignState } from 'contexts/design/DesignContext';
+import { useSnackbar } from 'notistack';
+import { StackedBar } from 'components/StackedBar';
+import { PieGraphic } from 'components/PieGraphic';
+import { itemsLearningType, itemsFormat, itemsModality, itemsLearningTypePie } from 'assets/resource/items'
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -43,6 +46,14 @@ const useStyles = makeStyles((theme) => ({
     textLefPanelMetadata:{
         marginTop: theme.spacing(3)
     },
+    graphicsSpacing:{
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2),
+    },
+    betweenGraphics:{
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+    },
     workSpaceUnits:{
     },
     '@global': {
@@ -71,13 +82,32 @@ export const DesignWorkspace = () => {
     const { design } = designState;
     const { metadata } = design;
     const { socket } = useSocketState();
+    const { enqueueSnackbar } = useSnackbar();
 
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
+        enqueueSnackbar('Su diseño se ha guardado correctamente',  {variant: 'success', autoHideDuration: 2000});
     };
 
     const handleNewUA = () => {
         socket.emit('new-learningActivity', { designId: design._id });    
+    };
+    
+    
+    const resetItems = () =>{
+        itemsLearningType.forEach((item) =>{
+            item.value = 0;
+        });
+        itemsLearningTypePie.forEach((item) =>{
+            item.value = 0;
+        });
+        
+        itemsFormat.forEach((item) =>{
+            item.value = 0;
+        });
+        itemsModality.forEach((item) =>{
+            item.value = 0;
+        });
     };
     
     return (
@@ -92,8 +122,8 @@ export const DesignWorkspace = () => {
                         <Grid>
                             { metadata && metadata.name &&(
                                     <>
-                                        <Typography variant="body2" color='textSecondary'> Nombre </Typography>
-                                        <Typography variant="body2">{ metadata.name }</Typography>
+                                        <Typography variant='body2' color='textSecondary'> Nombre </Typography>
+                                        <Typography variant='body2'>{ metadata.name }</Typography>
                                         <Divider/>
                                     </>
                                 )
@@ -102,8 +132,8 @@ export const DesignWorkspace = () => {
                         <Grid>
                             { metadata && metadata.category &&(
                                 <>
-                                        <Typography variant="body2" color='textSecondary' className={classes.textLefPanelMetadata}>Tema</Typography>
-                                        <Typography variant="body2"> { metadata.category.name } </Typography>
+                                        <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}>Tema</Typography>
+                                        <Typography variant='body2'> { metadata.category.name } </Typography>
                                         <Divider/>
                                     </>
                                 )
@@ -132,8 +162,8 @@ export const DesignWorkspace = () => {
                         <Grid>
                             { metadata && metadata.name &&(
                                     <>
-                                        <Typography variant="body2" color='textSecondary' className={classes.textLefPanelMetadata}> Modo de entrega </Typography>
-                                        <Typography variant="body2" > { metadata.name } </Typography>
+                                        <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}> Modo de entrega </Typography>
+                                        <Typography variant='body2' > { metadata.name } </Typography>
                                         <Divider/>
                                     </>
                                 )
@@ -141,8 +171,8 @@ export const DesignWorkspace = () => {
                         </Grid>
                             { metadata && metadata.classSize &&(
                                     <>
-                                        <Typography variant="body2" color='textSecondary' className={classes.textLefPanelMetadata}> Tamaño de la clase </Typography>
-                                        <Typography variant="body2"> { metadata.classSize } </Typography>
+                                        <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}> Tamaño de la clase </Typography>
+                                        <Typography variant='body2'> { metadata.classSize } </Typography>
                                         <Divider/>
                                     </>
                                 )
@@ -150,8 +180,8 @@ export const DesignWorkspace = () => {
                         <Grid>
                             { metadata && metadata.priorKnowledge &&(
                                     <>
-                                        <Typography variant="body2" color='textSecondary' className={classes.textLefPanelMetadata}> Conocimiento Previo </Typography>
-                                        <Typography variant="body2" > { metadata.priorKnowledge } </Typography>
+                                        <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}> Conocimiento Previo </Typography>
+                                        <Typography variant='body2' > { metadata.priorKnowledge } </Typography>
                                         <Divider/>
                                     </>
                                 )
@@ -160,8 +190,8 @@ export const DesignWorkspace = () => {
                         <Grid>
                             { metadata && metadata.description &&(
                                     <>
-                                        <Typography variant="body2" color='textSecondary' className={classes.textLefPanelMetadata}> Descripción </Typography>
-                                        <Typography variant="body2"> { metadata.description } </Typography>
+                                        <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}> Descripción </Typography>
+                                        <Typography variant='body2'> { metadata.description } </Typography>
                                         <Divider/>
                                     </>
                                 )
@@ -190,13 +220,13 @@ export const DesignWorkspace = () => {
                     </Grid>
                 </Grid>
                 <Grid item xs={12} md={6} lg={8} className={classes.workspace}>
-                    <ButtonGroup size="small" aria-label="outlined primary button group" className={classes.buttonGroupWorkSpace}>
+                    <ButtonGroup size='small' aria-label='outlined primary button group' className={classes.buttonGroupWorkSpace}>
                         <Button>Nuevo</Button>
                         <Button>Compartir</Button>
                         <Button onClick = {handleSaveDesign}>Guardar</Button>
                     </ButtonGroup>
                     <Grid className={classes.workSpaceUnits}>
-                        <Button size="small" variant = "outlined" onClick={handleNewUA}>Agregar Unidad de Aprendizaje</Button>
+                        <Button size='small' variant = 'outlined' onClick={handleNewUA}>Agregar Unidad de Aprendizaje</Button>
                         <Grid >
                             {
                                 design.data.learningActivities && design.data.learningActivities.map((learningActivity, index) => <LearningActivity key={`learningActivity-${index}`} index={index} learningActivity={learningActivity}/> )
@@ -204,9 +234,46 @@ export const DesignWorkspace = () => {
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item xs={3} md={3} lg={2} className={classes.rightPanel}>
-                    <Grid >
-                        <DesignGraphic design = { design }/>
+                <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}>
+                    {resetItems()}
+                    <Grid className={classes.graphicsSpacing}>
+                        {   
+                            design.data.learningActivities && design.data.learningActivities.map((learningActivity) => 
+                                learningActivity.tasks && learningActivity.tasks.forEach((task) => {
+                                    itemsLearningType.forEach((item) =>{
+                                        if( item.title === task.learningType){
+                                            item.value = item.value + 1;
+                                        }
+                                    });
+                                    itemsLearningTypePie.forEach((item) =>{
+                                        if( item.title === task.learningType){
+                                            item.value = item.value + 1;
+                                        }
+                                    });
+                                    itemsFormat.forEach((item) =>{ 
+                                        if( item.title === task.format ){
+                                            item.value = item.value + 1;
+                                        }
+                                    });
+                                    itemsModality.forEach((item) =>{ 
+                                        if( item.title === task.modality ){
+                                            item.value = item.value + 1;
+                                        }
+                                    });
+                                }))
+                        }
+                        <div className={classes.betweenGraphics}>
+                            <PieGraphic items = { itemsLearningTypePie}></PieGraphic>
+                        </div>
+                        <div className={classes.betweenGraphics}>
+                            <Typography>Formato</Typography>
+                            <StackedBar items = {itemsFormat} type={'Format'} legends={true}></StackedBar>
+                            
+                        </div>
+                        <div className={classes.betweenGraphics}>
+                            <Typography>Modalidad</Typography>
+                            <StackedBar items = {itemsModality} type={'Modality'} legends={true}></StackedBar>
+                        </div>
                     </Grid>
                 </Grid>
             </Grid>   
