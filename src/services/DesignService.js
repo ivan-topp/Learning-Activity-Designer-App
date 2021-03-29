@@ -31,8 +31,19 @@ export const getPublicDesignsByUser = async ( id, pageParam ) => {
     return resp.data;
 };
 
-export const createDesign = async (path) => {
-    const resp = await fetchWithToken(`design`, { path }, 'POST');
+export const getDesignsSharedWithMe = async ( pageParam ) => {
+    const resp = await fetchWithToken(`design/shared-with-user/`, {
+        from: pageParam,
+    }, 'POST');
+    if (!resp.ok) {
+        throw new Error(resp.message);
+    }
+    return resp.data;
+};
+
+export const createDesign = async ({ path, isPublic = false }) => {
+    console.log(isPublic);
+    const resp = await fetchWithToken(`design`, { path, isPublic }, 'POST');
     if (!resp.ok) {
         throw new Error(resp.message);
     }

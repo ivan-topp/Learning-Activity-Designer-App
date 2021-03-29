@@ -39,7 +39,7 @@ const useStyles = makeStyles({
     }
 });
 
-export const DesignsContainer = ({ data, status, isFetchingNextPage, fetchNextPage, hasNextPage, handleCreateDesign }) => {
+export const DesignsContainer = ({ data, status, isFetchingNextPage, fetchNextPage, hasNextPage, handleCreateDesign, label }) => {
     const classes = useStyles();
     const { authState } = useAuthState();
 
@@ -47,6 +47,40 @@ export const DesignsContainer = ({ data, status, isFetchingNextPage, fetchNextPa
         return data.pages.map((page, index) => {
             return page.designs.map((design, i) => <Design key={'my-design' + design._id} title={design.metadata.name} {...design} />);
         });
+    };
+
+    const alert = () => {
+        if(label === 'shared-with-me'){
+            return (
+                <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                    No se han encontrado diseños compartidos. Cuando otros usuarios compartan diseños contigo aparecerán aquí.
+                </Alert>
+            );
+        } else if (label === 'user-profile'){
+            if (data.pages[0].ownerId === authState.user.uid) {
+                return (
+                    <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                        No cuentas con diseños públicos. Crea tu primer diseño público haciendo click {' '}
+                        <Link className={classes.clickHere} onClick={handleCreateDesign}>aquí</Link>
+                        !
+                    </Alert>
+                );
+            } else {
+                return (
+                    <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                        Este usuario no cuenta con diseños públicos.
+                    </Alert>
+                );
+            }
+        } else {
+            return (
+                <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                    No se han encontrado diseños en este directorio. Crea tu primer diseño haciendo click {' '}
+                    <Link className={classes.clickHere} onClick={handleCreateDesign}>aquí</Link>
+                    !
+                </Alert>
+            );
+        }
     };
 
     return status === 'loading' ? (
@@ -62,15 +96,7 @@ export const DesignsContainer = ({ data, status, isFetchingNextPage, fetchNextPa
                 {
                     data.pages[0].designs.length > 0
                         ? designList()
-                        : (data.pages[0].ownerId === authState.user.uid)
-                            ? <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                                No se han encontrado diseños en este directorio. Crea tu primer diseño haciendo click {' '}
-                                {<Link className={classes.clickHere} onClick={handleCreateDesign}>aquí</Link>}
-                                !
-                            </Alert>
-                            : <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                                Este usuario no cuenta con diseños públicos.
-                            </Alert>
+                        : alert()
                 }
             </div>
             {

@@ -4,7 +4,7 @@ import RoomIcon from '@material-ui/icons/Room';
 import { useAuthState } from 'contexts/AuthContext';
 import { getUser, updateContact } from 'services/UserService';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from 'react-query';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { Star, Apartment, Group, Email, PersonAdd, Edit, Close } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 
@@ -13,7 +13,7 @@ import { EditProfileModal } from 'pages/User/UserProfile/EditProfileModal';
 import { useUiState } from 'contexts/ui/UiContext';
 import { ShowContactsModal } from 'pages/User/UserProfile/ShowContactsModal';
 
-import { getPublicDesignsByUser } from 'services/DesignService';
+import { createDesign, getPublicDesignsByUser } from 'services/DesignService';
 import { DesignsContainer } from 'components/DesignsContainer';
 import types from 'types';
 
@@ -75,6 +75,7 @@ export const UserProfile = () => {
     const queryClient = useQueryClient();
     const { authState, setAuthState } = useAuthState();
     const { dispatch } = useUiState();
+    const history = useHistory();
     const urlparams = useParams();
     const uid = urlparams.uid;
 
@@ -101,6 +102,31 @@ export const UserProfile = () => {
             queryClient.invalidateQueries(['user-profile', uid]);
         }
     });
+
+    const createDesignMutation = useMutation(createDesign, {
+        onMutate: async () => {
+            await queryClient.cancelQueries('recent-designs');
+            await queryClient.cancelQueries('designs');
+            await queryClient.cancelQueries([authState.user.id, 'user-public-designs']);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries('recent-designs');
+            queryClient.invalidateQueries('designs');
+            queryClient.invalidateQueries([authState.user.id, 'user-public-designs']);
+        },
+        onError: (error) => {
+            // TODO: Emitir notificación o message para denotar el error.
+            console.log(error);
+        },
+        onSuccess: data => {
+            history.push(`/designs/${data.design._id}`);
+        }
+    });
+
+    const handleCreateDesign = async () => {
+        await createDesignMutation.mutate({ path: '/', isPublic: true });
+    };
+
     if(isError){
         return (<div className={ classes.errorContainer }>
             <Alert severity='error' className={ classes.error }>
@@ -249,7 +275,7 @@ export const UserProfile = () => {
                             </> 
                     }
                     <ShowContactsModal/> 
-                    <DesignsContainer {...designsQuery}/>
+                    <DesignsContainer {...designsQuery} label='user-profile' handleCreateDesign={handleCreateDesign}/>
                 </Grid>
             </Grid>
         </Grid>

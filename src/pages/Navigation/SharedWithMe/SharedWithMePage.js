@@ -1,6 +1,9 @@
 import React from 'react';
-import { Grid, makeStyles, Typography } from '@material-ui/core';
+import { Divider, Grid, makeStyles, Typography } from '@material-ui/core';
 import { LeftPanel } from 'pages/Navigation/LeftPanel';
+import { useInfiniteQuery } from 'react-query';
+import { getDesignsSharedWithMe } from 'services/DesignService';
+import { DesignsContainer } from 'components/DesignsContainer';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -9,8 +12,10 @@ const useStyles = makeStyles((theme) => ({
         borderRight: `1px solid ${theme.palette.divider}`,
     },
     workspace: {
+        paddingTop: 20,
         paddingLeft: 30,
         paddingRight: 30,
+        background: theme.palette.background.workSpace,
         minHeight: 'calc(100vh - 128px)',
     },
     rightPanel: {
@@ -26,6 +31,16 @@ const useStyles = makeStyles((theme) => ({
 export const SharedWithMePage = () => {
     const classes = useStyles();
 
+    const sharedDesignsQuery = useInfiniteQuery(['shared-designs'], async ({ pageParam = 0 }) => {
+        return await getDesignsSharedWithMe(pageParam);
+    }, {
+        refetchOnWindowFocus: false,
+        getNextPageParam: (lastPage, pages) => {
+            if(lastPage.nPages === pages.length) return undefined; 
+            return lastPage.from;
+        },
+    });
+
     return (
         <>
             <Grid container>
@@ -33,7 +48,9 @@ export const SharedWithMePage = () => {
                     <LeftPanel />
                 </Grid>
                     <Grid item xs={12} md={6} lg={8} className={classes.workspace}>
-                        <Typography variant='h4'>Compartidos conmigo</Typography>
+                        <Typography variant='h4' style={{marginBottom: 5}}>Compartidos conmigo</Typography>
+                        <Divider />
+                        <DesignsContainer {...sharedDesignsQuery} label='shared-with-me'/>
                     </Grid>
                     <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
                 </Grid>
