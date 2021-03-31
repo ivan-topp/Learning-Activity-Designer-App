@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory, useParams } from "react-router-dom";
-import { Button, Divider, Grid, makeStyles, Typography } from '@material-ui/core';
+import { Button, ButtonGroup, Divider, Grid, makeStyles, Typography } from '@material-ui/core';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from 'react-query';
 import { DesignsContainer } from 'components/DesignsContainer';
 import { createDesign, getDesignsByFolder } from 'services/DesignService';
@@ -46,7 +46,25 @@ const useStyles = makeStyles((theme) => ({
     },
     link: {
         textDecoration: 'none',
+    },
+    sectionTitle: {
+        width: '100%',
+        display:'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between', 
+        alignItems:'flex-end', 
+        paddingBottom: 5,
+        [theme.breakpoints.down('xs')]:{
+            flexDirection: 'column',
+            alignItems: 'start',
+            justifyContent: 'center',
+        },
+    },
+    button: {
+        height: 35,
     }
+
 }));
 
 export const MyDesignsPage = () => {
@@ -115,6 +133,10 @@ export const MyDesignsPage = () => {
         await createDesignMutation.mutate(path);
     };
 
+    const handleCreateFolder = async (e) => {
+        console.log(e);
+    };
+
     return (
         <>
             <Grid container>
@@ -127,13 +149,18 @@ export const MyDesignsPage = () => {
                         path === '/' && <RecentDesigns id='recent' width={width} height={height} />
                     }
                     <div className={ classes.designsAndFoldersContainer }>
-                        <div style={{display:'flex', justifyContent: 'space-between', alignItems:'flex-end', paddingBottom: 5}}>
+                        <div className={classes.sectionTitle}>
                             <Typography variant='h4'>
                                 {path === '/' ? 'Mis Diseños' : folderName}
                             </Typography>
-                            <Button variant='outlined' style={{height: 35}} size='large' color='default' onClick={(e)=>handleCreateDesign(e, path)}> 
-                                Crear Diseño
-                            </Button>
+                            <ButtonGroup className={classes.button}>
+                                <Button variant='outlined' fullWidth size='large' color='default' onClick={(e)=>handleCreateDesign(e, path)}> 
+                                    Crear Diseño
+                                </Button>
+                                <Button variant='outlined' fullWidth size='large' color='default' onClick={(e)=>handleCreateFolder(e)}> 
+                                    Crear Carpeta
+                                </Button>
+                            </ButtonGroup>
                         </div>
                         <Divider />
                         <FoldersContainer {...foldersQuery}/>

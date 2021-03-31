@@ -28,6 +28,28 @@ const useStyles = makeStyles((theme) => ({
         display: "flex",
         alignItems: 'center',
         textDecoration: 'none',
+        marginLeft: 5,
+        marginRight: 5,
+        [theme.breakpoints.down('xs')]:{
+            marginTop: 20,
+            marginBottom: 10,
+        },
+    },
+    search: {
+        marginLeft: 5,
+        marginRight: 5,
+        [theme.breakpoints.down('xs')]:{
+            marginTop: 5,
+            marginBottom: 5,
+        },
+    },
+    userAndOptions: {
+        marginLeft: 5,
+        marginRight: 5,
+        [theme.breakpoints.down('xs')]:{
+            marginTop: 5,
+            marginBottom: 10,
+        },
     },
     navbarColor: {
         background: theme.palette.background.navbar,
@@ -39,6 +61,19 @@ const useStyles = makeStyles((theme) => ({
     },
     menuColor: {
         background: theme.palette.background.menu
+    },
+    toolbar: {
+        display: 'flex', 
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        [theme.breakpoints.down('xs')]:{
+            flexDirection: 'column',
+            justifyContent: 'center',
+        },
+        [theme.breakpoints.up('sm')]:{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+        },
     }
 }));
 
@@ -100,7 +135,7 @@ export const NavBar = () => {
     return (
         <div className={classes.root}>
             <AppBar position="static" className={classes.navbarColor} elevation={0}>
-                <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Toolbar className={classes.toolbar}>
                     <Box className={classes.brand} component={Link} to='/'>
                         <Avatar className={classes.logo} src={Logo} alt="Logo" />
                         <Typography variant="h6" className={classes.title}>
@@ -119,9 +154,10 @@ export const NavBar = () => {
                             </ButtonGroup>
                             :
                             <>
-                                <div>
+                                <div className={classes.search}>
                                     <form onSubmit={handleSearchUsers} noValidate>
                                         <OutlinedInput
+                                            margin='dense'
                                             variant="outlined"
                                             name="filter"
                                             value={filter}
@@ -134,7 +170,7 @@ export const NavBar = () => {
                                         </IconButton>
                                     </form>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <div className={classes.userAndOptions} style={{ display: 'flex', alignItems: 'center' }}>
                                     <Typography className={classes.navbarLetter}  component={Link} to={`/profile/${authState.user.uid}`} >
                                         { authState.user.name }
                                     </Typography>
