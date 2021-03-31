@@ -90,7 +90,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
     const { title, description } = form;
     
     const handleDeleteUnit = () => {
-        if(title === "" && description === "" && learningActivity.learningResults.length === 0 && learningActivity.task.length === 0 && (learningActivity.tasks === undefined || learningActivity.tasks.length === 0)){
+        if(title === "" && description === "" && learningActivity.learningResults.length === 0 && (learningActivity.tasks === undefined || learningActivity.tasks.length === 0)){
             taskRefs?.current.forEach(task => task?.clearTexts());
             titleRef?.current.clearText();
             descriptionRef?.current.clearText();
