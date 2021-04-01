@@ -7,7 +7,6 @@ import { StackedBar } from 'components/StackedBar';
 import { useForm } from 'hooks/useForm';
 import { useDesignState } from 'contexts/design/DesignContext';
 import { SharedTextFieldTipTapEditor } from 'components/SharedTextFieldTipTapEditor';
-import { ConfirmationModal } from 'components/ConfirmationModal';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 import { useSnackbar } from 'notistack';

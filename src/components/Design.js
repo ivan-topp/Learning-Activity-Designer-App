@@ -6,7 +6,6 @@ import { formatName, getUserInitials } from 'utils/textFormatters';
 import { deleteDesignById } from 'services/DesignService';
 import { useMutation, useQueryClient } from 'react-query';
 import { Link, useHistory } from 'react-router-dom';
-import { ConfirmationModal } from './ConfirmationModal';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 
