@@ -5,6 +5,7 @@ const ui = {
     toggleLearningResultModal: '[UI] toggle learning result modal',
     updateFolderPath: '[UI] update folder path',
     toggleConfirmAction: '[UI] confirm action',
+    setFolder: '[UI] set folder data',
 };
 
 export default ui;

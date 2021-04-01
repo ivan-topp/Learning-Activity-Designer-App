@@ -12,6 +12,7 @@ import types from 'types';
 import { LeftPanel } from 'pages/Navigation/LeftPanel';
 import { DesignsBreadcrumbs } from 'pages/Navigation/MyDesigns/DesignsBreadcrumbs';
 import { RecentDesigns } from 'pages/Navigation/MyDesigns/RecentDesigns';
+import { FolderModal } from './FolderModal';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -133,8 +134,11 @@ export const MyDesignsPage = () => {
         await createDesignMutation.mutate(path);
     };
 
-    const handleCreateFolder = async (e) => {
-        console.log(e);
+    const handleOpenFolderModal = async (e) => {
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'Folder'
+        });
     };
 
     return (
@@ -157,7 +161,7 @@ export const MyDesignsPage = () => {
                                 <Button variant='outlined' fullWidth size='large' color='default' onClick={(e)=>handleCreateDesign(e, path)}> 
                                     Crear Diseño
                                 </Button>
-                                <Button variant='outlined' fullWidth size='large' color='default' onClick={(e)=>handleCreateFolder(e)}> 
+                                <Button variant='outlined' fullWidth size='large' color='default' onClick={handleOpenFolderModal}> 
                                     Crear Carpeta
                                 </Button>
                             </ButtonGroup>
@@ -169,6 +173,7 @@ export const MyDesignsPage = () => {
                 </Grid>
                 <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
             </Grid>
+            <FolderModal />
         </>
     );
 };

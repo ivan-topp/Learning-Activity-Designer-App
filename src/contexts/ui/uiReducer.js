@@ -25,6 +25,11 @@ export const uiReducer = ( state, action ) => {
                 ...state,
                 setWitchOpenModal: !state.setWitchOpenModal,
             };
+        case types.ui.setFolder:
+            return {
+                ...state,
+                folder: action.payload,
+            }
         default:
             return state;
     }

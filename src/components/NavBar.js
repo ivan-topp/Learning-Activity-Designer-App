@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     logo: {
         width: theme.spacing(5),
         height: theme.spacing(5),
-        margin: 'auto',
+        //margin: 'auto',
     },
     brand: {
         display: "flex",
@@ -42,6 +42,10 @@ const useStyles = makeStyles((theme) => ({
             marginTop: 5,
             marginBottom: 5,
         },
+    },
+    searchForm: {
+        display: 'flex',
+        alignItems: 'center',
     },
     userAndOptions: {
         marginLeft: 5,
@@ -155,7 +159,7 @@ export const NavBar = () => {
                             :
                             <>
                                 <div className={classes.search}>
-                                    <form onSubmit={handleSearchUsers} noValidate>
+                                    <form className={classes.searchForm} onSubmit={handleSearchUsers} noValidate>
                                         <OutlinedInput
                                             margin='dense'
                                             variant="outlined"

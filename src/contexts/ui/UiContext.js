@@ -22,6 +22,11 @@ const initialState = {
 	isConfirmationModalOpen: false,
 	isOtherConfirmationModalOpen: false,
 	setWichOpenModal: false,
+	isFolderModalOpen: false,
+	folder: {
+		_id: null,
+		name: '',
+	},
 };
 
 export const UiProvider = ({ children }) => {
