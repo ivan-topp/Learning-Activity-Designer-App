@@ -7,7 +7,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         width: '100%',
         border: `1px solid ${theme.palette.divider}`,
-        borderRadius: '6px',
+        //borderRadius: '6px',
         height: '100%',
     },
     title:{
@@ -39,6 +39,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+/*borderRadius: index === 0 
+    ? '5px 0px 0px 5px'
+    : index === items.length - 1  && item.value !== 0
+        ? '0px 5px 5px 0px'
+        : 0,
+*/
+
 export const StackedBar = ({ height = 25, items, type, legends }) => {
     const classes = useStyles();
     const { userConfig } = useUserConfigState();
@@ -55,6 +62,7 @@ export const StackedBar = ({ height = 25, items, type, legends }) => {
             <div className={classes.root} style={{height}}>
                 {   
                     items.map( (item, index) => (
+                        <>
                         <Tooltip 
                             key={`nombreGrafico${index}`} 
                             title={
@@ -69,16 +77,12 @@ export const StackedBar = ({ height = 25, items, type, legends }) => {
                                 style={{
                                     width: `${item.value * 100}%`, 
                                     height: '100%', 
-                                    borderRadius: index === 0 
-                                        ? '5px 0px 0px 5px'
-                                        : index === items.length - 1
-                                            ? '0px 5px 5px 0px'
-                                            : 0,
                                     backgroundColor: colors[index]
                                     }}
                                 >
                             </div>
                         </Tooltip>
+                        </>
                     ))
                 }
             </div>
@@ -86,7 +90,7 @@ export const StackedBar = ({ height = 25, items, type, legends }) => {
                 (legends) && 
                 <div className={classes.spacingGraphic}>
                     { items.map ((item, index) =>( 
-                        <div className={classes.legend} >
+                        <div className={classes.legend} key={index} >
                             <div className={classes.colorBoxRightPanel} style={{backgroundColor: colors[index]}}></div>
                             <Typography  variant="caption" > {item.title} </Typography>
                         </div>)

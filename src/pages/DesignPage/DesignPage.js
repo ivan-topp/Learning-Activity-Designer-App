@@ -11,6 +11,7 @@ import { useDesignState } from 'contexts/design/DesignContext';
 import { getBloomCategories, getBloomVerbs } from 'services/BloomService';
 import types from 'types';
 import { Alert } from '@material-ui/lab';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -76,6 +77,7 @@ export const DesignPage = () => {
     const { designState, dispatch } = useDesignState();
     const { design } = designState;
     const [error, setError] = useState(null);
+    const { enqueueSnackbar } = useSnackbar();
     
     const prefetchBloomCategories = useCallback(async () => {
         const data = await getBloomCategories();
@@ -123,6 +125,7 @@ export const DesignPage = () => {
     useEffect(() => {
         socket?.on('update-design', (design) => {
             if(isMounted.current) {
+                enqueueSnackbar('Su diseño se ha guardado correctamente',  {variant: 'success', autoHideDuration: 2000});
                 dispatch({
                     type: types.design.updateDesign,
                     payload: design
@@ -132,12 +135,19 @@ export const DesignPage = () => {
         socket?.on('users', (users) => {
             if(isMounted.current) setUsersList(users);
         });
+        socket?.on('change-design-privileges', (privileges) => {
+            enqueueSnackbar('Se ha compartido su diseño correctamente',  {variant: 'success', autoHideDuration: 2000});
+            dispatch({
+                type: types.design.setDesignPrivileges,
+                payload: privileges
+            });
+        });
         return () => {
             socket?.emit('leave-from-design', { user: authState.user, designId: id });
             socket?.off('updateDesign');
             socket?.off('users');
         };
-    }, [socket, authState.user, id, dispatch]);
+    }, [socket, authState.user, id, dispatch, enqueueSnackbar]);
 
     const handleChange = (event, newValue) => {
         setTabIndex(newValue);
@@ -156,7 +166,6 @@ export const DesignPage = () => {
     if (!design) {
         return (<Typography>Cargando...</Typography>);
     }
-
 
     return (
         <>

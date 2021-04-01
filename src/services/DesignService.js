@@ -47,4 +47,20 @@ export const deleteDesignById = async ({ id }) => {
     return resp.data;
 };
 
+export const uptdateUserInDesign = async ({id, privileges}) =>{
+    console.log(id, privileges)
+    try {
+        const resp = await fetchWithToken(`design/${id}`, { 
+            newData: { id, privileges }
+         }, 'PUT');
+        if(!resp.ok){
+            throw new Error(resp.message);
+        };
+        return resp.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+
 

@@ -42,6 +42,14 @@ export const designReducer = ( state, action ) => {
                 ...state,
                 bloomVerbs: action.payload
             }
+        case types.design.setDesignPrivileges:
+            return {
+                ...state,
+                design: {
+                    ...state.design,
+                    privileges: action.payload
+                }
+            }
         default:
             return state;
     }

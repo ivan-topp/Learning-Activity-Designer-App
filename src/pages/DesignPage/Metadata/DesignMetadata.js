@@ -12,7 +12,6 @@ import { useDesignState } from 'contexts/design/DesignContext';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 import { useAuthState } from 'contexts/AuthContext';
-import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -76,7 +75,6 @@ export const DesignMetadata = () => {
     const { designState } = useDesignState();
     const { design } = designState;
     const { metadata } = design;
-    const { enqueueSnackbar } = useSnackbar();
 
     const [form, handleInputChange, , setValues] = useForm({
         name: metadata.name,
@@ -147,7 +145,6 @@ export const DesignMetadata = () => {
 
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
-        enqueueSnackbar('Su diseño se ha guardado correctamente',  {variant: 'success', autoHideDuration: 2000}); 
     };
 
     const handleOpenLearningResultmodal = () => dispatch({

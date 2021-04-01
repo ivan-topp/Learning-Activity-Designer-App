@@ -25,6 +25,11 @@ export const uiReducer = ( state, action ) => {
                 ...state,
                 setWitchOpenModal: !state.setWitchOpenModal,
             };
+        case types.ui.setConfirmData:
+            return{
+                ...state,
+                confirmModalData: action.payload,
+            };
         default:
             return state;
     }

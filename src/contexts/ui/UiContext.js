@@ -21,7 +21,13 @@ const initialState = {
 	isContactsModalOpen: false,
 	isConfirmationModalOpen: false,
 	isOtherConfirmationModalOpen: false,
+	isShareOpenModal: false,
 	setWichOpenModal: false,
+	confirmModalData: {
+		type: null,
+		args: null,
+		actionMutation: null,
+	},
 };
 
 export const UiProvider = ({ children }) => {

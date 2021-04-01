@@ -3,10 +3,12 @@ import { Button, ButtonGroup, Divider, Grid, makeStyles, Typography } from '@mat
 import { LearningActivity } from 'pages/DesignPage/Workspace/LearningActivity';
 import { useSocketState } from 'contexts/SocketContext';
 import { useDesignState } from 'contexts/design/DesignContext';
-import { useSnackbar } from 'notistack';
 import { StackedBar } from 'components/StackedBar';
 import { PieGraphic } from 'components/PieGraphic';
 import { itemsLearningType, itemsFormat, itemsModality, itemsLearningTypePie } from 'assets/resource/items'
+import { useUiState } from 'contexts/ui/UiContext';
+import { ShareModal } from './ShareModal';
+import types from 'types';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -82,17 +84,27 @@ export const DesignWorkspace = () => {
     const { design } = designState;
     const { metadata } = design;
     const { socket } = useSocketState();
-    const { enqueueSnackbar } = useSnackbar();
+    
+    const { dispatch } = useUiState();
+    let showGraphicLearningType = false;
+    let showGraphicFormat = false;
+    let showGraphicModality = false;
 
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
-        enqueueSnackbar('Su diseño se ha guardado correctamente',  {variant: 'success', autoHideDuration: 2000});
     };
 
     const handleNewUA = () => {
         socket.emit('new-learningActivity', { designId: design._id });    
     };
-    
+
+    const handleOpenModal = () => {
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'Share'
+        })
+        
+    };
     
     const resetItems = () =>{
         itemsLearningType.forEach((item) =>{
@@ -109,6 +121,22 @@ export const DesignWorkspace = () => {
             item.value = 0;
         });
     };
+    
+    design.data.learningActivities.forEach((activities) => {
+        if (activities.tasks !== undefined) {
+            activities.tasks.forEach(task=>{
+                if (task.learningType !== '' && task.learningType !== 'Seleccionar' ) {
+                    showGraphicLearningType  = true;
+                }
+                if (task.format !== '' && task.format !== 'Seleccionar') {
+                    showGraphicFormat = true;
+                }
+                if (task.modality !== '' && task.modality !== 'Seleccionar') {
+                    showGraphicModality = true;
+                }
+            })
+        }
+    });
     
     return (
         <>  
@@ -222,7 +250,7 @@ export const DesignWorkspace = () => {
                 <Grid item xs={12} md={6} lg={8} className={classes.workspace}>
                     <ButtonGroup size='small' aria-label='outlined primary button group' className={classes.buttonGroupWorkSpace}>
                         <Button>Nuevo</Button>
-                        <Button>Compartir</Button>
+                        <Button onClick = {handleOpenModal}>Compartir</Button>
                         <Button onClick = {handleSaveDesign}>Guardar</Button>
                     </ButtonGroup>
                     <Grid className={classes.workSpaceUnits}>
@@ -262,21 +290,27 @@ export const DesignWorkspace = () => {
                                     });
                                 }))
                         }
-                        <div className={classes.betweenGraphics}>
-                            <PieGraphic items = { itemsLearningTypePie}></PieGraphic>
-                        </div>
-                        <div className={classes.betweenGraphics}>
-                            <Typography>Formato</Typography>
-                            <StackedBar items = {itemsFormat} type={'Format'} legends={true}></StackedBar>
-                            
-                        </div>
-                        <div className={classes.betweenGraphics}>
-                            <Typography>Modalidad</Typography>
-                            <StackedBar items = {itemsModality} type={'Modality'} legends={true}></StackedBar>
-                        </div>
+                        { showGraphicLearningType && 
+                            <div className={classes.betweenGraphics}>
+                                <PieGraphic items = { itemsLearningTypePie}></PieGraphic>
+                            </div>
+                        }
+                        {   showGraphicFormat &&
+                            <div className={classes.betweenGraphics}>
+                                <Typography>Formato</Typography>
+                                <StackedBar items = {itemsFormat} type={'Format'} legends={true}></StackedBar>
+                            </div>
+                        }
+                        {   showGraphicModality &&
+                            <div className={classes.betweenGraphics}>
+                                <Typography>Modalidad</Typography>
+                                <StackedBar items = {itemsModality} type={'Modality'} legends={true}></StackedBar>
+                            </div>
+                        }
                     </Grid>
                 </Grid>
-            </Grid>   
+            <ShareModal />
+            </Grid>
         </>
     )
 }

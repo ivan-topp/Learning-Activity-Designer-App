@@ -7,7 +7,6 @@ import { deleteDesignById } from 'services/DesignService';
 import { useMutation, useQueryClient } from 'react-query';
 import { Link, useHistory } from 'react-router-dom';
 import TimeFormatter from '../utils/timeFormatters';
-import { ConfirmationModal } from './ConfirmationModal';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 
@@ -128,6 +127,14 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, canDele
     const handleDeleteDesign = async (e) => {
         e.stopPropagation();
         dispatch({
+            type: types.ui.setConfirmData,
+            payload: {
+                type: 'diseño',
+                args: { designId: _id },
+                actionMutation: deleteMutation,
+            }
+        })
+        dispatch({
             type: types.ui.toggleModal,
             payload: 'Confirmation',
         });
@@ -179,8 +186,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, canDele
                         <Typography color="textSecondary">{owner.occupation ?? 'Sin ocupación'}</Typography>
                     </div>
                 </CardActions>
-            </CardActionArea>
-            <ConfirmationModal type = {'diseño'} actionMutation = {deleteMutation} args = {{ id: _id }}/>    
+            </CardActionArea>    
         </Card>
     );
 };
