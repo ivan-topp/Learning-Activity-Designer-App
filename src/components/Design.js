@@ -129,7 +129,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, canDele
             type: types.ui.setConfirmData,
             payload: {
                 type: 'diseño',
-                args: { designId: _id },
+                args: { id:_id },
                 actionMutation: deleteMutation,
             }
         })

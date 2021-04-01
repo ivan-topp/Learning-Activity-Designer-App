@@ -40,7 +40,7 @@ export const LeftPanel = () => {
     });
 
     const handleCreateDesign = async () => {
-        await createDesignMutation.mutate('/');
+        await createDesignMutation.mutate( {path:'/'});
     };
 
     return (

@@ -131,7 +131,7 @@ export const MyDesignsPage = () => {
     }, [designsRef]);
 
     const handleCreateDesign = async ( e, path = '/' ) => {
-        await createDesignMutation.mutate(path);
+        await createDesignMutation.mutate({path});
     };
 
     const handleOpenFolderModal = async (e) => {
