@@ -257,7 +257,7 @@ export const DesignWorkspace = () => {
                         <Button onClick = {handleSaveDesign}>Guardar</Button>
                     </ButtonGroup>
                     <Grid className={classes.workSpaceUnits}>
-                        <Button size='small' variant = 'outlined' onClick={handleNewUA}>Agregar Unidad de Aprendizaje</Button>
+                        <Button size='small' variant = 'outlined' onClick={handleNewUA}> Agregar Actividad de Aprendizaje </Button>
                         <Grid >
                             {
                                 design.data.learningActivities && design.data.learningActivities.map((learningActivity, index) => <LearningActivity key={`learningActivity-${index}`} index={index} learningActivity={learningActivity}/> )
