@@ -29,7 +29,12 @@ export const uiReducer = ( state, action ) => {
             return {
                 ...state,
                 folder: action.payload,
-            }
+            };
+        case types.ui.setConfirmData:
+            return{
+                ...state,
+                confirmModalData: action.payload,
+            };
         default:
             return state;
     }

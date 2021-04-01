@@ -21,11 +21,17 @@ const initialState = {
 	isContactsModalOpen: false,
 	isConfirmationModalOpen: false,
 	isOtherConfirmationModalOpen: false,
+	isShareOpenModal: false,
 	setWichOpenModal: false,
 	isFolderModalOpen: false,
 	folder: {
 		_id: null,
 		name: '',
+	},
+	confirmModalData: {
+		type: null,
+		args: null,
+		actionMutation: null,
 	},
 };
 

@@ -53,7 +53,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task }, ref) => 
     const descriptionRef = useRef();
     const { designState } = useDesignState();
     const { design } = designState;
-    const { uiState, dispatch } = useUiState();
+    const { dispatch } = useUiState();
     const { enqueueSnackbar } = useSnackbar();
 
     const [form, handleInputChange, , setValues] = useForm({
@@ -167,7 +167,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task }, ref) => 
         socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field, value, subfield });
     };
     
-    const handleDeleteTask = () => {
+    const handleDeleteTask = (index) => {
         if (description === "" && learningType === 'Seleccionar' && modality === 'Seleccionar' && format === 'Seleccionar' && timeHours === 0 && timeMinutes === 0 ){
             hoursRef?.current.clearText();
             minutesRef?.current.clearText();
@@ -176,8 +176,16 @@ export const Task = forwardRef(({ learningActivityIndex, index, task }, ref) => 
             enqueueSnackbar('Su tarea se ha eliminado',  {variant: 'success', autoHideDuration: 2000});
         } else {
             dispatch({
+                type: types.ui.setConfirmData,
+                payload: {
+                    type: 'tarea',
+                    args: { designId: design._id, learningActivityIndex, index },
+                    actionMutation: null,
+                }
+            })
+            dispatch({
                 type: types.ui.toggleModal,
-                payload: 'OtherConfirmation',
+                payload: 'Confirmation',
             });
         }
     };
@@ -187,7 +195,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task }, ref) => 
         socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field: e.target.name, value: e.target.value, subfield: null });
     };
 
-    const listtasksArray = () => {
+    const listTasksArray = () => {
         return (
             <Grid key={index}>
                 <Paper square className={classes.tasksSpacing}>
@@ -224,8 +232,8 @@ export const Task = forwardRef(({ learningActivityIndex, index, task }, ref) => 
                         <Grid item xs={11}>
                             <Grid container className={classes.taskSpacing}>
                                 <Grid item xs={12} sm={5}>
-                                    <FormControl variant='outlined' style={{width: '90%'}}>
-                                    <Typography variant="body2" color="textSecondary" > Aprendizaje </Typography>
+                                    <FormControl variant='outlined' size='small' style={{width: '90%'}}>
+                                        <Typography variant="body2" color="textSecondary" > Aprendizaje </Typography>
                                         <Select
                                             name='learningType'
                                             value={learningType}
@@ -243,8 +251,8 @@ export const Task = forwardRef(({ learningActivityIndex, index, task }, ref) => 
                                     </FormControl>
                                 </Grid>
                                 <Grid item xs={12} sm={6} className={classes.grid} style={{justifyContent: 'space-between'}}>
-                                    <FormControl variant='outlined' style={{width: '90%'}}>
-                                    <Typography variant="body2" color="textSecondary" > Modalidad </Typography>
+                                    <FormControl variant='outlined' size='small' style={{width: '90%'}}>
+                                        <Typography variant="body2" color="textSecondary" > Modalidad </Typography>
                                         <Select
                                             name='modality'
                                             value={modality}
@@ -295,8 +303,8 @@ export const Task = forwardRef(({ learningActivityIndex, index, task }, ref) => 
                                     </div>
                                 </Grid>
                                 <Grid item xs={12} sm={6} className={classes.grid}>
-                                        <FormControl variant='outlined' style={{width: '90%', marginRight: 5}}>
-                                        <Typography variant="body2" color="textSecondary" style={{marginBottom: 4, marginRight: 5}}> Formato </Typography>
+                                        <FormControl variant='outlined' size='small' style={{width: '90%', marginRight: 5}}>
+                                            <Typography variant="body2" color="textSecondary" style={{marginBottom: 4, marginRight: 5}}> Formato </Typography>
                                             <Select
                                                 name='format'
                                                 value={format}
@@ -329,16 +337,13 @@ export const Task = forwardRef(({ learningActivityIndex, index, task }, ref) => 
                         </Grid>
                     </Grid>
                 </Paper>
-                {
-                    (uiState.isOtherConfirmationModalOpen) && <ConfirmationModal type = {'tarea'} args = {{ designId: design._id, learningActivityIndex, index }} />
-                }
             </Grid>
         )
     }
     return (
         <>
             {
-                listtasksArray()
+                listTasksArray()
             }
         </>
     )

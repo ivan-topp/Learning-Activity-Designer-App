@@ -77,7 +77,7 @@ export const DesignPage = () => {
     const [ tabIndex, setTabIndex ] = useState(0);
     const { designState, dispatch } = useDesignState();
     const { design } = designState;
-    const [ error, setError ] = useState(null);
+    const [error, setError] = useState(null);
     
     const prefetchBloomCategories = useCallback(async () => {
         const data = await getBloomCategories();
@@ -153,6 +153,12 @@ export const DesignPage = () => {
         });
         socket?.on('users', (users) => {
             if(isMounted.current) setUsersList(users);
+        });
+        socket?.on('change-design-privileges', (privileges) => {
+            dispatch({
+                type: types.design.setDesignPrivileges,
+                payload: privileges
+            });
         });
         return () => {
             socket?.emit('leave-from-design', { user: authState.user, designId: id });

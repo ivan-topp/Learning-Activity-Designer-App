@@ -101,8 +101,6 @@ export const DesignMetadata = forwardRef((props, ref) => {
         isPublic: metadata.isPublic
     });
 
-
-
     useImperativeHandle(
         ref,
         () => ({
@@ -292,7 +290,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
 
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
-        enqueueSnackbar('Su diseño se ha guardado correctamente',  {variant: 'success', autoHideDuration: 2000}); 
+        enqueueSnackbar('Su diseño se ha guardado correctamente',  {variant: 'success', autoHideDuration: 2000});
     };
 
     const handleOpenLearningResultmodal = () => dispatch({

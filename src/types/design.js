@@ -7,6 +7,7 @@ const design = {
     setCurrentLearningResult: '[DESIGN] set current learning result',
     setBloomCategories: '[DESIGN] set bloom categories',
     setBloomVerbs: '[DESIGN] set bloom verbs',
+    setDesignPrivileges: '[DESIGN] set design privileges',
 };
 
 export default design;

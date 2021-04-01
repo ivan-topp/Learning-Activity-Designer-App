@@ -6,6 +6,7 @@ const ui = {
     updateFolderPath: '[UI] update folder path',
     toggleConfirmAction: '[UI] confirm action',
     setFolder: '[UI] set folder data',
+    setConfirmData: '[UI] set confirm data',
 };
 
 export default ui;

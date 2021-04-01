@@ -68,7 +68,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
     const { designState } = useDesignState();
     const { design } = designState;
     const { socket } = useSocketState();
-    const { uiState, dispatch } = useUiState();
+    const { dispatch } = useUiState();
     const { enqueueSnackbar } = useSnackbar();
 
     const titleRef = useRef();
@@ -97,6 +97,14 @@ export const LearningActivity = ({ index, learningActivity }) => {
             socket.emit('delete-learningActivity', { designId: design._id, index });
             enqueueSnackbar('Su actividad se ha eliminado',  {variant: 'success', autoHideDuration: 2000});
         }else {
+            dispatch({
+                type: types.ui.setConfirmData,
+                payload: {
+                    type: 'actividad',
+                    args: { designId: design._id, index },
+                    actionMutation: null,
+                }
+            });
             dispatch({
                 type: types.ui.toggleModal,
                 payload: 'Confirmation',
@@ -230,9 +238,6 @@ export const LearningActivity = ({ index, learningActivity }) => {
                         </Grid>
                     </Grid>
                 </Paper>
-                {
-                    (uiState.isConfirmationModalOpen) && <ConfirmationModal type = {'actividad'} args = {{designId: design._id, index}} />
-                }
             </Grid>
         )
     }
