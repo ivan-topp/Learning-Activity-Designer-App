@@ -161,7 +161,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, canDele
                         <Typography color="textSecondary" variant='body2'>Última modificación: {new Date(updatedAt).toLocaleDateString()}</Typography>
                         <div className={classes.row} style={{ marginRight: 4 }}>
                             <Star fontSize='small' />
-                            <Typography variant='body2'> 4.6</Typography>
+                            <Typography variant='body2'> { metadata.scoreMean }</Typography>
                         </div>
                     </div>
                 </CardContent>

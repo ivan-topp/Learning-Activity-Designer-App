@@ -8,6 +8,8 @@ const design = {
     setBloomCategories: '[DESIGN] set bloom categories',
     setBloomVerbs: '[DESIGN] set bloom verbs',
     setDesignPrivileges: '[DESIGN] set design privileges',
+    addDesignKeyword: '[DESIGN] add design keyword',
+    removeDesignKeyword: '[DESIGN] remove design keyword',
 };
 
 export default design;

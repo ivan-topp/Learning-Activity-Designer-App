@@ -45,7 +45,7 @@ export const DesignsContainer = ({ data, status, isFetchingNextPage, fetchNextPa
 
     const designList = () => {
         return data.pages.map((page, index) => {
-            return page.designs.map((design, i) => <Design key={'my-design' + design._id} title={design.metadata.name} {...design} />);
+            return page.designs.map((design, i) => <Design key={'my-design' + design._id} title={design.metadata.name} {...design} canDelete={label!=='public-repository'} />);
         });
     };
 
@@ -72,6 +72,12 @@ export const DesignsContainer = ({ data, status, isFetchingNextPage, fetchNextPa
                     </Alert>
                 );
             }
+        } else if(label === 'public-repository'){
+            return (
+                <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                    No se han encontrado resultados para tu búsqueda.
+                </Alert>
+            );
         } else {
             return (
                 <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>

@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Button, Checkbox, Chip, Divider, FormControlLabel, Grid, makeStyles, Paper, TextField, Typography } from '@material-ui/core';
+import { Button, Checkbox, Divider, FormControlLabel, Grid, IconButton, makeStyles, TextField, Typography } from '@material-ui/core';
 import { LeftPanel } from 'pages/Navigation/LeftPanel';
-import { useQuery } from 'react-query';
+import { useInfiniteQuery, useQuery } from 'react-query';
 import { getCategories } from 'services/CategoryService';
-import { useHorizontalScroll } from 'hooks/useHorizontalScroll';
+import { getPublicFilteredDesigns } from 'services/DesignService';
+import { DesignsContainer } from 'components/DesignsContainer';
+import { Close } from '@material-ui/icons';
+import { KeywordManager } from 'components/KeywordManager';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -58,62 +61,77 @@ const useStyles = makeStyles((theme) => ({
     keyword: {
         margin: theme.spacing(0.5),
     },
-    form: {
+    searchContainer: {
         display: 'flex',
         alignItems: 'center',
         marginTop: 20,
+        marginBottom: 15,
     },
-    keywordInput: {
+    input: {
         height: 40,
         '& fieldset': {
             borderTopRightRadius: 0,
             borderBottomRightRadius: 0,
         }
     },
-    addKeyword: {
+    button: {
         borderTopLeftRadius: 0,
         borderBottomLeftRadius: 0,
         height: 40,
     },
+    keywordFilter: {
+        paddingLeft: 0,
+        backgroundColor: theme.palette.background.paper,
+        borderRadius: theme.shape.borderRadius,
+    }
 }));
 
 export const PublicRepositoryPage = () => {
     const classes = useStyles();
     const [search, setSearch] = useState('');
-    const [keyword, setKeyword] = useState('');
+    const [filter, setFilter] = useState('');
     const [categoriesFilter, setCategoriesFilter] = useState([]);
-    const [keywords, setKeywords] = useState(['keyword 1']);
-    const scrollRef = useHorizontalScroll();
-    const { isLoading, isError, error } = useQuery('categories', async () => {
+    const [keywords, setKeywords] = useState([]);
+    const categoriesQuery = useQuery('categories', async () => {
         const resp = await getCategories();
-        const categories = resp.categories.slice(1);
-        setCategoriesFilter(categories.map(category => ({ ...category, selected: false })));
+        setCategoriesFilter(resp.categories.map(category => ({ ...category, selected: false })));
         return resp;
     }, { refetchOnWindowFocus: false });
 
-    if (isError) {
-        return (<Typography>{error.message}</Typography>);
-    }
+    const designsQuery = useInfiniteQuery(['filtered-designs', filter, ...keywords, ...categoriesFilter], async ({ pageParam = 0 }) => {
+        const resp = await getPublicFilteredDesigns(search, keywords, categoriesFilter.filter(c => c.selected), pageParam);
+        return resp;
+    }, {
+        refetchOnWindowFocus: false,
+        getNextPageParam: (lastPage, pages) => {
+            if(lastPage.nPages === pages.length) return undefined; 
+            return lastPage.from;
+        },
+    });
 
-    if (isLoading) {
-        return (<Typography>Cargando...</Typography>);
-    }
+    const handleChangeKeywords = (keywords, type, targetKeyword) => {
+        setKeywords(keywords);
+    };
+
+    const handleSearch = () => {
+        setFilter(search);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        handleSearch();
+    };
 
     const handleToggleCategory = (index) => {
         const categories = [...categoriesFilter];
         categories[index].selected = !categories[index].selected;
         setCategoriesFilter(categories);
+        handleSearch();
     };
 
-    const handleAddKeyword = (e) => {
-        e.preventDefault();
-        if(keyword.trim().length) setKeywords([...keywords, keyword]);
-        setKeyword('');
-    };
-
-    const handleRemoveKeyword = (index) => {
-        if(index === keywords.length - 1) setKeywords([...keywords.slice(0, index)]);
-        else setKeywords([...keywords.slice(0, index), ...keywords.slice(index + 1, keywords.length)]);
+    const handleClearSearch = () => {
+        setSearch('');
+        setFilter('');
     };
 
     return (
@@ -146,48 +164,52 @@ export const PublicRepositoryPage = () => {
                         <Typography variant='h4'>Buscar Diseño</Typography>
                         <Divider />
                     </div>
-                    <TextField
-                        margin='dense'
-                        variant='outlined'
-                        value={search}
-                        onChange={({ target }) => setSearch(target.value)}
-                        label='Nombre/Propietario'
-                        placeholder='Ingresa el nombre o propietario para buscar diseños'
-                        fullWidth
-                    />
-                    <form onSubmit={handleAddKeyword} className={classes.form}>
+                    <form onSubmit={handleSubmit} className={classes.searchContainer}>
                         <TextField
-                            className={classes.keywordInput}
+                            className={classes.input}
                             size='small'
                             variant='outlined'
-                            value={keyword}
-                            onChange={({ target }) => setKeyword(target.value)}
-                            label='Palabra Clave'
+                            value={search}
+                            onChange={({ target }) => setSearch(target.value)}
+                            label='Nombre/Propietario'
+                            onBlur={handleSearch}
                             placeholder='Ingresa el nombre o propietario para buscar diseños'
+                            InputProps={{
+                                endAdornment:
+                                    search.trim().length ?(<IconButton
+                                        size='small'
+                                        onClick={handleClearSearch}
+                                        onMouseDown={(e)=>e.preventDefault()}
+                                    >
+                                        {<Close /> }
+                                    </IconButton>) : (<div></div>)
+
+                            }}
                             fullWidth
                         />
-                        <Button variant='contained' disableElevation color='primary' type='submit' className={classes.addKeyword} >
-                            Agregar
+                        <Button
+                            className={classes.button}
+                            variant='contained' 
+                            color='primary'
+                            type='submit'
+                            disableElevation
+                        >
+                            Buscar
                         </Button>
                     </form>
-                    <Paper ref={scrollRef} component='ul' className={classes.keywordList}>
-                        {
-                            keywords.map((keyword, index) => {
-                                return (
-                                    <li key={`keyword-${index}`}>
-                                    <Chip
-                                        label={keyword}
-                                        onDelete={(e) => handleRemoveKeyword(index)}
-                                        className={classes.keyword}
-                                        />
-                                    </li>
-                                );
-                            })
-                        }
-                    </Paper>
+                    <KeywordManager keywords={keywords} onChangeKeywords={handleChangeKeywords}/>
                     <div className={classes.sectionTitle}>
                         <Typography variant='h4'>Repositorio Público</Typography>
                         <Divider />
+                        {
+                            (categoriesQuery.isError) 
+                                ? <Typography>{categoriesQuery.error.message}</Typography>
+                                : (designsQuery.isError) 
+                                    ? <Typography>{designsQuery.error.message}</Typography>
+                                    : (categoriesQuery.isLoading || designsQuery.isLoading)
+                                        ? <Typography>Cargando...</Typography>
+                                        : <DesignsContainer {...designsQuery} label='public-repository'/>
+                        }                        
                     </div>
                 </Grid>
                 <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
