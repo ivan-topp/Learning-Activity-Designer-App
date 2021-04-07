@@ -9,7 +9,7 @@ const useStyles = makeStyles({
         flexDirection: 'column',
         justifyContent: 'center',
     },
-    designsContainer: {
+    folderContainer: {
         width: '100%',
         display: 'flex',
         flexGrow: 1,
@@ -27,7 +27,7 @@ export const FoldersContainer = ({ title, data }) => {
 
     return data && data.length > 0 
         ?(<div className={classes.root}>
-            <div className={classes.designsContainer}>
+            <div className={classes.folderContainer}>
                 { folderList() }
             </div>
         </div>)
