@@ -31,6 +31,19 @@ export const getPublicDesignsByUser = async ( id, pageParam ) => {
     return resp.data;
 };
 
+export const getPublicFilteredDesigns = async (filter, keywords, categories, pageParam) => {
+    const resp = await fetchWithToken(`design/public-repository`, {
+        filter,
+        keywords,
+        categories,
+        from: pageParam,
+    }, 'POST');
+    if (!resp.ok) {
+        throw new Error(resp.message);
+    }
+    return resp.data;
+};
+
 export const getDesignsSharedWithMe = async ( pageParam ) => {
     const resp = await fetchWithToken(`design/shared-with-user/`, {
         from: pageParam,

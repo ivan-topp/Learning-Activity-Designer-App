@@ -142,6 +142,22 @@ export const DesignPage = () => {
                 });
             }
         });
+        socket?.on('add-design-keyword', (keyword) => {
+            if(isMounted.current) {
+                dispatch({
+                    type: types.design.addDesignKeyword,
+                    payload: keyword,
+                });
+            }
+        });
+        socket?.on('remove-design-keyword', (keyword) => {
+            if(isMounted.current) {
+                dispatch({
+                    type: types.design.removeDesignKeyword,
+                    payload: keyword,
+                });
+            }
+        });
         socket?.on('edit-metadata-field', ({ field, value, subfield }) => {
             if(isMounted.current) {
                 dispatch({
@@ -171,6 +187,8 @@ export const DesignPage = () => {
             socket?.emit('leave-from-design', { user: authState.user, designId: id });
             socket?.off('updateDesign');
             socket?.off('edit-metadata-field');
+            socket?.off('add-design-keyword');
+            socket?.off('remove-design-keyword');
             socket?.off('edit-task-field');
             socket?.off('users');
         };

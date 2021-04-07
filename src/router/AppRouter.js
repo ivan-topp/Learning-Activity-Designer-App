@@ -13,7 +13,7 @@ import { useAuthState } from 'contexts/AuthContext';
 import { NavBar } from 'components/NavBar';
 import { UserConfigProvider} from 'contexts/UserConfigContext';
 import { Footer } from 'components/Footer';
-import { CssBaseline, Grow } from '@material-ui/core';
+import { CssBaseline, Grow, makeStyles } from '@material-ui/core';
 import { SharedWithMePage } from 'pages/Navigation/SharedWithMe/SharedWithMePage';
 import { PublicRepositoryPage } from 'pages/Navigation/PublicRepository/PublicRepositoryPage';
 import { SearchUsersPage } from 'pages/User/SearchUsersPage/SearchUsersPage';
@@ -21,9 +21,31 @@ import { DesignPage } from 'pages/DesignPage/DesignPage';
 import { SnackbarProvider } from 'notistack';
 import { ConfirmationModal } from 'components/ConfirmationModal';
 import { DesignPageReader } from 'pages/DesignPageReader/DesignPageReader'
+
+const useStyles = makeStyles((theme) => ({
+    '@global': {
+        //Ancho del scrollbar    
+        '*::-webkit-scrollbar': {
+            width: '0.4em',
+        },
+        //Sombra del scrollbar
+        '*::-webkit-scrollbar-track': {
+            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)'
+            
+        },
+        //Scrollbar
+        '*::-webkit-scrollbar-thumb': {
+            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
+            borderRadius: '15px',
+            backgroundColor: 'rgba(0,0,0,.1)',
+        }
+    },
+}));
+
 export const AppRouter = () => {
     const { authState, verifyToken } = useAuthState();
     const { token, checking } = authState;
+    useStyles();
 
     useEffect(() => {
         verifyToken();

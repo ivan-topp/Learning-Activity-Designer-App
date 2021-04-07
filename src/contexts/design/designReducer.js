@@ -135,6 +135,22 @@ export const designReducer = ( state, action ) => {
                     privileges: action.payload
                 }
             }
+        case types.design.addDesignKeyword:
+            return {
+                ...state,
+                design: {
+                    ...state.design,
+                    keywords: [...state.design.keywords, action.payload],
+                }
+            };
+        case types.design.removeDesignKeyword:
+            return {
+                ...state,
+                design: {
+                    ...state.design,
+                    keywords: [...state.design.keywords.filter(k => k !== action.payload)],
+                }
+            };
         default:
             return state;
     }

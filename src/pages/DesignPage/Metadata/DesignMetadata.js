@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 import { Button, Divider, FormControl, FormControlLabel, Grid, InputLabel, Link, makeStyles, MenuItem, Select, Switch, TextField, Typography } from '@material-ui/core'
 import { useQuery } from 'react-query';
 import { Alert } from '@material-ui/lab';
@@ -14,6 +14,7 @@ import types from 'types';
 import { useAuthState } from 'contexts/AuthContext';
 import { SharedTextFieldTipTapEditor } from 'components/SharedTextFieldTipTapEditor';
 import { useSnackbar } from 'notistack';
+import { KeywordManager } from 'components/KeywordManager';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -87,6 +88,8 @@ export const DesignMetadata = forwardRef((props, ref) => {
     const descriptionRef = useRef();
     const objectiveRef = useRef();
 
+    //console.log(design.keywords);
+
     const [form, handleInputChange, , setValues] = useForm({
         name: metadata.name,
         category: metadata.category.name ?? 'Sin categoría',
@@ -98,7 +101,8 @@ export const DesignMetadata = forwardRef((props, ref) => {
         priorKnowledge: metadata.priorKnowledge,
         description: metadata.description,
         objective: metadata.objective,
-        isPublic: metadata.isPublic
+        isPublic: metadata.isPublic,
+        keywords: design.keywords ?? [],
     });
 
     useImperativeHandle(
@@ -121,6 +125,21 @@ export const DesignMetadata = forwardRef((props, ref) => {
             isMounted.current = false;
         };
     }, []);
+
+    const setKeywords = useCallback(
+        (keywords) => {
+            handleInputChange({ target: { name: 'keywords', value: keywords } });
+        },
+        [handleInputChange],
+    );
+
+    useEffect(() => {
+        if (isMounted.current){
+            if(JSON.stringify(form.keywords) !== JSON.stringify(design.keywords)){
+                setKeywords([...design.keywords]);
+            }
+        }
+    }, [design.keywords, form.keywords, setKeywords]);
 
     useEffect(() => {
         if (isMounted.current){
@@ -243,7 +262,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
         }
     }, [metadata.isPublic, form.isPublic, setValues]);
     
-    const { name, category, classSize, workingTimeDesignHours, workingTimeDesignMinutes, workingTimeHours, workingTimeMinutes, priorKnowledge, description, objective, isPublic } = form;
+    const { name, category, classSize, workingTimeDesignHours, workingTimeDesignMinutes, workingTimeHours, workingTimeMinutes, priorKnowledge, description, objective, isPublic, keywords } = form;
     
     const { isLoading, isError, data, error } = useQuery('categories', async () => {
         return await getCategories();
@@ -297,6 +316,11 @@ export const DesignMetadata = forwardRef((props, ref) => {
         type: types.ui.toggleModal,
         payload: 'LearningResult',
     });
+
+    const handleChangeKeywords = (keywords, type, targetKeyword) => {
+        if(type === 'add') socket.emit('add-design-keyword', { designId: design._id, keyword: targetKeyword});
+        else if (type === 'remove') socket.emit('remove-design-keyword', { designId: design._id, keyword: targetKeyword});
+    };
 
     return (
         <>
@@ -448,6 +472,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
                             />
                         </Grid>
                     </Grid>
+                    <KeywordManager keywords={keywords} onChangeKeywords={handleChangeKeywords}/>
                     <div className={classes.title}>
                         <Typography variant='h4'>Resultados de aprendizaje</Typography>
                         <Button variant='outlined' color='default' onClick={handleOpenLearningResultmodal}>Agregar</Button>
