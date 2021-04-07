@@ -111,20 +111,27 @@ export const DesignPage = () => {
 
     useEffect(() => {
         if(online){
-            socket?.emit('join-to-design', { user: authState.user, designId: id }, (res) => {
-                if (res.ok){
-                    if(isMounted.current) {
-                        dispatch({
-                            type: types.design.updateDesign,
-                            payload: res.data.design
-                        });
-                        connectToDesign(id);
-                    }
-                } 
-                else setError(res.message);
+            socket?.emit('join-to-design', { user: authState.user, designId: id, public: false }, (res) => {
+                if(res.data){
+                    const userInPrivileges = res.data.design.privileges.find(privilege => privilege.user._id === authState.user.uid );
+                    if (res.ok && userInPrivileges && userInPrivileges.type === 0){
+                        if(isMounted.current) {
+                            dispatch({
+                                type: types.design.updateDesign,
+                                payload: res.data.design
+                            });
+                            connectToDesign(id);
+                        }
+                    }else {
+                        setError(res.message)
+                    };
+                      
+                }else {
+                    setError(res.message)
+                };
             });
         }
-    }, [socket, authState.user, online, id, dispatch, connectToDesign]);
+    }, [socket, authState.user, authState._id, online, id, dispatch, connectToDesign]);
 
     useEffect(() => {
         socket?.on('update-design', (design) => {

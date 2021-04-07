@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export const Design = ({ _id, title, updatedAt, metadata, folder, owner, canDelete = true }) => {
+export const Design = ({ _id, title, updatedAt, metadata, folder, owner, privileges, canDelete = true }) => {
     const queryClient = useQueryClient();
     const { authState } = useAuthState();
     const { dispatch } = useUiState();
@@ -139,9 +139,25 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, canDele
         });
     };
 
+    const handleOpenDesign = () =>{
+        const inDesign = privileges.find(privilege => authState.user.uid === privilege.user);
+        if (inDesign) {
+            const typePrivilegeEditor = privileges.find(privilege => authState.user.uid === privilege.user && privilege.type === 0);
+            if (typePrivilegeEditor) {
+                history.push(`/designs/${_id}`);
+            } else {
+                history.push(`/designs/reader/${_id}`);
+            }
+        } else if(metadata.isPublic){
+            history.push(`/designs/reader/${_id}`);
+        } else {
+            history.push(`/`);
+        }
+    };
+
     return (
         <Card className={classes.root} elevation={0}>
-            <CardActionArea component={Link} to={`/designs/${_id}`}>
+            <CardActionArea onClick={handleOpenDesign}>
                 <CardContent>
                     <div className={classes.row} style={{ width: '100%' }}>
                         <Description className={classes.designIcon} />

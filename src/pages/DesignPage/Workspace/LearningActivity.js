@@ -207,7 +207,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
                                     name={`description-learning-activity-${index}`} // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
                                     placeholder='Título'
                                     initialvalue={description}
-                                    onChange={(e)=>handleEditLearningActivityField}
+                                    onChange={handleEditLearningActivityField}
                                     rowMax={3}
                                     multiline
                                     //deleteOnRemove

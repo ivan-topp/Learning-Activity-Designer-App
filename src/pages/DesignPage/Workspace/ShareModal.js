@@ -216,7 +216,12 @@ export const ShareModal = () => {
 
     return (
         <>
-            <Dialog onClose={handleClose} open={uiState.isShareModalOpen} maxWidth={'sm'} fullWidth>
+            <Dialog 
+                open={uiState.isShareModalOpen} 
+                onClose={handleClose} 
+                maxWidth={'sm'} 
+                fullWidth
+            >
                 <DialogTitle >
                     Compartir Diseño
                 </DialogTitle>

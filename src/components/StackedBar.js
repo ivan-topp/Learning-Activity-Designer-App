@@ -62,7 +62,6 @@ export const StackedBar = ({ height = 25, items, type, legends }) => {
             <div className={classes.root} style={{height}}>
                 {   
                     items.map( (item, index) => (
-                        <>
                         <Tooltip 
                             key={`nombreGrafico${index}`} 
                             title={
@@ -82,7 +81,6 @@ export const StackedBar = ({ height = 25, items, type, legends }) => {
                                 >
                             </div>
                         </Tooltip>
-                        </>
                     ))
                 }
             </div>
@@ -90,7 +88,7 @@ export const StackedBar = ({ height = 25, items, type, legends }) => {
                 (legends) && 
                 <div className={classes.spacingGraphic}>
                     { items.map ((item, index) =>( 
-                        <div className={classes.legend} key={index} >
+                        <div className={classes.legend} key = {`legends-${index}`}  >
                             <div className={classes.colorBoxRightPanel} style={{backgroundColor: colors[index]}}></div>
                             <Typography  variant="caption" > {item.title} </Typography>
                         </div>)

@@ -20,7 +20,7 @@ import { SearchUsersPage } from 'pages/User/SearchUsersPage/SearchUsersPage';
 import { DesignPage } from 'pages/DesignPage/DesignPage';
 import { SnackbarProvider } from 'notistack';
 import { ConfirmationModal } from 'components/ConfirmationModal';
-
+import { DesignPageReader } from 'pages/DesignPageReader/DesignPageReader'
 export const AppRouter = () => {
     const { authState, verifyToken } = useAuthState();
     const { token, checking } = authState;
@@ -49,6 +49,7 @@ export const AppRouter = () => {
                             <PrivateRoute exact path="/public-repository" component={PublicRepositoryPage} isAuthenticated={!checking && !!token }/>
                             <PrivateRoute exact path="/users/search" component={SearchUsersPage} isAuthenticated={!checking && !!token }/>
                             <PrivateRoute exact path="/designs/:id" component={DesignPage} isAuthenticated={!checking && !!token }/>
+                            <PrivateRoute exact path="/designs/reader/:id" component={DesignPageReader} isAuthenticated={!checking && !!token }/>
                             <Redirect to="/" />
                         </Switch>
                         <ConfirmationModal />
