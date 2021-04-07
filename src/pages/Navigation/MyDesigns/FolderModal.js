@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Button,
     makeStyles,
@@ -10,7 +10,7 @@ import {
     DialogActions,
     Typography
 } from '@material-ui/core';
-import { createFolder } from 'services/FolderService';
+import { createFolder, renameFolder } from 'services/FolderService';
 
 import { Close } from '@material-ui/icons';
 import { useUiState } from 'contexts/ui/UiContext';
@@ -46,6 +46,10 @@ export const FolderModal = () => {
     const [error, setError] = useState(null);
     const [name, setName] = useState(folder.name);
 
+    useEffect(() => {
+        setName(folder.name);
+    }, [folder.name, setName]);
+
     const createFolderMutation = useMutation(createFolder, {
         onMutate: async () => {
             await queryClient.cancelQueries(['folders', folderPath]);            
@@ -57,6 +61,23 @@ export const FolderModal = () => {
             enqueueSnackbar(error.message,  {variant: 'error', autoHideDuration: 2000});
         },
         onSuccess: data => {
+            enqueueSnackbar('Carpeta creada con éxito.',  {variant: 'success', autoHideDuration: 2000});
+            handleCloseModal();
+        }
+    });
+
+    const renameFolderMutation = useMutation(renameFolder, {
+        onMutate: async () => {
+            await queryClient.cancelQueries(['folders', folderPath]);            
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries(['folders', folderPath]);
+        },
+        onError: (error) => {
+            enqueueSnackbar(error.message,  {variant: 'error', autoHideDuration: 2000});
+        },
+        onSuccess: data => {
+            enqueueSnackbar('Nombre de carpeta cambiado con éxito.',  {variant: 'success', autoHideDuration: 2000});
             handleCloseModal();
         }
     });
@@ -78,15 +99,21 @@ export const FolderModal = () => {
                 name: '',
             }
         });
+        setName('');
         setError(null);
     };
 
     const handleCreateFolder = async (e) => {
-        if (name.trim() !== ''){
-            await createFolderMutation.mutate({path: folderPath, folderName: name});
-        } else {
-            setError('Este campo es obligatorio.');
-        }
+        if (name.trim() === '') return setError('Este campo es obligatorio.');
+        if (name.trim() === '/' || name.trim().toLowerCase() === 'mis diseños') return setError('Nombre de carpeta no permitido.');
+        await createFolderMutation.mutate({path: folderPath, folderName: name.trim()});
+    };
+    
+    const handleRenameFolder = async (e) => {
+        if (name.trim() === '') return setError('Este campo es obligatorio.');
+        if (name.trim() === '/' || name.trim().toLowerCase() === 'mis diseños') return setError('Nombre de carpeta no permitido.');
+        if (name.trim().toLowerCase() === folder.name.trim().toLowerCase()) return handleCloseModal();
+        await renameFolderMutation.mutate({id: folder._id, name});
     };
 
     return (
@@ -103,7 +130,7 @@ export const FolderModal = () => {
             </div>
             <DialogContent>
                 <Typography style={{marginBottom: 20}}>
-                    Usted está por { !folder._id ? 'crear' : 'editar' } una nueva carpeta.
+                    Usted está por { !folder._id ? 'crear una nueva carpeta' : 'editar una carpeta' }.
                     Por favor ingrese el { !folder._id ? '' : 'nuevo' } nombre para su carpeta en la siguiente entrada de texto.
                 </Typography>
                 <Typography variant='caption' >
@@ -127,9 +154,16 @@ export const FolderModal = () => {
                 <Button onClick={handleCloseModal}>
                     Cancelar
                 </Button>
-                <Button variant="contained" color="primary" onClick={handleCreateFolder}>
-                    Crear Carpeta
-                </Button>
+                {
+                    !folder._id 
+                        ? <Button variant="contained" color="primary" onClick={handleCreateFolder}>
+                            Crear Carpeta
+                            </Button>
+                        : <Button variant="contained" color="primary" onClick={handleRenameFolder}>
+                            Editar Carpeta
+                        </Button>
+                }
+                
             </DialogActions>
         </Dialog>
     )

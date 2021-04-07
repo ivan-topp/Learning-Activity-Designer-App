@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import CloseIcon from '@material-ui/icons/Close';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, makeStyles, Typography, } from '@material-ui/core';
 import { useUiState } from 'contexts/ui/UiContext';
@@ -28,6 +28,12 @@ export const ConfirmationModal = () => {
     const { type, args, actionMutation } = uiState.confirmModalData;
     const { enqueueSnackbar } = useSnackbar();
     const { socket } = useSocketState();
+    const [message, setMessage] = useState('');
+
+    useEffect(() => {
+        if(type === 'carpeta') setMessage(`¿Estás realmente seguro de que deseas eliminar tu carpeta? Recuerda que se eliminarán también las carpetas y diseños de aprendizaje que se encuentren al interior de esta o de sus carpetas hijas y este proceso no se podrá deshacer luego de haber elegido la opción de eliminar.`);
+        else setMessage(`¿Estás realmente seguro de que deseas eliminar tu ${type}? Este proceso no se podrá deshacer luego de haber elegido la opción de eliminar.`);
+    }, [type]);
     
     const handleClose = () => {
         dispatch({
@@ -45,16 +51,15 @@ export const ConfirmationModal = () => {
     };
 
     const confirmResult = async () => {
-        if (type === 'diseño') {
+        if (type === 'diseño' || type === 'carpeta') {
             await actionMutation.mutate(args);
-            enqueueSnackbar('Su diseño se ha eliminado', { variant: 'success', autoHideDuration: 2000 });
         } else if (type === 'actividad') {
             socket.emit('delete-learningActivity', args);
             enqueueSnackbar('Su actividad se ha eliminado', { variant: 'success', autoHideDuration: 2000 });
         } else if (type === 'tarea') {
             socket.emit('delete-task', args);
             enqueueSnackbar('Su tarea se ha eliminado', { variant: 'success', autoHideDuration: 2000 });
-        };
+        }
         dispatch({
             type: types.ui.toggleModal,
             payload: 'Confirmation',
@@ -72,8 +77,8 @@ export const ConfirmationModal = () => {
                 </IconButton>
                 <DialogContent dividers>
                     <Typography>
-                        ¿Estás realmente seguro de que deseas eliminar tu {type}? Este proceso no se podrá deshacer luego de haber elegido la opción de eliminar.
-                        </Typography>
+                        {message}    
+                    </Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>
