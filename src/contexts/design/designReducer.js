@@ -151,6 +151,15 @@ export const designReducer = ( state, action ) => {
                     keywords: [...state.design.keywords.filter(k => k !== action.payload)],
                 }
             };
+
+        case types.design.updateReadOnlyLink:
+            return {
+                ...state,
+                design: {
+                    ...state.design,
+                    readOnlyLink: action.payload,
+                }
+            };
         default:
             return state;
     }

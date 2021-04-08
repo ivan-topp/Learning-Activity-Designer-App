@@ -55,7 +55,6 @@ export const getDesignsSharedWithMe = async ( pageParam ) => {
 };
 
 export const createDesign = async ({ path, isPublic = false }) => {
-    console.log(isPublic);
     const resp = await fetchWithToken(`design`, { path, isPublic }, 'POST');
     if (!resp.ok) {
         throw new Error(resp.message);
@@ -71,8 +70,7 @@ export const deleteDesignById = async ({ id }) => {
     return resp.data;
 };
 
-export const uptdateUserInDesign = async ({id, privileges}) =>{
-    console.log(id, privileges)
+export const uptdateUserInDesign = async ({ id, privileges }) =>{
     try {
         const resp = await fetchWithToken(`design/${id}`, { 
             newData: { id, privileges }
@@ -84,6 +82,15 @@ export const uptdateUserInDesign = async ({id, privileges}) =>{
     } catch (error) {
         console.log(error);
     }
+};
+
+export const getDesignByLink = async ({ link }) => {
+    if(!link || (link && link.trim().length === 0)) return { design: {} };
+    const resp = await fetchWithToken(`design/shared-link/${link}`, {}, 'GET');
+    if(!resp.ok){
+        throw new Error(resp.message);
+    };
+    return resp.data;
 };
 
 

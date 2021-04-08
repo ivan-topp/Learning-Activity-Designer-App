@@ -10,6 +10,7 @@ const design = {
     setDesignPrivileges: '[DESIGN] set design privileges',
     addDesignKeyword: '[DESIGN] add design keyword',
     removeDesignKeyword: '[DESIGN] remove design keyword',
+    updateReadOnlyLink: '[DESIGN] change read only link',
 };
 
 export default design;

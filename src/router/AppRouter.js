@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import {
     BrowserRouter as Router,
     Switch,
-    Redirect
+    Redirect,
+    Route
 } from 'react-router-dom';
 import { LandingPage } from 'pages/LandingPage/LandingPage';
 import { PublicRoute } from 'router/PublicRoute';
@@ -21,6 +22,7 @@ import { DesignPage } from 'pages/DesignPage/DesignPage';
 import { SnackbarProvider } from 'notistack';
 import { ConfirmationModal } from 'components/ConfirmationModal';
 import { DesignPageReader } from 'pages/DesignPageReader/DesignPageReader'
+import { SharedLinkPage } from 'pages/SharedLink/SharedLinkPage';
 
 const useStyles = makeStyles((theme) => ({
     '@global': {
@@ -64,6 +66,7 @@ export const AppRouter = () => {
                     <SnackbarProvider maxSnack={3} anchorOrigin={{vertical: 'bottom',horizontal: 'left',}} TransitionComponent={Grow}>
                         <Switch>
                             <PublicRoute exact path="/" component={ LandingPage } isAuthenticated={!checking && !!token }/>
+                            <Route exact path="/shared-link/:link" component={ SharedLinkPage } />
                             <PrivateRoute exact path="/profile/:uid" component={ UserProfile } isAuthenticated={ !checking && !!token }/>
                             <PrivateRoute exact path="/my-designs" component={MyDesignsPage} isAuthenticated={!checking && !!token }/>
                             <PrivateRoute path="/my-designs/:urlPath+/" component={MyDesignsPage} isAuthenticated={!checking && !!token }/>
