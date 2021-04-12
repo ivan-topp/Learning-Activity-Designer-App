@@ -78,10 +78,10 @@ export const SharedLinkPage = () => {
         <Grid item xs={12} md={3} lg={2}></Grid>
     </Grid>
         <TabPanel value={tabIndex} index={0} >
-            <DesignReader />
+            <DesignReader type='shared-link'/>
         </TabPanel></>;
     };
-
+    
     const renderLoading = () => {
         return <Typography>Cargando...</Typography>;
     };

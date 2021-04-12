@@ -1,4 +1,4 @@
-import { fetchWithToken } from "utils/fetch";
+import { fetchWithoutToken, fetchWithToken } from "utils/fetch";
 
 
 export const getRecentDesigns = async () => {
@@ -86,7 +86,15 @@ export const uptdateUserInDesign = async ({ id, privileges }) =>{
 
 export const getDesignByLink = async ({ link }) => {
     if(!link || (link && link.trim().length === 0)) return { design: {} };
-    const resp = await fetchWithToken(`design/shared-link/${link}`, {}, 'GET');
+    const resp = await fetchWithoutToken(`design/shared-link/${link}`, {}, 'GET');
+    if(!resp.ok){
+        throw new Error(resp.message);
+    };
+    return resp.data;
+};
+
+export const duplicateDesign = async ({ id }) => {
+    const resp = await fetchWithToken(`design/duplicate`, { id }, 'POST');
     if(!resp.ok){
         throw new Error(resp.message);
     };

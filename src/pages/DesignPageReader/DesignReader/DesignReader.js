@@ -5,6 +5,11 @@ import { StackedBar } from 'components/StackedBar';
 import { PieGraphic } from 'components/PieGraphic';
 import { itemsLearningType, itemsFormat, itemsModality, itemsLearningTypePie } from 'assets/resource/items'
 import { LearningActivityReader } from './LearningActivityReader';
+import { useAuthState } from 'contexts/AuthContext';
+import { duplicateDesign } from 'services/DesignService';
+import { useMutation, useQueryClient } from 'react-query';
+import { useSnackbar } from 'notistack';
+import { useHistory, useParams } from 'react-router';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -75,16 +80,39 @@ const useStyles = makeStyles((theme) => ({
       
 }));
 
-export const DesignReader = () => {
+export const DesignReader = ({ type }) => {
     const classes = useStyles();
     const { designState } = useDesignState();
+    const { authState } = useAuthState();
+    const urlparams = useParams();
+    const history = useHistory();
+    const queryClient = useQueryClient();
+    const { enqueueSnackbar } = useSnackbar();
     const { design } = designState;
     const { metadata } = design;
-
+    
     let showGraphicLearningType = false;
     let showGraphicFormat = false;
     let showGraphicModality = false;
-    
+
+    const duplicateDesignMutation = useMutation(duplicateDesign, {
+        onMutate: async () => {
+            await queryClient.cancelQueries('recent-designs');
+            await queryClient.cancelQueries(['designs', '/']);
+            await queryClient.cancelQueries([authState.user.id, 'user-public-designs']);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries('recent-designs');
+            queryClient.invalidateQueries(['designs', '/']);
+            queryClient.invalidateQueries([authState.user.id, 'user-public-designs']);
+        },
+        onError: (error) => {
+            enqueueSnackbar(error.message,  {variant: 'error', autoHideDuration: 2000});
+        },
+        onSuccess: data => {
+            history.push(`/designs/${data.newDesign._id}`);
+        }
+    });
     
     design.data.learningActivities.forEach((activities) => {
         if (activities.tasks !== undefined) {
@@ -100,7 +128,7 @@ export const DesignReader = () => {
                 }
             })
         }
-    });
+    });    
 
     const resetItems = () =>{
         itemsLearningType.forEach((item) =>{
@@ -116,6 +144,10 @@ export const DesignReader = () => {
         itemsModality.forEach((item) =>{
             item.value = 0;
         });
+    };
+
+    const handleDuplicateDesign = async (e) => {
+        await duplicateDesignMutation.mutate({ id: urlparams.id });
     };
     
     return (
@@ -228,9 +260,9 @@ export const DesignReader = () => {
                     </Grid>
                 </Grid>
                 <Grid item xs={12} md={6} lg={8} className={classes.workspace}>
-                    <ButtonGroup size='small' aria-label='outlined primary button group' className={classes.buttonGroupWorkSpace}>
-                        <Button> Duplicar </Button>
-                    </ButtonGroup>
+                    { (!!authState.token) ? <ButtonGroup size='small' aria-label='outlined primary button group' className={classes.buttonGroupWorkSpace}>
+                        <Button onClick={handleDuplicateDesign}> Duplicar </Button>
+                    </ButtonGroup> : <div></div>}
                     <Grid className={classes.workSpaceUnits}>
                         <Grid >
                             {

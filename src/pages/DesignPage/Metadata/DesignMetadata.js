@@ -88,8 +88,6 @@ export const DesignMetadata = forwardRef((props, ref) => {
     const descriptionRef = useRef();
     const objectiveRef = useRef();
 
-    //console.log(design.keywords);
-
     const [form, handleInputChange, , setValues] = useForm({
         name: metadata.name,
         category: metadata.category.name ?? 'Sin categoría',
@@ -109,13 +107,13 @@ export const DesignMetadata = forwardRef((props, ref) => {
         ref,
         () => ({
             clearEditors: () => {
-                nameRef?.current.clearText();
-                classSizeRef?.current.clearText();
-                hoursRef?.current.clearText();
-                minutesRef?.current.clearText();
-                priorKnowledgeRef?.current.clearText();
-                descriptionRef?.current.clearText();
-                objectiveRef?.current.clearText();
+                nameRef?.current?.clearText();
+                classSizeRef?.current?.clearText();
+                hoursRef?.current?.clearText();
+                minutesRef?.current?.clearText();
+                priorKnowledgeRef?.current?.clearText();
+                descriptionRef?.current?.clearText();
+                objectiveRef?.current?.clearText();
             }
         }),
     );
