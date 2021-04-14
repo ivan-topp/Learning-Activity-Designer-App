@@ -7,6 +7,7 @@ const ui = {
     toggleConfirmAction: '[UI] confirm action',
     setFolder: '[UI] set folder data',
     setConfirmData: '[UI] set confirm data',
+    setPDF: '[UI] set pdf',
 };
 
 export default ui;

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, ButtonGroup, Divider, Grid, makeStyles, Typography } from '@material-ui/core';
+import React, { useRef, useState } from 'react';
+import { Button, ButtonGroup, Divider, Grid, makeStyles, Menu, MenuItem, Typography } from '@material-ui/core';
 import { LearningActivity } from 'pages/DesignPage/Workspace/LearningActivity';
 import { useSocketState } from 'contexts/SocketContext';
 import { useDesignState } from 'contexts/design/DesignContext';
@@ -10,6 +10,8 @@ import { useUiState } from 'contexts/ui/UiContext';
 import { ShareModal } from './ShareModal';
 import types from 'types';
 import { useSnackbar } from 'notistack';
+import { ViewAndDownloadPDFModal } from 'pages/DesignPage/PDF/ViewAndDownloadPDFModal';
+import { useUserConfigState } from 'contexts/UserConfigContext';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -28,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         borderLeft: `1px solid ${theme.palette.divider}`,
+        background: theme.palette.background.paper
     },
     buttonGroupWorkSpace:{
         marginTop: theme.spacing(1),
@@ -46,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(2),
         marginRight: theme.spacing(2)
     },
-    textLefPanelMetadata:{
+    textLeftPanelMetadata:{
         marginTop: theme.spacing(3)
     },
     graphicsSpacing:{
@@ -56,6 +59,12 @@ const useStyles = makeStyles((theme) => ({
     betweenGraphics:{
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
+    },
+    chartRightPanel:{
+        backgroundColor: '#FFFFFF',
+        position: 'absolute',
+        right: 0,
+        height: 700,
     },
     workSpaceUnits:{
     },
@@ -86,11 +95,15 @@ export const DesignWorkspace = () => {
     const { metadata } = design;
     const { socket } = useSocketState();
     const { enqueueSnackbar } = useSnackbar();
-    
     const { dispatch } = useUiState();
+    const [ openMenuPDF, setOpenMenuPDF ] = useState(null);
+    const imgGraphic = useRef();
+    const { userConfig } = useUserConfigState();
+    const [ pdfView, setPdfView] = useState(false);
     let showGraphicLearningType = false;
     let showGraphicFormat = false;
     let showGraphicModality = false;
+
 
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
@@ -100,15 +113,27 @@ export const DesignWorkspace = () => {
     const handleNewUA = () => {
         socket.emit('new-learningActivity', { designId: design._id });    
     };
-
+    
     const handleOpenModal = () => {
         dispatch({
             type: types.ui.toggleModal,
             payload: 'Share'
         })
-        
     };
-    
+
+    const handleOpenModalPDF = (type) => {
+        setPdfView(true);
+        handleCloseMenu();
+        dispatch({
+            type: types.ui.setPDF,
+            payload: type,
+        });
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'PDF'
+        });
+    };
+
     const resetItems = () =>{
         itemsLearningType.forEach((item) =>{
             item.value = 0;
@@ -124,6 +149,14 @@ export const DesignWorkspace = () => {
             item.value = 0;
         });
     };
+
+    const handleOpenMenu = (event) => {
+        setOpenMenuPDF(event.currentTarget);
+      };
+    
+      const handleCloseMenu = () => {
+        setOpenMenuPDF(null);
+      };
     
     design.data.learningActivities.forEach((activities) => {
         if (activities.tasks !== undefined) {
@@ -143,7 +176,7 @@ export const DesignWorkspace = () => {
     
     return (
         <>  
-            <Grid container>
+            <Grid container >
                 <Grid item xs={12} md={3} lg={2} className={classes.leftPanel}>
                     <Grid container alignItems='center' justify='center'>
                         <Typography className={classes.textLefPanel}> INFORMACIÓN DISEÑO </Typography>
@@ -163,7 +196,7 @@ export const DesignWorkspace = () => {
                         <Grid>
                             { metadata && metadata.category &&(
                                 <>
-                                        <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}>Tema</Typography>
+                                        <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}>Tema</Typography>
                                         <Typography variant='body2'> { metadata.category.name } </Typography>
                                         <Divider/>
                                     </>
@@ -173,7 +206,7 @@ export const DesignWorkspace = () => {
                         <Grid>
                             { metadata && metadata.workingTime &&(
                                     <>
-                                        <Typography variant="body2" color='textSecondary' className={classes.textLefPanelMetadata}> Tiempo de trabajo </Typography>
+                                        <Typography variant="body2" color='textSecondary' className={classes.textLeftPanelMetadata}> Tiempo de trabajo </Typography>
                                         <Typography variant="body2"> { metadata.workingTime.hours } : {metadata.workingTime.minutes}</Typography>
                                         <Divider/>
                                     </>
@@ -183,7 +216,7 @@ export const DesignWorkspace = () => {
                         <Grid>
                             { metadata && metadata.workingTimeDesign &&(
                                     <>
-                                        <Typography variant="body2" color='textSecondary' className={classes.textLefPanelMetadata}>Tiempo de trabajo Diseño</Typography>
+                                        <Typography variant="body2" color='textSecondary' className={classes.textLeftPanelMetadata}>Tiempo de trabajo Diseño</Typography>
                                         <Typography variant="body2"> { metadata.workingTimeDesign }</Typography>
                                         <Divider/>
                                     </>
@@ -193,7 +226,7 @@ export const DesignWorkspace = () => {
                         <Grid>
                             { metadata && metadata.name &&(
                                     <>
-                                        <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}> Modo de entrega </Typography>
+                                        <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Modo de entrega </Typography>
                                         <Typography variant='body2' > { metadata.name } </Typography>
                                         <Divider/>
                                     </>
@@ -202,7 +235,7 @@ export const DesignWorkspace = () => {
                         </Grid>
                             { metadata && metadata.classSize &&(
                                     <>
-                                        <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}> Tamaño de la clase </Typography>
+                                        <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Tamaño de la clase </Typography>
                                         <Typography variant='body2'> { metadata.classSize } </Typography>
                                         <Divider/>
                                     </>
@@ -211,7 +244,7 @@ export const DesignWorkspace = () => {
                         <Grid>
                             { metadata && metadata.priorKnowledge &&(
                                     <>
-                                        <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}> Conocimiento Previo </Typography>
+                                        <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Conocimiento Previo </Typography>
                                         <Typography variant='body2' > { metadata.priorKnowledge } </Typography>
                                         <Divider/>
                                     </>
@@ -221,7 +254,7 @@ export const DesignWorkspace = () => {
                         <Grid>
                             { metadata && metadata.description &&(
                                     <>
-                                        <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}> Descripción </Typography>
+                                        <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Descripción </Typography>
                                         <Typography variant='body2'> { metadata.description } </Typography>
                                         <Divider/>
                                     </>
@@ -231,7 +264,7 @@ export const DesignWorkspace = () => {
                         <Grid>
                             { metadata && metadata.objective &&(
                                     <>
-                                        <Typography color='textSecondary' className={classes.textLefPanelMetadata}> Objetivos </Typography>
+                                        <Typography color='textSecondary' className={classes.textLeftPanelMetadata}> Objetivos </Typography>
                                         <Typography> { metadata.objective } </Typography>
                                         <Divider/>
                                     </>
@@ -241,7 +274,7 @@ export const DesignWorkspace = () => {
                         <Grid>
                             { /*metadata && metadata.results &&(
                                     <>
-                                        <Typography color='textSecondary' className={classes.textLefPanelMetadata}> Resultados </Typography>
+                                        <Typography color='textSecondary' className={classes.textLeftPanelMetadata}> Resultados </Typography>
                                         <Typography>{ metadata.results }</Typography>
                                         <Divider/>
                                     </>
@@ -251,8 +284,18 @@ export const DesignWorkspace = () => {
                     </Grid>
                 </Grid>
                 <Grid item xs={12} md={6} lg={8} className={classes.workspace}>
-                    <ButtonGroup size='small' aria-label='outlined primary button group' className={classes.buttonGroupWorkSpace}>
-                        <Button>Nuevo</Button>
+                    <Menu 
+                        variant = {'selectedMenu'}
+                        anchorEl={openMenuPDF}
+                        keepMounted
+                        open={Boolean(openMenuPDF)}
+                        onClose={handleCloseMenu}
+                    >
+                        <MenuItem onClick = {() => handleOpenModalPDF('teacher')}>PDF Docente</MenuItem>
+                        <MenuItem onClick = {() => handleOpenModalPDF('student')}>PDF Estudiante</MenuItem>
+                    </Menu>
+                    <ButtonGroup size='small' className={classes.buttonGroupWorkSpace}>
+                        <Button onClick = {handleOpenMenu}>Exportar</Button>
                         <Button onClick = {handleOpenModal}>Compartir</Button>
                         <Button onClick = {handleSaveDesign}>Guardar</Button>
                     </ButtonGroup>
@@ -265,9 +308,56 @@ export const DesignWorkspace = () => {
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}>
+                <Grid item xs={12} md={3} lg={2} className={classes.rightPanel} style ={{zIndex: 1}}>
                     {resetItems()}
-                    <Grid className={classes.graphicsSpacing}>
+                    <Grid className={classes.graphicsSpacing} >
+                        {   
+                            design.data.learningActivities && design.data.learningActivities.map((learningActivity) => 
+                                learningActivity.tasks && learningActivity.tasks.forEach((task) => {
+                                    itemsLearningType.forEach((item) =>{
+                                        if( item.title === task.learningType){
+                                            item.value = item.value + 1;
+                                        }
+                                    });
+                                    itemsLearningTypePie.forEach((item) =>{
+                                        if( item.title === task.learningType){
+                                            item.value = item.value + 1;
+                                        }
+                                    });
+                                    itemsFormat.forEach((item) =>{ 
+                                        if( item.title === task.format ){
+                                            item.value = item.value + 1;
+                                        }
+                                    });
+                                    itemsModality.forEach((item) =>{ 
+                                        if( item.title === task.modality ){
+                                            item.value = item.value + 1;
+                                        }
+                                    });
+                                }))
+                        }
+                        { showGraphicLearningType && 
+                            <div className={classes.betweenGraphics} >
+                                <PieGraphic items = { itemsLearningTypePie } colorGraphicToPdf={true}></PieGraphic>
+                            </div>
+                        }
+                        {   showGraphicFormat &&
+                            <div className={classes.betweenGraphics}>
+                                <Typography>Formato</Typography>
+                                <StackedBar items = {itemsFormat} type={'Format'} legends={true} colorGraphicToPdf={true} ></StackedBar>
+                            </div>
+                        }
+                        {   showGraphicModality &&
+                            <div className={classes.betweenGraphics}>
+                                <Typography>Modalidad</Typography>
+                                <StackedBar items = {itemsModality} type={'Modality'} legends={true} colorGraphicToPdf={true}></StackedBar>
+                            </div>
+                        }
+                    </Grid>
+                </Grid>
+                <Grid item xs={12} md={3} lg={2} className={classes.chartRightPanel}  style ={{zIndex: 0}}>
+                    {resetItems()}
+                    <Grid className={classes.graphicsSpacing} ref = {imgGraphic}>
                         {   
                             design.data.learningActivities && design.data.learningActivities.map((learningActivity) => 
                                 learningActivity.tasks && learningActivity.tasks.forEach((task) => {
@@ -295,24 +385,33 @@ export const DesignWorkspace = () => {
                         }
                         { showGraphicLearningType && 
                             <div className={classes.betweenGraphics}>
-                                <PieGraphic items = { itemsLearningTypePie}></PieGraphic>
+                                <PieGraphic items = { itemsLearningTypePie } colorGraphicToPdf={false}></PieGraphic>
                             </div>
                         }
                         {   showGraphicFormat &&
                             <div className={classes.betweenGraphics}>
-                                <Typography>Formato</Typography>
-                                <StackedBar items = {itemsFormat} type={'Format'} legends={true}></StackedBar>
+                                {
+                                    userConfig.darkTheme ? <Typography style={{color:'#000000'}}>Formato</Typography> : <Typography >Formato</Typography>
+                                }
+                                
+                                <StackedBar items = {itemsFormat} type={'Format'} legends={true} colorGraphicToPdf={false}></StackedBar>
                             </div>
                         }
                         {   showGraphicModality &&
                             <div className={classes.betweenGraphics}>
-                                <Typography>Modalidad</Typography>
-                                <StackedBar items = {itemsModality} type={'Modality'} legends={true}></StackedBar>
+                                {
+                                    userConfig.darkTheme ? <Typography style={{color:'#000000'}}>Modalidad</Typography> : <Typography >Modalidad</Typography>
+                                }
+                                <StackedBar items = {itemsModality} type={'Modality'} legends={true} colorGraphicToPdf={false} ></StackedBar>
                             </div>
                         }
                     </Grid>
                 </Grid>
             <ShareModal />
+            {
+                (pdfView) &&
+                <ViewAndDownloadPDFModal imgGraphic = {imgGraphic} setPdfView = {setPdfView}/>
+            }
             </Grid>
         </>
     )

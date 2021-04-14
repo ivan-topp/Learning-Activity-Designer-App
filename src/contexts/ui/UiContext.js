@@ -20,10 +20,10 @@ const initialState = {
 	isEditProfileModalOpen: false,
 	isContactsModalOpen: false,
 	isConfirmationModalOpen: false,
-	isOtherConfirmationModalOpen: false,
 	isShareModalOpen: false,
 	setWichOpenModal: false,
 	isFolderModalOpen: false,
+	isPDFModalOpen: false,
 	folder: {
 		_id: null,
 		name: '',
@@ -32,6 +32,9 @@ const initialState = {
 		type: null,
 		args: null,
 		actionMutation: null,
+	},
+	pdf: {
+		typeUserPDF: null,
 	},
 };
 
