@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Avatar, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControl, Grid, IconButton, makeStyles, MenuItem, Select, TextField, Typography } from '@material-ui/core';
+import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControl, Grid, IconButton, Link as MaterialLink, makeStyles, MenuItem, Select, TextField, Typography } from '@material-ui/core';
 import { useUiState } from 'contexts/ui/UiContext';
 import CloseIcon from '@material-ui/icons/Close';
 import types from 'types';
@@ -9,6 +9,9 @@ import { useSnackbar } from 'notistack';
 import { useQuery } from 'react-query';
 import { getUser } from 'services/UserService';
 import { useSocketState } from 'contexts/SocketContext';
+import { Link } from 'react-router-dom';
+import { Add, FileCopy } from '@material-ui/icons';
+import { CustomMenu } from 'components/CustomMenu';
 
 const useStyles = makeStyles((theme) => ({
     closeButton: {
@@ -24,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
         width: 'fit-content',
     },
     divSectionShare: {
-        marginBottom: theme.spacing(4),
+        padding: 20,
     },
 }));
 
@@ -69,7 +72,16 @@ export const ShareModal = () => {
             type: types.ui.toggleModal,
             payload: 'Share'
         });
-        enqueueSnackbar('Se ha compartido su diseño correctamente',  {variant: 'success', autoHideDuration: 2000});
+        enqueueSnackbar('Se ha compartido su diseño correctamente', { variant: 'success', autoHideDuration: 2000 });
+    };
+
+    const handleCopyLinkToClipboard = () => {
+        navigator.clipboard.writeText(process.env.REACT_APP_URL + 'shared-link/' + design.readOnlyLink);
+        enqueueSnackbar('Enlace copiado.', { variant: 'success', anchorOrigin: { vertical: 'bottom', horizontal: 'left' }, autoHideDuration: 2000 });
+    };
+
+    const handleGenerateLink = () => {
+        socket.emit('generate-new-share-link', { designId: design._id });
     };
 
     const handleChange = (e, type, index) => {
@@ -86,7 +98,7 @@ export const ShareModal = () => {
                     ...newPrivileges.slice(index + 1, newPrivileges.length)
                 ])
             }
-        }else {
+        } else {
             const p = { ...newPrivileges[index] };
             p.type = v;
             if (index === newPrivileges.length - 1) {
@@ -131,20 +143,32 @@ export const ShareModal = () => {
         } else {
             return (
                 <>
-                    {/*
-                    <div className = {classes.divSectionShare}>
-                        <div className = {classes.titleSectionShare}>
+
+                    <div className={classes.divSectionShare}>
+                        <div className={classes.titleSectionShare}>
                             <Typography color='textSecondary'> Compartir mediante enlace </Typography>
                         </div>
-                        <div>
-                            <Typography> Cualquier usuario que tenga este enlace puede ver este diseño </Typography>
-                            <div color={'green'}>
-                                https://www.soportetecnologico.cl/lectura/32132dsadsad
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 10, paddingLeft: 10, paddingRight: 10 }}>
+                            <Typography align='justify'> Mediante el siguiente enlace puedes compartir este diseño en modo solo lectura: </Typography>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <MaterialLink
+                                    style={{ wordBreak: 'break-word' }}
+                                    component={Link}
+                                    to={`/shared-link/${design.readOnlyLink}`}
+                                    onClick={handleClose}
+                                    align='center'
+                                >
+                                    {process.env.REACT_APP_URL + 'shared-link/' + design.readOnlyLink}
+                                </MaterialLink>
+                                <CustomMenu options={[
+                                    { icon: <FileCopy fontSize='small' />, label: 'Copiar enlace', onSelect: handleCopyLinkToClipboard },
+                                    { icon: <Add />, label: 'Generar nuevo enlace', onSelect: handleGenerateLink },
+                                ]} />
                             </div>
                         </div>
                     </div>
-                    */}
-                    <div>
+                    <Divider />
+                    <div className={classes.divSectionShare}>
                         <div className={classes.titleSectionShare}>
                             <Typography color='textSecondary'> Compartir a contactos </Typography>
                         </div>
@@ -179,30 +203,34 @@ export const ShareModal = () => {
                             {newPrivileges.map((privilege, i) => {
                                 return (
                                     <Grid container style={{ marginBottom: 10 }} key={`privilege-${i}`}>
-                                        <Grid style={{ justifyContent: 'space-between' }}>
-                                            <Avatar style={{ marginRight: 7 }} />
-                                        </Grid>
-                                        <Grid style={{ justifyContent: 'space-between' }}>
-                                            <Typography>{privilege.user.name + ' ' + privilege.user.lastname}</Typography>
-                                            <Typography color={'textSecondary'}>{privilege.user.email}</Typography>
-                                        </Grid>
-                                        <Grid style={{ justifyContent: 'space-between', marginLeft: "auto" }}>
-                                            {(privilege.user._id === design.owner) ?
-                                                <Typography>Propietario</Typography>
-                                                :
-                                                <FormControl variant='outlined' size='small'>
-                                                    <Select
-                                                        key={`privileges-action-${i}`}
-                                                        name='type'
-                                                        value={privilege.type}
-                                                        onChange={(e) => { handleChange(e, privilege.type, i) }}
-                                                    >
-                                                        <MenuItem value={0}> Editor </MenuItem>
-                                                        <MenuItem value={1}> Lector</MenuItem>
-                                                        <MenuItem value={'Quitar'}> Quitar</MenuItem>
-                                                    </Select>
-                                                </FormControl>
-                                            }
+                                        <Grid item xs={12} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <Box style={{ justifyContent: 'space-between' }}>
+                                                    <Avatar style={{ marginRight: 7 }} />
+                                                </Box>
+                                                <Box style={{ justifyContent: 'space-between' }}>
+                                                    <Typography>{privilege.user.name + ' ' + privilege.user.lastname}</Typography>
+                                                    <Typography color={'textSecondary'}>{privilege.user.email}</Typography>
+                                                </Box>
+                                            </div>
+                                            <Box >
+                                                {(privilege.user._id === design.owner) ?
+                                                    <Typography>Propietario</Typography>
+                                                    :
+                                                    <FormControl variant='outlined' size='small'>
+                                                        <Select
+                                                            key={`privileges-action-${i}`}
+                                                            name='type'
+                                                            value={privilege.type}
+                                                            onChange={(e) => { handleChange(e, privilege.type, i) }}
+                                                        >
+                                                            <MenuItem value={0}> Editor </MenuItem>
+                                                            <MenuItem value={1}> Lector</MenuItem>
+                                                            <MenuItem value={'Quitar'}> Quitar</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                }
+                                            </Box>
                                         </Grid>
                                     </Grid>
                                 )
@@ -216,10 +244,10 @@ export const ShareModal = () => {
 
     return (
         <>
-            <Dialog 
-                open={uiState.isShareModalOpen} 
-                onClose={handleClose} 
-                maxWidth={'sm'} 
+            <Dialog
+                open={uiState.isShareModalOpen}
+                onClose={handleClose}
+                maxWidth={'sm'}
                 fullWidth
             >
                 <DialogTitle >
@@ -228,7 +256,7 @@ export const ShareModal = () => {
                 <IconButton aria-label='close' className={classes.closeButton} onClick={handleClose}>
                     <CloseIcon />
                 </IconButton>
-                <DialogContent dividers>
+                <DialogContent dividers style={{ padding: 0 }}>
                     {content()}
                 </DialogContent>
                 <DialogActions>

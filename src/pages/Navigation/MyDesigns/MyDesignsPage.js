@@ -13,6 +13,7 @@ import { LeftPanel } from 'pages/Navigation/LeftPanel';
 import { DesignsBreadcrumbs } from 'pages/Navigation/MyDesigns/DesignsBreadcrumbs';
 import { RecentDesigns } from 'pages/Navigation/MyDesigns/RecentDesigns';
 import { FolderModal } from './FolderModal';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -74,6 +75,7 @@ export const MyDesignsPage = () => {
     const urlparams = useParams();
     const designsRef = useRef(null);
     const { uiState, dispatch } = useUiState();
+    const { enqueueSnackbar } = useSnackbar();
     const queryClient = useQueryClient();
     const { authState } = useAuthState();
     const [width, setWidth] = useState(0);
@@ -115,8 +117,7 @@ export const MyDesignsPage = () => {
             queryClient.invalidateQueries([authState.user.id, 'user-public-designs']);
         },
         onError: (error) => {
-            // TODO: Emitir notificación o message para denotar el error.
-            console.log(error);
+            enqueueSnackbar(error.message,  {variant: 'error', autoHideDuration: 2000});
         },
         onSuccess: data => {
             history.push(`/designs/${data.design._id}`);

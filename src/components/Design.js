@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from 'react-query';
 import { Link, useHistory } from 'react-router-dom';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
+import { useSnackbar } from 'notistack';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -73,6 +74,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, privile
     const queryClient = useQueryClient();
     const { authState } = useAuthState();
     const { dispatch } = useUiState();
+    const { enqueueSnackbar } = useSnackbar();
     const history = useHistory();
     //const [hours, minutes] = TimeFormatter.toHoursAndMinutes(metadata.workingTime ?? 0);
 
@@ -119,6 +121,9 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, privile
             queryClient.invalidateQueries(['designs', folder.path]);
             queryClient.invalidateQueries([owner._id, 'user-public-designs']);
         },
+        onSuccess: data => {
+            enqueueSnackbar('Su diseño se ha eliminado.', { variant: 'success', autoHideDuration: 2000 });
+        }
     });
 
     const classes = useStyles();

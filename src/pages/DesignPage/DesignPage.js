@@ -183,12 +183,21 @@ export const DesignPage = () => {
                 payload: privileges
             });
         });
+        socket?.on('change-read-only-link', (newLink) => {
+            if(isMounted.current) {
+                dispatch({
+                    type: types.design.updateReadOnlyLink,
+                    payload: newLink
+                });
+            }
+        });
         return () => {
             socket?.emit('leave-from-design', { user: authState.user, designId: id });
             socket?.off('updateDesign');
             socket?.off('edit-metadata-field');
             socket?.off('add-design-keyword');
             socket?.off('remove-design-keyword');
+            socket?.off('change-read-only-link');
             socket?.off('edit-task-field');
             socket?.off('users');
         };
