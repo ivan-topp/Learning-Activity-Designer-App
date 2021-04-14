@@ -301,19 +301,19 @@ export const DesignReader = ({ type }) => {
                             }
                         { showGraphicLearningType && 
                             <div className={classes.betweenGraphics}>
-                                <PieGraphic items = { itemsLearningTypePie}></PieGraphic>
+                                <PieGraphic items = { itemsLearningTypePie} colorGraphicToPdf={true}></PieGraphic>
                             </div>
                         }
                         {   showGraphicFormat &&
                             <div className={classes.betweenGraphics}>
                                 <Typography>Formato</Typography>
-                                <StackedBar items = {itemsFormat} type={'Format'} legends={true}></StackedBar>
+                                <StackedBar items = {itemsFormat} type={'Format'} legends={true} colorGraphicToPdf={true}></StackedBar>
                             </div>
                         }
                         {   showGraphicModality &&
                             <div className={classes.betweenGraphics}>
                                 <Typography>Modalidad</Typography>
-                                <StackedBar items = {itemsModality} type={'Modality'} legends={true}></StackedBar>
+                                <StackedBar items = {itemsModality} type={'Modality'} legends={true} colorGraphicToPdf={true}></StackedBar>
                             </div>
                         }
                     </Grid>
