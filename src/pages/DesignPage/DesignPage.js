@@ -134,11 +134,11 @@ export const DesignPage = () => {
     }, [socket, authState.user, authState._id, online, id, dispatch, connectToDesign]);
 
     useEffect(() => {
-        socket?.on('update-design', (design) => {
+        socket?.on('update-design', (newDesign) => {
             if(isMounted.current) {
                 dispatch({
                     type: types.design.updateDesign,
-                    payload: design
+                    payload: newDesign
                 });
             }
         });
@@ -166,11 +166,11 @@ export const DesignPage = () => {
                 });
             }
         });
-        socket?.on('edit-task-field', ({ learningActivityIndex, index, field, value, subfield }) => {
+        socket?.on('edit-task-field', ({ learningActivityID, taskID, field, value, subfield }) => {
             if(isMounted.current) {
                 dispatch({
                     type: types.design.changeTaskField,
-                    payload: { learningActivityIndex, index, field, value, subfield },
+                    payload: { learningActivityID, taskID, field, value, subfield },
                 });
             }
         });

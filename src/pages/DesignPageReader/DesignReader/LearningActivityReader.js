@@ -1,5 +1,5 @@
 import React, {  useRef } from 'react';
-import { Checkbox, Divider, FormControlLabel, Grid, makeStyles, Paper, Typography } from '@material-ui/core'
+import { Divider, Grid, makeStyles, Paper, Tooltip, Typography } from '@material-ui/core'
 import { TaskReader } from 'pages/DesignPageReader/DesignReader/TaskReader';
 import { StackedBar } from 'components/StackedBar';
 import { useDesignState } from 'contexts/design/DesignContext';
@@ -44,6 +44,11 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(1),
         marginLeft: theme.spacing(1),
     },
+    descriptionContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        padding: theme.spacing(1),
+    },
     learningResultList: {
         display: 'flex',
         flexWrap: 'nowrap',
@@ -52,7 +57,10 @@ const useStyles = makeStyles((theme) => ({
         maxHeight: 200,
         overflow: 'auto',
         overflowX: true,
-    }
+    },
+    taskContainer: {
+        position: 'relative',
+    },
 }));
 
 export const LearningActivityReader = ({ index, learningActivity }) => {
@@ -93,7 +101,7 @@ export const LearningActivityReader = ({ index, learningActivity }) => {
                     </Grid>
                     <Divider />
                     <Grid container spacing={2} >
-                        <Grid item xs={12} sm={8}>
+                        <Grid item xs={12} sm={8} className={classes.taskContainer}>
                             <Grid className={classes.gridTask}>
                                 {
                                     design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i)=> <TaskReader ref={(ref) => taskRefs.current.push(ref)} key={`task-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index}/> ) 
@@ -104,27 +112,25 @@ export const LearningActivityReader = ({ index, learningActivity }) => {
                             </Grid>
                         </Grid>
                         <Grid item xs={12} sm={4} >
-                            <Typography variant="body2" className={classes.spacingDescriptionlearningActivity} color="textSecondary"> Descripción Unidad de aprendizaje </Typography>
-                            <Grid className={classes.spacingDescription}>
-                                <Typography>{learningActivity.description}</Typography>
-                            </Grid>
-                            <Typography variant="body2" className={classes.spacingLinkedResults} color="textSecondary"> Resultados Vinculados </Typography>
-                            <div className={classes.learningResultList}>
-                                {
-                                    design.metadata.results.map(result => (
-                                        <FormControlLabel
-                                            style={{width: '50%'}}
-                                            key={`learning-result-${result.verb}`}
-                                            disabled = {true}
-                                            control={
-                                                <Checkbox 
-                                                    checked={!!learningActivity.learningResults.find(lr=> lr.verb === result.verb)} 
-                                                />
-                                            }
-                                            label={result.verb}
-                                        />
-                                    ))
-                                }
+                            <div className={classes.descriptionContainer}>
+                                <Typography variant="body2" className={classes.spacingDescriptionlearningActivity} color="textSecondary"> Descripción Unidad de aprendizaje </Typography>
+                                <Grid className={classes.spacingDescription}>
+                                    <Typography>{learningActivity.description}</Typography>
+                                </Grid>
+                                <Typography variant="body2" className={classes.spacingLinkedResults} color="textSecondary"> Resultados Vinculados </Typography>
+                                <div className={classes.learningResultList}>
+                                    {
+                                        design.metadata.results.map(result => {
+                                            if(!!learningActivity.learningResults.find(lr=> lr.verb === result.verb)) return (
+                                                <Tooltip key={`learning-result-${result.verb}`} title={result.description}>
+                                                    <Typography>{result.verb}</Typography>
+                                                </Tooltip>
+                                            );
+                                            else return (<div key={`learning-result-${result.verb}`}></div>);
+                                        })
+                                    }
+                                </div>
+
                             </div>
                         </Grid>
                     </Grid>

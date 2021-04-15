@@ -22,17 +22,18 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: 15,
         paddingRight: 15,
         background: theme.palette.background.workSpace,
-        height: 'calc(100vh - 177px)',
-        overflow: 'auto'
+        paddingBottom: theme.spacing(3),
+        height: 'auto',
+        [theme.breakpoints.up('md')]: {
+            height: 'calc(100vh - 177px)',
+            overflow: 'auto'
+        },
     },
     rightPanel: {
         display: 'flex',
         flexDirection: 'column',
         borderLeft: `1px solid ${theme.palette.divider}`,
-    },
-    buttonGroupWorkSpace:{
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1)
+        background: theme.palette.background.paper,
     },
     textLefPanel:{
         marginTop: theme.spacing(1),
@@ -58,7 +59,18 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
     },
-    workSpaceUnits:{
+    workSpaceUnits: {
+        height: 'auto',
+        [theme.breakpoints.up('md')]: {
+            height: '90%',
+            overflow: 'auto',
+            overflowX: 'hidden',
+        },
+    },
+    buttonGroupWorkSpace: {
+        height: 'auto',
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
     },
     '@global': {
         //Ancho del scrollbar    
@@ -260,9 +272,13 @@ export const DesignReader = ({ type }) => {
                     </Grid>
                 </Grid>
                 <Grid item xs={12} md={6} lg={8} className={classes.workspace}>
-                    { (!!authState.token) ? <ButtonGroup size='small' aria-label='outlined primary button group' className={classes.buttonGroupWorkSpace}>
-                        <Button onClick={handleDuplicateDesign}> Duplicar </Button>
-                    </ButtonGroup> : <div></div>}
+                    { (!!authState.token) 
+                        ? <div className={classes.buttonZone}>
+                            <ButtonGroup size='small' aria-label='outlined primary button group' className={classes.buttonGroupWorkSpace}>
+                                <Button onClick={handleDuplicateDesign}> Duplicar </Button>
+                            </ButtonGroup>
+                        </div> 
+                        : <div></div>}
                     <Grid className={classes.workSpaceUnits}>
                         <Grid >
                             {

@@ -35,7 +35,7 @@ const initialState = {
 	},
 	pdf: {
 		typeUserPDF: null,
-	},
+	}
 };
 
 export const UiProvider = ({ children }) => {
