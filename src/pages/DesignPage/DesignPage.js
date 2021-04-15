@@ -232,7 +232,7 @@ export const DesignPage = () => {
                         onChange={handleChange}
                         aria-label="full width tabs example"
                     >
-                        <Tab label="METADATA" {...a11yProps(0)} />
+                        <Tab label="METADATOS" {...a11yProps(0)} />
                         <Tab label="DISEÑO" {...a11yProps(1)} />
                     </Tabs>
                     <div className={classes.usersConnecteds}>

@@ -35,11 +35,14 @@ export const SharedDocProvider = ({ children }) => {
             ];
             const yDoc = new Y.Doc({guid: id});
             setDoc(yDoc);
-            setProvider(new WebsocketProvider(process.env.REACT_APP_Y_WEBSOCKET_SERVER, id, yDoc));
-            setUser({
+            const wsProvider = new WebsocketProvider(process.env.REACT_APP_Y_WEBSOCKET_SERVER, id, yDoc);
+            const userWithColor = {
                 name: authState.user.name,
                 color: colors[Math.floor(Math.random() * colors.length)],
-            });
+            };
+            wsProvider.awareness.setLocalStateField('user', userWithColor);
+            setProvider(wsProvider);
+            setUser(userWithColor);
         },
         [provider, authState.user],
     );

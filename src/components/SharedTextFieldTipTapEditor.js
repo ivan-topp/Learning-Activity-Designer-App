@@ -9,7 +9,7 @@ import { Box, ButtonBase, Divider, makeStyles } from '@material-ui/core'
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
-import Placeholder from './PlaceHolder'
+//import Placeholder from './PlaceHolder'
 import CharacterCount from '@tiptap/extension-character-count'
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons'
 
@@ -27,20 +27,8 @@ const useStyles = makeStyles((theme) => ({
     inputContainer: ({ multiline, rowMax, focused, type }) => ({
         width: '100%',
         cursor: 'text',
-        height: multiline && rowMax === 1 ? 'auto' : `calc(22px * ${rowMax} + 38px)`,
+        height: multiline && rowMax === 1 ? 'auto' : `calc(22px * ${rowMax} + 34px)`,
         overflow: 'auto',
-        borderWidth: !focused ? 1 : 2,
-        borderStyle: 'solid',
-        borderColor: !focused ? theme.palette.action.disabled : theme.palette.primary.main,
-        borderRadius: theme.shape.borderRadius,
-        borderTopRightRadius: type === 'number' ? 0 : theme.shape.borderRadius,
-        borderBottomRightRadius: type === 'number' ? 0 : theme.shape.borderRadius,
-        '&:hover': {
-            borderColor: !focused ? theme.palette.action.active : theme.palette.primary.main,
-        },
-        '&:focus': {
-            borderColor: !focused ? theme.palette.primary.light : theme.palette.primary.main,
-        }
     }),
     actions: () => ({
         display: 'flex',
@@ -49,15 +37,11 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between',
         borderWidth: 1,
         borderStyle: 'solid',
-        borderLeftStyle: 'none',
         borderColor: theme.palette.action.disabled,
         borderTopRightRadius: 5,
         borderBottomRightRadius: 5,
     }),
     action: () => ({
-        //border: `0px 1px 1px 0px solid ${theme.palette.action.disabled}`,
-
-        //borderRadius: '0px 5px 15px 0px',
         height: '100%',
         display: 'flex',
         justifyContent: 'center',
@@ -85,9 +69,6 @@ const useStyles = makeStyles((theme) => ({
             marginBlockStart: 0,
             marginBlockEnd: 0,
         },
-        '.ProseMirror-focused': {
-            border: '0px solid red !important',
-        },
         '.ProseMirror:focus': {
             outline: 'none',
         },
@@ -98,21 +79,6 @@ const useStyles = makeStyles((theme) => ({
             pointerEvents: 'none',
             height: 0,
         },
-        //Ancho del scrollbar    
-        '*::-webkit-scrollbar': {
-            width: '0.4em'
-        },
-        //Sombra del scrollbar
-        '*::-webkit-scrollbar-track': {
-            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)'
-
-        },
-        //Scrollbar
-        '*::-webkit-scrollbar-thumb': {
-            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
-            borderRadius: '15px',
-            backgroundColor: 'rgba(0,0,0,.1)',
-        }
     },
 }));
 
@@ -150,7 +116,7 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name, multiline, rowMax 
             clearText: () => {
                 if (!doc || !editor) return;
                 setText('');
-            }
+            },
         }),
     );
 
@@ -196,9 +162,6 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name, multiline, rowMax 
                 }),
                 Paragraph,
                 Text,
-                Placeholder.configure({
-                    placeholder: placeholder.charAt(0).toUpperCase() + placeholder.slice(1),
-                }),
                 CollaborationCursor.configure({
                     provider: provider,
                     user,
@@ -292,7 +255,6 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name, multiline, rowMax 
                 if (!focused) editor.chain().focus('end').run()
             }}>
                 <EditorContent editor={editor} className={`${classes.editorx}`} />
-
             </div>
             {
                 type === 'number' && (

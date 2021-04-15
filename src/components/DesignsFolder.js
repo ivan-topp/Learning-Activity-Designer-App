@@ -65,7 +65,7 @@ export const DesignsFolder = ({ _id, name, path, ...rest }) => {
     const { dispatch } = useUiState();
     const queryClient = useQueryClient();
     const { enqueueSnackbar } = useSnackbar();
-    const parentPath = path.replace('/' + name, '');
+    const parentPath = path !== '/' + name ? path.replace('/' + name, '') : path.replace(name, '');
 
     const deleteFolderMutation = useMutation(deleteFolder, {
         onMutate: async () => {

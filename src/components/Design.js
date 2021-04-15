@@ -143,7 +143,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, privile
             payload: 'Confirmation',
         });
     };
-
+    
     const handleOpenDesign = () =>{
         const inDesign = privileges.find(privilege => authState.user.uid === privilege.user);
         if (inDesign) {
@@ -197,7 +197,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, privile
                 <CardActions className={classes.ownerInfo}>
                     <Avatar
                         alt={formatName(owner.name, owner.lastname)}
-                    //src='https://i.pinimg.com/400x300/d6/e6/28/d6e6281bb90621d9be0a9e53d882c2c6.jpg'
+                        src={owner.img ?? ''}
                     >
                         {getUserInitials(owner.name, owner.lastname)}
                     </Avatar>

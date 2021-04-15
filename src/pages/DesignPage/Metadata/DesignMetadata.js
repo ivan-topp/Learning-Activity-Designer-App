@@ -118,7 +118,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
         }),
     );
 
-    useEffect(()=>{
+    useEffect(() => {
         return () => {
             isMounted.current = false;
         };
@@ -132,17 +132,17 @@ export const DesignMetadata = forwardRef((props, ref) => {
     );
 
     useEffect(() => {
-        if (isMounted.current){
-            if(JSON.stringify(form.keywords) !== JSON.stringify(design.keywords)){
+        if (isMounted.current) {
+            if (JSON.stringify(form.keywords) !== JSON.stringify(design.keywords)) {
                 setKeywords([...design.keywords]);
             }
         }
     }, [design.keywords, form.keywords, setKeywords]);
 
     useEffect(() => {
-        if (isMounted.current){
-            if(form.category !== metadata.category.name){
-                setValues((prevState)=>({
+        if (isMounted.current) {
+            if (form.category !== metadata.category.name) {
+                setValues((prevState) => ({
                     ...prevState,
                     category: metadata.category.name ?? 'Sin categoría',
                 }));
@@ -151,9 +151,9 @@ export const DesignMetadata = forwardRef((props, ref) => {
     }, [metadata.category, form.category, setValues]);
 
     useEffect(() => {
-        if(isMounted.current){
-            if(form.name !== metadata.name){
-                setValues((prevState)=>({
+        if (isMounted.current) {
+            if (form.name !== metadata.name) {
+                setValues((prevState) => ({
                     ...prevState,
                     name: metadata.name,
                 }));
@@ -162,9 +162,9 @@ export const DesignMetadata = forwardRef((props, ref) => {
     }, [metadata.name, form.name, setValues]);
 
     useEffect(() => {
-        if(isMounted.current){
-            if(form.classSize !== metadata.classSize){
-                setValues((prevState)=>({
+        if (isMounted.current) {
+            if (form.classSize !== metadata.classSize) {
+                setValues((prevState) => ({
                     ...prevState,
                     classSize: metadata.classSize,
                 }));
@@ -173,9 +173,9 @@ export const DesignMetadata = forwardRef((props, ref) => {
     }, [metadata.classSize, form.classSize, setValues]);
 
     useEffect(() => {
-        if(isMounted.current){
-            if(form.description !== metadata.description){
-                setValues((prevState)=>({
+        if (isMounted.current) {
+            if (form.description !== metadata.description) {
+                setValues((prevState) => ({
                     ...prevState,
                     description: metadata.description,
                 }));
@@ -184,9 +184,9 @@ export const DesignMetadata = forwardRef((props, ref) => {
     }, [metadata.description, form.description, setValues]);
 
     useEffect(() => {
-        if(isMounted.current){
-            if(form.workingTimeDesignHours !== TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[0]){
-                setValues((prevState)=>({
+        if (isMounted.current) {
+            if (form.workingTimeDesignHours !== TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[0]) {
+                setValues((prevState) => ({
                     ...prevState,
                     workingTimeDesignHours: TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[0],
                 }));
@@ -195,9 +195,9 @@ export const DesignMetadata = forwardRef((props, ref) => {
     }, [metadata.workingTimeDesign, form.workingTimeDesignHours, setValues]);
 
     useEffect(() => {
-        if(isMounted.current){
-            if(form.workingTimeDesignMinutes !== TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[1]){
-                setValues((prevState)=>({
+        if (isMounted.current) {
+            if (form.workingTimeDesignMinutes !== TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[1]) {
+                setValues((prevState) => ({
                     ...prevState,
                     workingTimeDesignMinutes: TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[1],
                 }));
@@ -206,9 +206,9 @@ export const DesignMetadata = forwardRef((props, ref) => {
     }, [metadata.workingTimeDesign, form.workingTimeDesignMinutes, setValues]);
 
     useEffect(() => {
-        if(isMounted.current){
-            if(form.workingTimeHours !== metadata.workingTime.hours){
-                setValues((prevState)=>({
+        if (isMounted.current) {
+            if (form.workingTimeHours !== metadata.workingTime.hours) {
+                setValues((prevState) => ({
                     ...prevState,
                     workingTimeHours: metadata.workingTime.hours ?? 0,
                 }));
@@ -217,9 +217,9 @@ export const DesignMetadata = forwardRef((props, ref) => {
     }, [metadata.workingTime.hours, form.workingTimeHours, setValues]);
 
     useEffect(() => {
-        if(isMounted.current){
-            if(form.workingTimeMinutes !== metadata.workingTime.minutes){
-                setValues((prevState)=>({
+        if (isMounted.current) {
+            if (form.workingTimeMinutes !== metadata.workingTime.minutes) {
+                setValues((prevState) => ({
                     ...prevState,
                     workingTimeMinutes: metadata.workingTime.minutes ?? 0,
                 }));
@@ -228,9 +228,9 @@ export const DesignMetadata = forwardRef((props, ref) => {
     }, [metadata.workingTime.minutes, form.workingTimeMinutes, setValues]);
 
     useEffect(() => {
-        if(isMounted.current){
-            if(form.priorKnowledge !== metadata.priorKnowledge){
-                setValues((prevState)=>({
+        if (isMounted.current) {
+            if (form.priorKnowledge !== metadata.priorKnowledge) {
+                setValues((prevState) => ({
                     ...prevState,
                     priorKnowledge: metadata.priorKnowledge,
                 }));
@@ -239,9 +239,9 @@ export const DesignMetadata = forwardRef((props, ref) => {
     }, [metadata.priorKnowledge, form.priorKnowledge, setValues]);
 
     useEffect(() => {
-        if(isMounted.current){
-            if(form.objective !== metadata.objective){
-                setValues((prevState)=>({
+        if (isMounted.current) {
+            if (form.objective !== metadata.objective) {
+                setValues((prevState) => ({
                     ...prevState,
                     objective: metadata.objective,
                 }));
@@ -250,18 +250,18 @@ export const DesignMetadata = forwardRef((props, ref) => {
     }, [metadata.objective, form.objective, setValues]);
 
     useEffect(() => {
-        if(isMounted.current){
-            if(form.isPublic !== metadata.isPublic){
-                setValues((prevState)=>({
+        if (isMounted.current) {
+            if (form.isPublic !== metadata.isPublic) {
+                setValues((prevState) => ({
                     ...prevState,
                     isPublic: metadata.isPublic,
                 }));
             }
         }
     }, [metadata.isPublic, form.isPublic, setValues]);
-    
+
     const { name, category, classSize, workingTimeDesignHours, workingTimeDesignMinutes, workingTimeHours, workingTimeMinutes, priorKnowledge, description, objective, isPublic, keywords } = form;
-    
+
     const { isLoading, isError, data, error } = useQuery('categories', async () => {
         return await getCategories();
     }, { refetchOnWindowFocus: false });
@@ -279,7 +279,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
         return data.categories.map(c => <MenuItem key={c._id} value={c.name}>{c.name}</MenuItem>);
     };
 
-    const handleChangeMetadataField = ({target}) => {
+    const handleChangeMetadataField = ({ target }) => {
         let { name: field, value } = target;
         value = (target.type === 'number' && !isNaN(target.value)) ? parseInt(target.value) : (target.type === 'checkbox') ? target.checked : target.value;
         let e = { target: { name: target.name, value } };
@@ -307,7 +307,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
 
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
-        enqueueSnackbar('Su diseño se ha guardado correctamente',  {variant: 'success', autoHideDuration: 2000});
+        enqueueSnackbar('Su diseño se ha guardado correctamente', { variant: 'success', autoHideDuration: 2000 });
     };
 
     const handleOpenLearningResultmodal = () => dispatch({
@@ -316,8 +316,8 @@ export const DesignMetadata = forwardRef((props, ref) => {
     });
 
     const handleChangeKeywords = (keywords, type, targetKeyword) => {
-        if(type === 'add') socket.emit('add-design-keyword', { designId: design._id, keyword: targetKeyword});
-        else if (type === 'remove') socket.emit('remove-design-keyword', { designId: design._id, keyword: targetKeyword});
+        if (type === 'add') socket.emit('add-design-keyword', { designId: design._id, keyword: targetKeyword });
+        else if (type === 'remove') socket.emit('remove-design-keyword', { designId: design._id, keyword: targetKeyword });
     };
 
     return (
@@ -331,24 +331,33 @@ export const DesignMetadata = forwardRef((props, ref) => {
                     </div>
                     <Divider />
                     <Grid container spacing={3} className={classes.content}>
-                        
                         <Grid item className={classes.grid} xs={12} sm={9}  >
-                            <SharedTextFieldTipTapEditor 
-                                ref={nameRef}
-                                name='name' 
-                                placeholder='Nombre'
-                                initialvalue={name}
-                                onChange={handleChangeMetadataField}
+                            <TextField
+                                label='Nombre'
+                                fullWidth
+                                margin='none'
+                                variant='outlined'
+                                color='primary'
+                                InputProps={{
+                                    inputComponent: SharedTextFieldTipTapEditor,
+                                    inputProps: {
+                                        ref: nameRef,
+                                        name: 'name',
+                                        placeholder: 'Nombre',
+                                        initialvalue: name,
+                                        onChange: handleChangeMetadataField,
+                                    }
+                                }}
                             />
                         </Grid>
                         <Grid item className={classes.grid} xs={12} sm={3}>
                             <div>
                                 <Typography variant='body2'>Visibilidad</Typography>
                                 <FormControlLabel
-                                    control={<Switch 
-                                        name='isPublic' 
-                                        checked={isPublic} 
-                                        onChange={handleChangeMetadataField} 
+                                    control={<Switch
+                                        name='isPublic'
+                                        checked={isPublic}
+                                        onChange={handleChangeMetadataField}
                                         disabled={!(design.owner === authState.user.uid)}
                                     />}
                                     label={isPublic ? 'Público' : 'Privado'}
@@ -371,39 +380,69 @@ export const DesignMetadata = forwardRef((props, ref) => {
                             </FormControl>
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
-                            <SharedTextFieldTipTapEditor 
-                                ref={classSizeRef}
-                                name='classSize' 
-                                placeholder='Tamaño de la clase'
-                                initialvalue={classSize ?? 0}
-                                type="number"
-                                min={0}
-                                onChange={handleChangeMetadataField}
+                            <TextField
+                                label='Tamaño de la clase'
+                                fullWidth
+                                margin='none'
+                                variant='outlined'
+                                color='primary'
+                                InputProps={{
+                                    inputComponent: SharedTextFieldTipTapEditor,
+                                    inputProps: {
+                                        ref: classSizeRef,
+                                        name: 'classSize',
+                                        placeholder: 'Tamaño de la clase',
+                                        initialvalue: classSize ?? 0,
+                                        type: "number",
+                                        min: 0,
+                                        onChange: handleChangeMetadataField,
+                                    }
+                                }}
                             />
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
                             <div style={{ width: '100%' }}>
                                 <Typography > Tiempo de trabajo </Typography>
                                 <div className={classes.timeField}>
-                                    <SharedTextFieldTipTapEditor 
-                                        ref={hoursRef}
-                                        name='workingTimeHours' 
-                                        placeholder='Horas'
-                                        initialvalue={workingTimeHours}
-                                        type="number"
-                                        min={0}
-                                        onChange={handleChangeMetadataField}
+                                    <TextField
+                                        label='Horas'
+                                        fullWidth
+                                        margin='none'
+                                        variant='outlined'
+                                        color='primary'
+                                        InputProps={{
+                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputProps: {
+                                                ref: hoursRef,
+                                                name: 'workingTimeHours',
+                                                placeholder: 'Horas',
+                                                initialvalue: workingTimeHours,
+                                                type: "number",
+                                                min: 0,
+                                                onChange: handleChangeMetadataField,
+                                            }
+                                        }}
                                     />
                                     <Typography style={{ marginLeft: 10, marginRight: 10 }}> : </Typography>
-                                    <SharedTextFieldTipTapEditor 
-                                        ref={minutesRef}
-                                        name='workingTimeMinutes' 
-                                        placeholder='Minutos'
-                                        initialvalue={workingTimeMinutes}
-                                        type="number"
-                                        min={0}
-                                        max={59}
-                                        onChange={handleChangeMetadataField}
+                                    <TextField
+                                        label='Minutos'
+                                        fullWidth
+                                        margin='none'
+                                        variant='outlined'
+                                        color='primary'
+                                        InputProps={{
+                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputProps: {
+                                                ref: minutesRef,
+                                                name: 'workingTimeMinutes',
+                                                placeholder: 'Minutos',
+                                                initialvalue: workingTimeMinutes,
+                                                type: "number",
+                                                min: 0,
+                                                max: 59,
+                                                onChange: handleChangeMetadataField,
+                                            }
+                                        }}
                                     />
                                 </div>
                             </div>
@@ -437,40 +476,70 @@ export const DesignMetadata = forwardRef((props, ref) => {
                             </div>
                         </Grid>
                         <Grid item className={classes.grid} xs={12}>
-                            <SharedTextFieldTipTapEditor 
-                                ref={descriptionRef}
-                                name='description' 
-                                placeholder='Descripción'
-                                initialvalue={description ?? ''}
-                                onChange={handleChangeMetadataField}
-                                rowMax={5}
-                                multiline
+                            <TextField
+                                label='Descripción'
+                                fullWidth
+                                margin='none'
+                                variant='outlined'
+                                color='primary'
+                                InputProps={{
+                                    inputComponent: SharedTextFieldTipTapEditor,
+                                    inputProps: {
+                                        ref: descriptionRef,
+                                        name: 'description',
+                                        placeholder: 'Descripción',
+                                        initialvalue: description ?? '',
+                                        rowMax: 5,
+                                        onChange: handleChangeMetadataField,
+                                        multiline: true,
+                                    }
+                                }}
                             />
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
-                            <SharedTextFieldTipTapEditor 
-                                ref={priorKnowledgeRef}
-                                name='priorKnowledge' 
-                                placeholder='Conocimiento previo'
-                                initialvalue={priorKnowledge ?? ''}
-                                onChange={handleChangeMetadataField}
-                                rowMax={5}
-                                multiline
+                            <TextField
+                                label='Conocimiento previo'
+                                fullWidth
+                                margin='none'
+                                variant='outlined'
+                                color='primary'
+                                InputProps={{
+                                    inputComponent: SharedTextFieldTipTapEditor,
+                                    inputProps: {
+                                        ref: priorKnowledgeRef,
+                                        name: 'priorKnowledge',
+                                        placeholder: 'Conocimiento previo',
+                                        initialvalue: priorKnowledge ?? '',
+                                        rowMax: 5,
+                                        onChange: handleChangeMetadataField,
+                                        multiline: true,
+                                    }
+                                }}
                             />
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
-                            <SharedTextFieldTipTapEditor 
-                                ref={objectiveRef}
-                                name='objective' 
-                                placeholder='Objetivos'
-                                initialvalue={objective ?? ''}
-                                onChange={handleChangeMetadataField}
-                                rowMax={5}
-                                multiline
+                            <TextField
+                                label='Objetivos'
+                                fullWidth
+                                margin='none'
+                                variant='outlined'
+                                color='primary'
+                                InputProps={{
+                                    inputComponent: SharedTextFieldTipTapEditor,
+                                    inputProps: {
+                                        ref: objectiveRef,
+                                        name: 'objective',
+                                        placeholder: 'Objetivos',
+                                        initialvalue: objective ?? '',
+                                        rowMax: 5,
+                                        onChange: handleChangeMetadataField,
+                                        multiline: true,
+                                    }
+                                }}
                             />
                         </Grid>
                     </Grid>
-                    <KeywordManager keywords={keywords} onChangeKeywords={handleChangeKeywords}/>
+                    <KeywordManager keywords={keywords} onChangeKeywords={handleChangeKeywords} />
                     <div className={classes.title}>
                         <Typography variant='h4'>Resultados de aprendizaje</Typography>
                         <Button variant='outlined' color='default' onClick={handleOpenLearningResultmodal}>Agregar</Button>
@@ -492,8 +561,8 @@ export const DesignMetadata = forwardRef((props, ref) => {
                     </div>
                 </Grid>
                 <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
-            </Grid> 
-            <LearningResultModal design={design} isOpen={uiState.isLearningResultModalOpen}/>
+            </Grid>
+            <LearningResultModal design={design} isOpen={uiState.isLearningResultModalOpen} />
         </>
     )
 })

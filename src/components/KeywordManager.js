@@ -78,7 +78,6 @@ export const KeywordManager = ({ keywords, onChangeKeywords }) => {
                     value={keyword}
                     onChange={handleKeywordInputChange}
                     label='Palabra Clave'
-                    placeholder='Ingresa el nombre o propietario para buscar diseños'
                     error={!!keywordError}
                     helperText={keywordError}
                     fullWidth
