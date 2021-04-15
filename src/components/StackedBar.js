@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
         : 0,
 */
 
-export const StackedBar = ({ height = 25, items, type, legends }) => {
+export const StackedBar = ({ height = 25, items, type, legends, colorGraphicToPdf }) => {
     const classes = useStyles();
     const { userConfig } = useUserConfigState();
     let colors = [];
@@ -58,8 +58,8 @@ export const StackedBar = ({ height = 25, items, type, legends }) => {
     else if( type === 'Modality' ){ (userConfig.darkTheme) ? colors = ['#A6CAF6', '#6996CD', '#5FA2EF', '#135BB3'] : colors = ['#A6CAF6', '#6996CD', '#5FA2EF', '#135BB3']};
     
     return (
-        <>
-            <div className={classes.root} style={{height}}>
+        <>  
+            <div className={classes.root} style={{height}} >
                 {   
                     items.map( (item, index) => (
                         <Tooltip 
@@ -90,7 +90,11 @@ export const StackedBar = ({ height = 25, items, type, legends }) => {
                     { items.map ((item, index) =>( 
                         <div className={classes.legend} key = {`legends-${index}`}  >
                             <div className={classes.colorBoxRightPanel} style={{backgroundColor: colors[index]}}></div>
-                            <Typography  variant="caption" > {item.title} </Typography>
+                            {colorGraphicToPdf ? 
+                                <Typography variant="caption" > {item.title} </Typography> 
+                                :
+                                <Typography variant="caption" style={{color: "#000000"}}> {item.title} </Typography>
+                            }
                         </div>)
                     )}
                 </div>

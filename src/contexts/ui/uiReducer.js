@@ -35,6 +35,14 @@ export const uiReducer = ( state, action ) => {
                 ...state,
                 confirmModalData: action.payload,
             };
+        case types.ui.setPDF:
+            return{
+                ...state,
+                pdf: {
+                    ...state.pdf,
+                    typeUserPDF: action.payload
+                },
+            };
         default:
             return state;
     }
