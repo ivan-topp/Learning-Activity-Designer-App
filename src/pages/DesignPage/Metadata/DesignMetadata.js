@@ -142,123 +142,90 @@ export const DesignMetadata = forwardRef((props, ref) => {
     useEffect(() => {
         if (isMounted.current) {
             if (form.category !== metadata.category.name) {
-                setValues((prevState) => ({
-                    ...prevState,
-                    category: metadata.category.name ?? 'Sin categoría',
-                }));
+                handleInputChange({target: {name: 'category', value: metadata.category.name ?? 'Sin categoría'}});
             }
         }
-    }, [metadata.category, form.category, setValues]);
+    }, [metadata.category, form.category, setValues, handleInputChange]);
 
     useEffect(() => {
         if (isMounted.current) {
             if (form.name !== metadata.name) {
-                setValues((prevState) => ({
-                    ...prevState,
-                    name: metadata.name,
-                }));
+                handleInputChange({target: {name: 'name', value: metadata.name}});
             }
         }
-    }, [metadata.name, form.name, setValues]);
+    }, [metadata.name, form.name, setValues, handleInputChange]);
 
     useEffect(() => {
         if (isMounted.current) {
             if (form.classSize !== metadata.classSize) {
-                setValues((prevState) => ({
-                    ...prevState,
-                    classSize: metadata.classSize,
-                }));
+                handleInputChange({target: {name: 'classSize', value: metadata.classSize}});
             }
         }
-    }, [metadata.classSize, form.classSize, setValues]);
+    }, [metadata.classSize, form.classSize, setValues, handleInputChange]);
 
     useEffect(() => {
         if (isMounted.current) {
             if (form.description !== metadata.description) {
-                setValues((prevState) => ({
-                    ...prevState,
-                    description: metadata.description,
-                }));
+                handleInputChange({target: {name: 'description', value: metadata.description}});
             }
         }
-    }, [metadata.description, form.description, setValues]);
+    }, [metadata.description, form.description, setValues, handleInputChange]);
 
     useEffect(() => {
         if (isMounted.current) {
             if (form.workingTimeDesignHours !== TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[0]) {
-                setValues((prevState) => ({
-                    ...prevState,
-                    workingTimeDesignHours: TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[0],
-                }));
+                handleInputChange({target: {name: 'workingTimeDesignHours', value: TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[0]}});
             }
         }
-    }, [metadata.workingTimeDesign, form.workingTimeDesignHours, setValues]);
+    }, [metadata.workingTimeDesign, form.workingTimeDesignHours, setValues, handleInputChange]);
 
     useEffect(() => {
         if (isMounted.current) {
             if (form.workingTimeDesignMinutes !== TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[1]) {
-                setValues((prevState) => ({
-                    ...prevState,
-                    workingTimeDesignMinutes: TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[1],
-                }));
+                handleInputChange({target: {name: 'workingTimeDesignMinutes', value: TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[1]}});
             }
         }
-    }, [metadata.workingTimeDesign, form.workingTimeDesignMinutes, setValues]);
+    }, [metadata.workingTimeDesign, form.workingTimeDesignMinutes, setValues, handleInputChange]);
 
     useEffect(() => {
         if (isMounted.current) {
             if (form.workingTimeHours !== metadata.workingTime.hours) {
-                setValues((prevState) => ({
-                    ...prevState,
-                    workingTimeHours: metadata.workingTime.hours ?? 0,
-                }));
+                handleInputChange({target: {name: 'workingTimeHours', value: metadata.workingTime.hours ?? 0}});
             }
         }
-    }, [metadata.workingTime.hours, form.workingTimeHours, setValues]);
+    }, [metadata.workingTime.hours, form.workingTimeHours, setValues, handleInputChange]);
 
     useEffect(() => {
         if (isMounted.current) {
             if (form.workingTimeMinutes !== metadata.workingTime.minutes) {
-                setValues((prevState) => ({
-                    ...prevState,
-                    workingTimeMinutes: metadata.workingTime.minutes ?? 0,
-                }));
+                handleInputChange({target: {name: 'workingTimeMinutes', value: metadata.workingTime.minutes ?? 0}});
             }
         }
-    }, [metadata.workingTime.minutes, form.workingTimeMinutes, setValues]);
+    }, [metadata.workingTime.minutes, form.workingTimeMinutes, setValues, handleInputChange]);
 
     useEffect(() => {
         if (isMounted.current) {
             if (form.priorKnowledge !== metadata.priorKnowledge) {
-                setValues((prevState) => ({
-                    ...prevState,
-                    priorKnowledge: metadata.priorKnowledge,
-                }));
+                handleInputChange({target: {name: 'priorKnowledge', value: metadata.priorKnowledge}});
             }
         }
-    }, [metadata.priorKnowledge, form.priorKnowledge, setValues]);
+    }, [metadata.priorKnowledge, form.priorKnowledge, setValues, handleInputChange]);
 
     useEffect(() => {
         if (isMounted.current) {
             if (form.objective !== metadata.objective) {
-                setValues((prevState) => ({
-                    ...prevState,
-                    objective: metadata.objective,
-                }));
+                handleInputChange({target: {name: 'objective', value: metadata.objective}});
             }
         }
-    }, [metadata.objective, form.objective, setValues]);
+    }, [metadata.objective, form.objective, setValues, handleInputChange]);
 
     useEffect(() => {
         if (isMounted.current) {
             if (form.isPublic !== metadata.isPublic) {
-                setValues((prevState) => ({
-                    ...prevState,
-                    isPublic: metadata.isPublic,
-                }));
+                handleInputChange({target: {name: 'isPublic', value: metadata.isPublic}});
             }
         }
-    }, [metadata.isPublic, form.isPublic, setValues]);
+    }, [metadata.isPublic, form.isPublic, setValues, handleInputChange]);
 
     const { name, category, classSize, workingTimeDesignHours, workingTimeDesignMinutes, workingTimeHours, workingTimeMinutes, priorKnowledge, description, objective, isPublic, keywords } = form;
 
@@ -302,7 +269,12 @@ export const DesignMetadata = forwardRef((props, ref) => {
                 break;
         }
         socket.emit('edit-metadata-field', { designId: design._id, field, value, subfield });
-        handleInputChange(e);
+        if(subfield){
+            if (design.metadata[field][subfield].toString() !== value.toString()) handleInputChange(e);
+        } else {
+            if (design.metadata[field].toString() !== value.toString()) handleInputChange(e);
+        }
+        
     };
 
     const handleSaveDesign = (e) => {
