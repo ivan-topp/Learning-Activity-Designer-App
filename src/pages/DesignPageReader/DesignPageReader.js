@@ -7,7 +7,6 @@ import { TabPanel } from 'components/TabPanel';
 import { useDesignState } from 'contexts/design/DesignContext';
 import types from 'types';
 import { Alert } from '@material-ui/lab';
-import { useSharedDocContext } from 'contexts/SharedDocContext';
 import { DesignReader } from './DesignReader/DesignReader';
 
 const useStyles = makeStyles((theme) => ({
@@ -38,24 +37,14 @@ const a11yProps = (index) => {
 export const DesignPageReader = () => {
     const classes = useStyles();
     const isMounted = useRef(true);
-    const metadataRef = useRef();
     const { id } = useParams();
-    const { doc, provider, connectToDesign, clearDoc } = useSharedDocContext();
     const { authState } = useAuthState();
     const { socket, online } = useSocketState();
     const [ tabIndex, setTabIndex ] = useState(0);
     const { designState, dispatch } = useDesignState();
     const { design } = designState;
     const [error, setError] = useState(null);
-    
-    useEffect(()=>{
-        let metadataComponent = metadataRef.current;
-        return () => {
-            metadataComponent?.clearEditors();
-            clearDoc();
-            isMounted.current = false;
-        };
-    }, [clearDoc]);
+
     
     useEffect(() => {
         if(online){
@@ -66,13 +55,12 @@ export const DesignPageReader = () => {
                             type: types.design.updateDesign,
                             payload: res.data.design
                         });
-                        connectToDesign(id);
                     }
                 } 
                 else setError(res.message);
             });
         }
-    }, [socket, authState.user, online, id, dispatch, connectToDesign]);
+    }, [socket, authState.user, online, id, dispatch]);
 
     useEffect(() => {
         return () => {
@@ -94,7 +82,7 @@ export const DesignPageReader = () => {
         );
     }
 
-    if (!design || !doc || !provider) {
+    if (!design) {
         
         return (<Typography>Cargando...</Typography>);
     }

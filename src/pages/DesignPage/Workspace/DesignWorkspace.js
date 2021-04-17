@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { /*useEffect,*/ useRef, useState } from 'react';
 import { Box, Button, ButtonGroup, Divider, Fab, Grid, makeStyles, Menu, MenuItem, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { LearningActivity } from 'pages/DesignPage/Workspace/LearningActivity';
@@ -13,7 +13,6 @@ import types from 'types';
 import { useSnackbar } from 'notistack';
 import { Add } from '@material-ui/icons';
 import ObjectID from 'bson-objectid';
-//import { scrollToBottomAnimated } from 'utils/scrollToBottom';
 import { ViewAndDownloadPDFModal } from 'pages/DesignPage/PDF/ViewAndDownloadPDFModal';
 import { useUserConfigState } from 'contexts/UserConfigContext';
 import { ResourceLinksModal } from './ResourceLinksModal';
@@ -29,8 +28,8 @@ const useStyles = makeStyles((theme) => ({
         paddingRight: 15,
         position: 'relative',
         background: theme.palette.background.workSpace,
-        height: 'auto',
         paddingBottom: theme.spacing(6),
+        height: 'auto',
         [theme.breakpoints.up('md')]: {
             height: 'calc(100vh - 177px)',
             overflow: 'auto'
@@ -119,7 +118,6 @@ export const DesignWorkspace = () => {
     let showGraphicFormat = false;
     let showGraphicModality = false;
 
-
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
         enqueueSnackbar('Su diseño se ha guardado correctamente', { variant: 'success', autoHideDuration: 2000 });
@@ -128,7 +126,6 @@ export const DesignWorkspace = () => {
     const handleNewUA = () => {
         const id = ObjectID().toString();
         socket.emit('new-learningActivity', { designId: design._id, id });
-        //scrollToBottomAnimated('learningActivities');
     };
 
     const handleOpenModal = () => {

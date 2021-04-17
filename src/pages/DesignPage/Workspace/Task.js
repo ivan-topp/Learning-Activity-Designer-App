@@ -125,7 +125,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const Task = forwardRef(({ learningActivityIndex, index, task, ...rest }, ref) => {
+export const Task = forwardRef(({ learningActivityIndex, index, task, learningActivityID, ...rest }, ref) => {
     const classes = useStyles();
     const { socket } = useSocketState();
     const isMounted = useRef(true);
@@ -248,7 +248,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, ...rest },
             value = isNaN(value) ? 0 : value;
         }
         handleInputChange({ target });
-        socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field, value, subfield });
+        socket.emit('edit-task-field', { designId: design._id, learningActivityID, taskID: task.id, field, value, subfield });
     };
 
     //const handleAddResource = () => {
@@ -275,14 +275,14 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, ...rest },
             hoursRef?.current?.clearText();
             minutesRef?.current?.clearText();
             descriptionRef?.current?.clearText();
-            socket.emit('delete-task', { designId: design._id, learningActivityIndex, index });
+            socket.emit('delete-task', { designId: design._id, learningActivityID, taskID: task.id });
             enqueueSnackbar('Su tarea se ha eliminado', { variant: 'success', autoHideDuration: 2000 });
         } else {
             dispatch({
                 type: types.ui.setConfirmData,
                 payload: {
                     type: 'tarea',
-                    args: { designId: design._id, learningActivityIndex, index },
+                    args: { designId: design._id, learningActivityID, taskID: task.id },
                     actionMutation: null,
                 }
             })
@@ -295,7 +295,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, ...rest },
 
     const handleChangeDropdown = (e) => {
         handleInputChange(e);
-        socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field: e.target.name, value: e.target.value, subfield: null });
+        socket.emit('edit-task-field', { designId: design._id, learningActivityID, taskID: task.id, field: e.target.name, value: e.target.value, subfield: null });
     };
 
     const listTasksArray = () => {
@@ -334,9 +334,9 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, ...rest },
                             <div className={classes.gridContainer}>
                                 <div className={classes.learningTypeContainer}>
                                     <FormControl fullWidth variant='outlined' className={classes.learningType}>
-                                        <InputLabel id={`learningType-task-${index}-learningActivity-${learningActivityIndex}`}>Aprendizaje</InputLabel>
+                                        <InputLabel id={`learningType-task-${task.id}-learningActivity-${learningActivityID}`}>Aprendizaje</InputLabel>
                                         <Select
-                                            labelId={`learningType-task-${index}-learningActivity-${learningActivityIndex}`}
+                                            labelId={`learningType-task-${task.id}-learningActivity-${learningActivityID}`}
                                             label='Aprendizaje'
                                             name='learningType'
                                             value={learningType}
@@ -360,11 +360,11 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, ...rest },
                                 </div>
                                 <div className={classes.modality}>
                                     <FormControl fullWidth variant='outlined'>
-                                        <InputLabel id={`modality-task-${index}-learningActivity-${learningActivityIndex}`}> Modalidad </InputLabel>
+                                        <InputLabel id={`modality-task-${task.id}-learningActivity-${learningActivityID}`}> Modalidad </InputLabel>
                                         <Select
-                                            labelId={`modality-task-${index}-learningActivity-${learningActivityIndex}`}
+                                            labelId={`modality-task-${task.id}-learningActivity-${learningActivityID}`}
                                             label='Aprendizaje'
-                                            name='Modalidad'
+                                            name='modality'
                                             value={modality}
                                             onChange={handleChangeDropdown}
                                         >
@@ -394,7 +394,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, ...rest },
                                                 inputComponent: SharedTextFieldTipTapEditor,
                                                 inputProps: {
                                                     ref: hoursRef,
-                                                    name: `timeHours-task-${index}-learning-activity-${learningActivityIndex}`, // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
+                                                    name: `timeHours-task-${task.id}-learning-activity-${learningActivityID}`, // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
                                                     placeholder: 'Horas',
                                                     initialvalue: timeHours,
                                                     onChange: handleEditTaskField,
@@ -414,7 +414,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, ...rest },
                                                 inputComponent: SharedTextFieldTipTapEditor,
                                                 inputProps: {
                                                     ref: minutesRef,
-                                                    name: `timeMinutes-task-${index}-learning-activity-${learningActivityIndex}`, // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
+                                                    name: `timeMinutes-task-${task.id}-learning-activity-${learningActivityID}`, // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
                                                     placeholder: 'Minutos',
                                                     initialvalue: timeMinutes,
                                                     onChange: handleEditTaskField,
@@ -425,11 +425,26 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, ...rest },
                                             }}
                                         />
                                     </div>
+                                    
+                                </div>
+                                <div style={{marginTop: 20}}>
+                                    <Button variant={'outlined'} onClick={handleOpenResourceModal}> Administrar recursos</Button>
+                                    {/*
+                                    <div className={classes.resourceLinkGrid}>
+                                        <Typography variant="body2" color="textSecondary" > Enlace de Recursos </Typography>
+                                        <Tooltip title='Agregar recurso' arrow>
+                                            <Fab aria-label='add-resource-link' className= {classes.fab} color='primary' onClick={handleAddResource} >
+                                                <Add className={classes.icon}/>
+                                            </Fab>
+                                        </Tooltip>
+                                    </div>
+                                    {design.data.learningActivities[learningActivityIndex] && design.data.learningActivities[learningActivityIndex].tasks && design.data.learningActivities[learningActivityIndex].tasks[index].resourceLinks && design.data.learningActivities[learningActivityIndex].tasks[index].resourceLinks.map((resourceLink, i)=> <ResourceLinks ref={(ref) => resourceLinksRefs.current.push(ref)} key={`resourceLink-${i}-task-${index}-learningActivity-${learningActivityIndex}`} index={i} resourceLink={resourceLink} taskIndex={index} learningActivityIndex= {learningActivityIndex} /> ) 
+                                    */}
                                 </div>
                                 <FormControl fullWidth={isMediumDevice} variant='outlined' className={classes.format}>
-                                    <InputLabel id={`format-task-${index}-learningActivity-${learningActivityIndex}`}> Formato </InputLabel>
+                                    <InputLabel id={`format-task-${task.id}-learningActivity-${learningActivityID}`}> Formato </InputLabel>
                                     <Select
-                                        labelId={`format-task-${index}-learningActivity-${learningActivityIndex}`}
+                                        labelId={`format-task-${task.id}-learningActivity-${learningActivityID}`}
                                         label='Formato'
                                         name='format'
                                         value={format}
@@ -452,7 +467,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, ...rest },
                                         inputComponent: SharedTextFieldTipTapEditor,
                                         inputProps: {
                                             ref: descriptionRef,
-                                            name: `description-task-${index}-learning-activity-${learningActivityIndex}`, // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
+                                            name: `description-task-${task.id}-learning-activity-${learningActivityID}`, // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
                                             placeholder: 'Descripción',
                                             initialvalue: description,
                                             onChange: handleEditTaskField,
@@ -460,20 +475,6 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, ...rest },
                                         }
                                     }}
                                 />
-                            </div>
-                            <div style={{marginTop: 20}}>
-                                <Button variant={'outlined'} onClick={handleOpenResourceModal}> Administrar recursos</Button>
-                                {/*
-                                <div className={classes.resourceLinkGrid}>
-                                    <Typography variant="body2" color="textSecondary" > Enlace de Recursos </Typography>
-                                    <Tooltip title='Agregar recurso' arrow>
-                                        <Fab aria-label='add-resource-link' className= {classes.fab} color='primary' onClick={handleAddResource} >
-                                            <Add className={classes.icon}/>
-                                        </Fab>
-                                    </Tooltip>
-                                </div>
-                                {design.data.learningActivities[learningActivityIndex] && design.data.learningActivities[learningActivityIndex].tasks && design.data.learningActivities[learningActivityIndex].tasks[index].resourceLinks && design.data.learningActivities[learningActivityIndex].tasks[index].resourceLinks.map((resourceLink, i)=> <ResourceLinks ref={(ref) => resourceLinksRefs.current.push(ref)} key={`resourceLink-${i}-task-${index}-learningActivity-${learningActivityIndex}`} index={i} resourceLink={resourceLink} taskIndex={index} learningActivityIndex= {learningActivityIndex} /> ) 
-                                */}
                             </div>
                         </div>
                     </Box>

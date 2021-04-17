@@ -37,8 +37,18 @@ export const designReducer = ( state, action ) => {
             }
         case types.design.changeTaskField:
             const learningActivities = state.design.data.learningActivities;
-            if (action.payload.subfield !== null) learningActivities[action.payload.learningActivityIndex].tasks[action.payload.index][action.payload.field][action.payload.subfield] = action.payload.value;
-            else learningActivities[action.payload.learningActivityIndex].tasks[action.payload.index][action.payload.field] = action.payload.value;
+            learningActivities.forEach((la, index) => {
+                if(la.id === action.payload.learningActivityID){
+                    la.tasks.forEach((t, i)=>{
+                        if(t.id === action.payload.taskID){
+                            if(action.payload.subfield !== null) learningActivities[index].tasks[i][action.payload.field][action.payload.subfield] = action.payload.value;
+                            else learningActivities[index].tasks[i][action.payload.field] = action.payload.value;
+                        }
+                    });
+                }
+            });
+            //if (action.payload.subfield !== null) learningActivities[action.payload.learningActivityIndex].tasks[action.payload.index][action.payload.field][action.payload.subfield] = action.payload.value;
+            //else learningActivities[action.payload.learningActivityIndex].tasks[action.payload.index][action.payload.field] = action.payload.value;
             // learningActivities: [...learningActivities.slice(0, learningActivityIndex), learningActivities[learningActivityIndex].task[], ...learningActivities.slice(learningActivityIndex)] 
             return {
                 ...state,
@@ -50,49 +60,6 @@ export const designReducer = ( state, action ) => {
                     }
                 }
             }
-            /*if(action.payload.subfield !== null){
-                return {
-                    ...state,
-                    design: {
-                        ...state.design,
-                        data: {
-                            ...state.design.data,
-                            learningActivities: state.design.data.learningActivities.map(((learningActivity, index) => {
-                                if (index === action.payload.learningActivityIndex) {
-                                    learningActivity.tasks = learningActivity.tasks.map((task, index) => {
-                                        if (index === action.payload.index){
-                                            task[action.payload.field][action.payload.subfield] = action.payload.value;
-                                        }
-                                        return task;
-                                    })
-                                }
-                                return learningActivity;
-                            }))
-                        }
-                    }
-                }
-            } else{
-                return {
-                    ...state,
-                    design: {
-                        ...state.design,
-                        data: {
-                            ...state.design.data,
-                            learningActivities: state.design.data.learningActivities.map(((learningActivity, index) => {
-                                if (index === action.payload.learningActivityIndex) {
-                                    learningActivity.tasks.map((task, index) => {
-                                        if (index === action.payload.index){
-                                            task[action.payload.field] = action.payload.value;
-                                        }
-                                        return task;
-                                    })
-                                }
-                                return learningActivity;
-                            }))
-                        }
-                    }
-                }
-            }*/
         case types.design.setCurrentLearningResultField:
             return {
                 ...state,

@@ -12,7 +12,6 @@ import { useSnackbar } from 'notistack';
 import { itemsLearningType } from 'assets/resource/items'
 import { Add, Delete } from '@material-ui/icons';
 import ObjectID from 'bson-objectid';
-//import { scrollToBottomAnimated } from 'utils/scrollToBottom';
 
 const useStyles = makeStyles((theme) => ({
     unitSpacing: {
@@ -88,7 +87,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
     const { designState } = useDesignState();
     const { design } = designState;
     const { socket } = useSocketState();
-    const { dispatch } = useUiState();
+    const { /*uiState,*/ dispatch } = useUiState();
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const isXSDevice = useMediaQuery(theme.breakpoints.down('xs'));
@@ -110,13 +109,13 @@ export const LearningActivity = ({ index, learningActivity }) => {
     }, [design, setValues, learningActivity]);
 
     const { title, description } = form;
-
+    
     const handleDeleteUnit = () => {
         if (title === "" && description === "" && learningActivity.learningResults.length === 0 && (learningActivity.tasks === undefined || learningActivity.tasks.length === 0)) {
             taskRefs?.current?.forEach(task => task?.clearTexts());
             titleRef?.current?.clearText();
             descriptionRef?.current?.clearText();
-            socket.emit('delete-learningActivity', { designId: design._id, index });
+            socket.emit('delete-learningActivity', { designId: design._id, learningActivityID: learningActivity.id });
             enqueueSnackbar('Su actividad se ha eliminado', { variant: 'success', autoHideDuration: 2000 });
         } else {
             dispatch({
@@ -142,8 +141,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
 
     const handleAddTask = () => {
         const id = ObjectID().toString();
-        socket.emit('new-task', { designId: design._id, index, id });
-        //scrollToBottomAnimated('tasks');
+        socket.emit('new-task', { designId: design._id, learningActivityID: learningActivity.id, id });
     };
 
     const handleToggleLearningResult = (e, isSelected, result) => {
@@ -154,13 +152,13 @@ export const LearningActivity = ({ index, learningActivity }) => {
             });
             socket.emit('delete-learning-result-from-learningActivity', {
                 designId: design._id,
-                index,
+                learningActivityID: learningActivity.id,
                 indexLearningResults
             });
         } else {
             socket.emit('add-learning-result-to-learningActivity', {
                 designId: design._id,
-                index,
+                learningActivityID: learningActivity.id,
                 result
             });
         }
@@ -170,7 +168,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
         let field = target.name;
         if (target.name.includes('title')) field = 'title';
         else if (target.name.includes('description')) field = 'description';
-        socket.emit('edit-unit-field', { designId: design._id, index, field, value: target.value });
+        socket.emit('edit-unit-field', { designId: design._id, learningActivityID: learningActivity.id, field, value: target.value });
         handleInputChange({ target: { ...target, name: field } });
     };
 
@@ -213,7 +211,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
                                     inputComponent: SharedTextFieldTipTapEditor,
                                     inputProps: {
                                         ref: titleRef,
-                                        name: `title-learning-activity-${index}`,
+                                        name: `title-learning-activity-${learningActivity.id}`,
                                         placeholder: 'Título',
                                         initialvalue: title,
                                         onChange: handleEditLearningActivityField,
@@ -251,7 +249,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
                         <Grid item xs={12} sm={8} className={classes.taskContainer}>
                             <Grid id='tasks' className={classes.gridTask}>
                                 {
-                                    design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i) => <Task ref={(ref) => taskRefs.current.push(ref)} key={`task-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index} />)
+                                    design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i) => <Task ref={(ref) => taskRefs.current.push(ref)} key={`task-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index} learningActivityID={learningActivity.id} />)
                                 }
                             </Grid>
                             <Tooltip title='Agregar tarea' arrow>
@@ -273,7 +271,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
                                             inputComponent: SharedTextFieldTipTapEditor,
                                             inputProps: {
                                                 ref: descriptionRef,
-                                                name: `description-learning-activity-${index}`,
+                                                name: `description-learning-activity-${learningActivity.id}`,
                                                 placeholder: 'Descripción',
                                                 initialvalue: description,
                                                 rowMax: 3,
