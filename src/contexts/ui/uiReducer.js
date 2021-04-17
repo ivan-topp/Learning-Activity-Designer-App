@@ -43,6 +43,11 @@ export const uiReducer = ( state, action ) => {
                     typeUserPDF: action.payload
                 },
             };
+        case types.ui.setResourceLink:
+            return{
+                ...state,
+                resourceLink: action.payload,
+            };
         default:
             return state;
     }

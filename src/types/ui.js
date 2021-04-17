@@ -8,6 +8,7 @@ const ui = {
     setFolder: '[UI] set folder data',
     setConfirmData: '[UI] set confirm data',
     setPDF: '[UI] set pdf',
+    setResourceLink: '[UI] set resource link',
 };
 
 export default ui;

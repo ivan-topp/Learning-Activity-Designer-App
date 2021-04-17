@@ -24,6 +24,7 @@ const initialState = {
 	setWichOpenModal: false,
 	isFolderModalOpen: false,
 	isPDFModalOpen: false,
+	isResourceModalOpen: false,
 	folder: {
 		_id: null,
 		name: '',
@@ -36,6 +37,10 @@ const initialState = {
 	pdf: {
 		typeUserPDF: null,
 	},
+	resourceLink:{
+		learningActivityIndex: null,
+		taskIndex: null,
+	}
 };
 
 export const UiProvider = ({ children }) => {

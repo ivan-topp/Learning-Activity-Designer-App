@@ -16,6 +16,7 @@ import ObjectID from 'bson-objectid';
 //import { scrollToBottomAnimated } from 'utils/scrollToBottom';
 import { ViewAndDownloadPDFModal } from 'pages/DesignPage/PDF/ViewAndDownloadPDFModal';
 import { useUserConfigState } from 'contexts/UserConfigContext';
+import { ResourceLinksModal } from './ResourceLinksModal';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -109,8 +110,7 @@ export const DesignWorkspace = () => {
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const isMediumDevice = useMediaQuery(theme.breakpoints.down('md'));
-
-    const { dispatch } = useUiState();
+    const {uiState, dispatch } = useUiState();
     const [openMenuPDF, setOpenMenuPDF] = useState(null);
     const imgGraphic = useRef();
     const { userConfig } = useUserConfigState();
@@ -438,6 +438,10 @@ export const DesignWorkspace = () => {
                 {
                     (pdfView) &&
                     <ViewAndDownloadPDFModal imgGraphic={imgGraphic} setPdfView={setPdfView} />
+                }
+                {
+                    (uiState.isResourceModalOpen)  &&
+                        <ResourceLinksModal/>
                 }
             </Grid>
         </>

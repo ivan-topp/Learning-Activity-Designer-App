@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-import { IconButton, makeStyles, Typography, Tooltip, Paper, MenuItem, FormControl, Select, TextField, Box, InputLabel, useTheme, useMediaQuery } from '@material-ui/core';
+import { IconButton, makeStyles, Typography, Tooltip, Paper, MenuItem, FormControl, Select, TextField, Box, InputLabel, useTheme, useMediaQuery, Fab, Button } from '@material-ui/core';
 import { useSocketState } from 'contexts/SocketContext';
 import { useForm } from 'hooks/useForm';
 import { useDesignState } from 'contexts/design/DesignContext';
@@ -8,6 +8,8 @@ import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 import { useSnackbar } from 'notistack';
 import { Delete } from '@material-ui/icons';
+//import ObjectID from 'bson-objectid';
+//import { ResourceLinks } from './ResourceLinks';
 
 const useStyles = makeStyles((theme) => ({
     trashIcon: {
@@ -104,6 +106,22 @@ const useStyles = makeStyles((theme) => ({
     delete: {
         alignSelf: 'flex-start',
         justifySelf: 'center',
+    },
+    resourceLinkGrid:{
+        display: 'grid',
+        gridTemplateColumns: '25% 75%',
+    },
+    fab: {
+        maxHeight: "20px",
+        minHeight: "20px",
+        minWidth: "20px",
+        maxWidth: "20px",
+    },
+    icon:{
+        maxHeight: "15px",
+        minHeight: "15px",
+        minWidth: "15px",
+        maxWidth: "15px",
     }
 }));
 
@@ -120,6 +138,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, ...rest },
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const isMediumDevice = useMediaQuery(theme.breakpoints.down('md'));
+    //const resourceLinksRefs = useRef([]);
 
     const [form, handleInputChange, , setValues] = useForm({
         description: task.description,
@@ -232,6 +251,25 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, ...rest },
         socket.emit('edit-task-field', { designId: design._id, learningActivityIndex, index, field, value, subfield });
     };
 
+    //const handleAddResource = () => {
+    //    const id = ObjectID().toString();
+    //    socket.emit('new-resource-link', { designId: design._id, learningActivityIndex, index, id});
+    //};
+
+    const handleOpenResourceModal = () => {
+        dispatch({
+            type: types.ui.setResourceLink,
+            payload: {
+                learningActivityIndex: learningActivityIndex,
+                taskIndex: index,
+            },
+        });
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'Resource',
+        });
+    }
+
     const handleDeleteTask = (index) => {
         if (description === "" && learningType === 'Seleccionar' && modality === 'Seleccionar' && format === 'Seleccionar' && timeHours === 0 && timeMinutes === 0) {
             hoursRef?.current?.clearText();
@@ -314,7 +352,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, ...rest },
 
                                         </Select>
                                     </FormControl>
-                                    {isMediumDevice && (<Tooltip title="Delete" className={classes.delete}>
+                                    {isMediumDevice && (<Tooltip title="Eliminar tarea" className={classes.delete}>
                                         <IconButton onClick={() => handleDeleteTask(index)}>
                                             <Delete fontSize="small" />
                                         </IconButton>
@@ -337,91 +375,105 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, ...rest },
                                             <MenuItem value={'Online-Síncrono'}> Online-Síncrono</MenuItem>
                                         </Select>
                                     </FormControl>
-                                    {!isMediumDevice && (<Tooltip title="Delete" className={classes.delete}>
+                                    {!isMediumDevice && (<Tooltip title="Eliminar tarea" className={classes.delete}>
                                         <IconButton onClick={() => handleDeleteTask(index)}>
                                             <Delete fontSize="small" />
                                         </IconButton>
                                     </Tooltip>)}
                                 </div>
-                            <div style={{ width: '100%', gridArea: 'workingTime', marginTop: 3 }}>
-                                <Typography variant="body2" color="textSecondary" gutterBottom> Tiempo de trabajo </Typography>
-                                <div className={classes.timeField}>
-                                    <TextField
-                                        label='Horas'
-                                        fullWidth
-                                        margin='none'
-                                        variant='outlined'
-                                        color='primary'
-                                        InputProps={{
-                                            inputComponent: SharedTextFieldTipTapEditor,
-                                            inputProps: {
-                                                ref: hoursRef,
-                                                name: `timeHours-task-${index}-learning-activity-${learningActivityIndex}`, // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
-                                                placeholder: 'Horas',
-                                                initialvalue: timeHours,
-                                                onChange: handleEditTaskField,
-                                                type: 'number',
-                                                min: 0,
-                                            }
-                                        }}
-                                    />
-                                    <Typography style={{ marginLeft: 10, marginRight: 10 }}> : </Typography>
-                                    <TextField
-                                        label='Minutos'
-                                        fullWidth
-                                        margin='none'
-                                        variant='outlined'
-                                        color='primary'
-                                        InputProps={{
-                                            inputComponent: SharedTextFieldTipTapEditor,
-                                            inputProps: {
-                                                ref: minutesRef,
-                                                name: `timeMinutes-task-${index}-learning-activity-${learningActivityIndex}`, // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
-                                                placeholder: 'Minutos',
-                                                initialvalue: timeMinutes,
-                                                onChange: handleEditTaskField,
-                                                type: 'number',
-                                                min: 0,
-                                                max: 59,
-                                            }
-                                        }}
-                                    />
+                                <div style={{ width: '100%', gridArea: 'workingTime', marginTop: 3 }}>
+                                    <Typography variant="body2" color="textSecondary" gutterBottom> Tiempo de trabajo </Typography>
+                                    <div className={classes.timeField}>
+                                        <TextField
+                                            label='Horas'
+                                            fullWidth
+                                            margin='none'
+                                            variant='outlined'
+                                            color='primary'
+                                            InputProps={{
+                                                inputComponent: SharedTextFieldTipTapEditor,
+                                                inputProps: {
+                                                    ref: hoursRef,
+                                                    name: `timeHours-task-${index}-learning-activity-${learningActivityIndex}`, // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
+                                                    placeholder: 'Horas',
+                                                    initialvalue: timeHours,
+                                                    onChange: handleEditTaskField,
+                                                    type: 'number',
+                                                    min: 0,
+                                                }
+                                            }}
+                                        />
+                                        <Typography style={{ marginLeft: 10, marginRight: 10 }}> : </Typography>
+                                        <TextField
+                                            label='Minutos'
+                                            fullWidth
+                                            margin='none'
+                                            variant='outlined'
+                                            color='primary'
+                                            InputProps={{
+                                                inputComponent: SharedTextFieldTipTapEditor,
+                                                inputProps: {
+                                                    ref: minutesRef,
+                                                    name: `timeMinutes-task-${index}-learning-activity-${learningActivityIndex}`, // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
+                                                    placeholder: 'Minutos',
+                                                    initialvalue: timeMinutes,
+                                                    onChange: handleEditTaskField,
+                                                    type: 'number',
+                                                    min: 0,
+                                                    max: 59,
+                                                }
+                                            }}
+                                        />
+                                    </div>
                                 </div>
+                                <FormControl fullWidth={isMediumDevice} variant='outlined' className={classes.format}>
+                                    <InputLabel id={`format-task-${index}-learningActivity-${learningActivityIndex}`}> Formato </InputLabel>
+                                    <Select
+                                        labelId={`format-task-${index}-learningActivity-${learningActivityIndex}`}
+                                        label='Formato'
+                                        name='format'
+                                        value={format}
+                                        onChange={handleChangeDropdown}
+                                    >
+                                        <MenuItem value={'Seleccionar'}> Seleccionar </MenuItem>
+                                        <MenuItem value={'Grupal'}> Grupal</MenuItem>
+                                        <MenuItem value={'Individual'}> Individual</MenuItem>
+                                        <MenuItem value={'Toda la clase'}> Toda la clase</MenuItem>
+                                    </Select>
+                                </FormControl>
+                                <TextField
+                                    style={{ gridArea: 'description', marginTop: 10, }}
+                                    label='Descripción'
+                                    fullWidth
+                                    margin='none'
+                                    variant='outlined'
+                                    color='primary'
+                                    InputProps={{
+                                        inputComponent: SharedTextFieldTipTapEditor,
+                                        inputProps: {
+                                            ref: descriptionRef,
+                                            name: `description-task-${index}-learning-activity-${learningActivityIndex}`, // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
+                                            placeholder: 'Descripción',
+                                            initialvalue: description,
+                                            onChange: handleEditTaskField,
+                                            multiline: true,
+                                        }
+                                    }}
+                                />
                             </div>
-                            <FormControl fullWidth={isMediumDevice} variant='outlined' className={classes.format}>
-                                <InputLabel id={`format-task-${index}-learningActivity-${learningActivityIndex}`}> Formato </InputLabel>
-                                <Select
-                                    labelId={`format-task-${index}-learningActivity-${learningActivityIndex}`}
-                                    label='Formato'
-                                    name='format'
-                                    value={format}
-                                    onChange={handleChangeDropdown}
-                                >
-                                    <MenuItem value={'Seleccionar'}> Seleccionar </MenuItem>
-                                    <MenuItem value={'Grupal'}> Grupal</MenuItem>
-                                    <MenuItem value={'Individual'}> Individual</MenuItem>
-                                    <MenuItem value={'Toda la clase'}> Toda la clase</MenuItem>
-                                </Select>
-                            </FormControl>
-                            <TextField
-                                style={{ gridArea: 'description', marginTop: 10, }}
-                                label='Descripción'
-                                fullWidth
-                                margin='none'
-                                variant='outlined'
-                                color='primary'
-                                InputProps={{
-                                    inputComponent: SharedTextFieldTipTapEditor,
-                                    inputProps: {
-                                        ref: descriptionRef,
-                                        name: `description-task-${index}-learning-activity-${learningActivityIndex}`, // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
-                                        placeholder: 'Descripción',
-                                        initialvalue: description,
-                                        onChange: handleEditTaskField,
-                                        multiline: true,
-                                    }
-                                }}
-                            />
+                            <div style={{marginTop: 20}}>
+                                <Button variant={'outlined'} onClick={handleOpenResourceModal}> Administrar recursos</Button>
+                                {/*
+                                <div className={classes.resourceLinkGrid}>
+                                    <Typography variant="body2" color="textSecondary" > Enlace de Recursos </Typography>
+                                    <Tooltip title='Agregar recurso' arrow>
+                                        <Fab aria-label='add-resource-link' className= {classes.fab} color='primary' onClick={handleAddResource} >
+                                            <Add className={classes.icon}/>
+                                        </Fab>
+                                    </Tooltip>
+                                </div>
+                                {design.data.learningActivities[learningActivityIndex] && design.data.learningActivities[learningActivityIndex].tasks && design.data.learningActivities[learningActivityIndex].tasks[index].resourceLinks && design.data.learningActivities[learningActivityIndex].tasks[index].resourceLinks.map((resourceLink, i)=> <ResourceLinks ref={(ref) => resourceLinksRefs.current.push(ref)} key={`resourceLink-${i}-task-${index}-learningActivity-${learningActivityIndex}`} index={i} resourceLink={resourceLink} taskIndex={index} learningActivityIndex= {learningActivityIndex} /> ) 
+                                */}
                             </div>
                         </div>
                     </Box>

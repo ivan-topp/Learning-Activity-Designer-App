@@ -59,6 +59,9 @@ export const ConfirmationModal = () => {
         } else if (type === 'tarea') {
             socket.emit('delete-task', args);
             enqueueSnackbar('Su tarea se ha eliminado', { variant: 'success', autoHideDuration: 2000 });
+        } else if (type === 'recurso'){
+            socket.emit('delete-resource-link', args);
+            enqueueSnackbar('Su recurso se ha eliminado', { variant: 'success', autoHideDuration: 2000 });
         }
         dispatch({
             type: types.ui.toggleModal,

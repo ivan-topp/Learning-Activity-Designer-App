@@ -220,7 +220,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
                                     }
                                 }}
                             />
-                            {isXSDevice && <Tooltip title="Delete" className={classes.delete}>
+                            {isXSDevice && <Tooltip title="Eliminar actividad" className={classes.delete}>
                                 <IconButton onClick={handleDeleteUnit}>
                                     <Delete fontSize="small" />
                                 </IconButton>
