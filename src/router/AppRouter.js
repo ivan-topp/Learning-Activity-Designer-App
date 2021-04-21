@@ -23,6 +23,7 @@ import { SnackbarProvider } from 'notistack';
 import { ConfirmationModal } from 'components/ConfirmationModal';
 import { DesignPageReader } from 'pages/DesignPageReader/DesignPageReader'
 import { SharedLinkPage } from 'pages/SharedLink/SharedLinkPage';
+import { ResetPasswordPage } from 'pages/Auth/ResetPasswordPage';
 
 const useStyles = makeStyles((theme) => ({
     '@global': {
@@ -70,6 +71,7 @@ export const AppRouter = () => {
                     <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }} TransitionComponent={Grow}>
                         <Switch>
                             <PublicRoute exact path="/" component={LandingPage} isAuthenticated={!checking && !!token} />
+                            <PublicRoute exact path="/reset-password" component={ResetPasswordPage} isAuthenticated={!checking && !!token} />
                             <Route exact path="/shared-link/:link" component={SharedLinkPage} />
                             <PrivateRoute exact path="/profile/:uid" component={UserProfile} isAuthenticated={!checking && !!token} />
                             <PrivateRoute exact path="/my-designs" component={MyDesignsPage} isAuthenticated={!checking && !!token} />
