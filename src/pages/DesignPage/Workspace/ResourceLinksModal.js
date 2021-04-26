@@ -1,10 +1,9 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Fab, Grid, IconButton, ListItem, makeStyles, TextField, Tooltip, Typography } from '@material-ui/core';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, makeStyles} from '@material-ui/core';
 import React, { useState } from 'react'
 import types from 'types';
 import { useUiState } from 'contexts/ui/UiContext';
 import CloseIcon from '@material-ui/icons/Close';
 import { useDesignState } from 'contexts/design/DesignContext';
-import { Add } from '@material-ui/icons';
 import { ResourceLink } from './ResourceLink';
 import { useSocketState } from 'contexts/SocketContext';
 import { useSnackbar } from 'notistack';

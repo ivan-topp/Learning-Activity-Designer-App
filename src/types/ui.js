@@ -9,6 +9,7 @@ const ui = {
     setConfirmData: '[UI] set confirm data',
     setPDF: '[UI] set pdf',
     setResourceLink: '[UI] set resource link',
+    setEvaluation: '[UI] set evaluation',
 };
 
 export default ui;

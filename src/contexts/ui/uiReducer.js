@@ -48,6 +48,11 @@ export const uiReducer = ( state, action ) => {
                 ...state,
                 resourceLink: action.payload,
             };
+        case types.ui.setEvaluation:
+            return{
+                ...state,
+                evaluationData: action.payload,
+            };
         default:
             return state;
     }

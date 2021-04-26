@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, Image, Link } from '@react-pdf/renderer';
 import Logo from 'assets/img/Logo.png';
 
 export const DocumentPDF = ({design, img, typeUserPDF}) => {
@@ -58,7 +58,11 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                             src={Logo}
                             style = {styles.logo}
                         />
-                        <Text style={styles.title}> Información de diseño </Text>
+                        {(design.metadata.name === '') ?
+                            <Text style={styles.title}> Nombre no definido. </Text>
+                            : 
+                            <Text style={styles.title}> {design.metadata.name}. </Text>
+                        }
                         <View style={styles.table}>
                             {(typeUserPDF === 'teacher') && 
                                 <View style={styles.tableRow}>
@@ -157,9 +161,9 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                             <View key = {`learning-activity-${index}`}> 
                                 <Text style={styles.marginTitle}> {learningActivity.title} </Text>
                                 { learningActivity.tasks && learningActivity.tasks.map((task, indexTask) =>
-                                        <View key = {`task-${indexTask}`}>
+                                        <View key = {`task-${indexTask}`} >
                                             <View>
-                                                <View style={[styles.table, { marginBottom: 15 }]}>
+                                                <View style={[styles.table, { marginBottom: 15, borderTop: 1, borderColor: '#808080'} ]}>
                                                     <View style={ styles.tableRow }>
                                                         {(typeUserPDF === 'teacher') && 
                                                             <View style={styles.tableCol}>
@@ -212,10 +216,32 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                                             <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>{task.description}</Text>
                                                         }
                                                     </View>
+                                                    <View>
+                                                        <Text style={{fontSize: 12, color: '#979797', marginTop: 15}} >Enlaces de recursos</Text>
+                                                        { (task.resourceLinks.length === 0) ?
+                                                            <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>No se han proporcionado recursos</Text>
+                                                            : 
+                                                            (task.resourceLinks.map((resource, i) =>  
+                                                                <div key = {`resource-${i}-task-${indexTask}-learningnActivity${index}`}>
+                                                                    <Text style={{fontSize: 12, color: '#979797', marginTop: 10, marginBottom: 10}} >Titulo</Text>
+                                                                    <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>{resource.title}</Text>
+                                                                    <Text style={{fontSize: 12, color: '#979797', marginTop: 10, marginBottom: 10}} >Enlace</Text>
+                                                                    <Link wrap style={{fontSize: 12, justifyContent: 'center'}}>{resource.link}</Link>
+                                                                </div> 
+                                                            ))
+                                                        }
+                                                    </View>
                                                 </View>
                                             </View>
                                         </View>
                                 )}
+                                <View style = {{marginLeft: 50, marginRight: 50}}>
+                                    <Text style={{fontSize: 12, color: '#979797', marginTop: 15}} >Evaluación de la actividad.</Text>
+                                    <Text style={{fontSize: 12, color: '#979797', marginTop: 10, marginBottom: 10}} >Titulo</Text>
+                                    <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>{learningActivity.evaluation.title}</Text>
+                                    <Text style={{fontSize: 12, color: '#979797', marginTop: 10, marginBottom: 10}} >Descripción</Text>
+                                    <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>{learningActivity.evaluation.description}</Text>
+                                </View>
                             </View>
                         )}
                         <View>

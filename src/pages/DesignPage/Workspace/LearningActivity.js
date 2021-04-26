@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Box, Checkbox, Divider, Fab, FormControlLabel, Grid, IconButton, makeStyles, Paper, TextField, Tooltip, Typography, useMediaQuery, useTheme } from '@material-ui/core'
+import React, { useEffect, useRef, useState } from 'react';
+import { Box, Checkbox, Divider, Fab, FormControlLabel, Grid, IconButton, makeStyles, Menu, MenuItem, Paper, TextField, Tooltip, Typography, useMediaQuery, useTheme } from '@material-ui/core'
 import { Task } from 'pages/DesignPage/Workspace/Task';
 import { useSocketState } from 'contexts/SocketContext';
 import { StackedBar } from 'components/StackedBar';
@@ -10,7 +10,7 @@ import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 import { useSnackbar } from 'notistack';
 import { itemsLearningType } from 'assets/resource/items'
-import { Add, Delete } from '@material-ui/icons';
+import { Add, Delete, MoreVert } from '@material-ui/icons';
 import ObjectID from 'bson-objectid';
 
 const useStyles = makeStyles((theme) => ({
@@ -91,6 +91,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const isXSDevice = useMediaQuery(theme.breakpoints.down('xs'));
+    const [isMenuOpen, setMenuOpen] = useState(null);
 
     const titleRef = useRef();
     const descriptionRef = useRef();
@@ -122,7 +123,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
                 type: types.ui.setConfirmData,
                 payload: {
                     type: 'actividad',
-                    args: { designId: design._id, index },
+                    args: { designId: design._id, learningActivityID: learningActivity.id },
                     actionMutation: null,
                 }
             });
@@ -195,6 +196,25 @@ export const LearningActivity = ({ index, learningActivity }) => {
         return learningResults;
     };
 
+    const handleOpenMenu = (e) => {
+        e.stopPropagation();
+        setMenuOpen(e.currentTarget);
+    };
+    
+    const handleOpenModalEvaluation = () =>{
+        setMenuOpen(null);
+        dispatch({
+            type: types.ui.setEvaluation,
+            payload: {
+                learningActivityIndex: index,
+            },
+        });
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'Evaluation',
+        });
+    };
+
     const listlearningActivityArray = () => {
         return (
             <Grid key={index}>
@@ -218,11 +238,34 @@ export const LearningActivity = ({ index, learningActivity }) => {
                                     }
                                 }}
                             />
-                            {isXSDevice && <Tooltip title="Eliminar actividad" className={classes.delete}>
-                                <IconButton onClick={handleDeleteUnit}>
-                                    <Delete fontSize="small" />
-                                </IconButton>
-                            </Tooltip>}
+                            {isXSDevice && <>
+                                    <IconButton onClick={handleOpenMenu}>
+                                        <MoreVert />
+                                    </IconButton>
+                                    <Menu
+                                        onBlur={()=>setMenuOpen(null)}
+                                        anchorEl={isMenuOpen}
+                                        open={Boolean(isMenuOpen)}
+                                        anchorOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'right',
+                                        }}
+                                        keepMounted
+                                        transformOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'right',
+                                        }}
+                                        onClose={()=>setMenuOpen(null)}
+                                    >
+                                        <MenuItem onClick={handleOpenModalEvaluation}>
+                                            <Typography>Definir Evaluación</Typography>
+                                        </MenuItem>
+                                        <MenuItem onClick={handleDeleteUnit}>
+                                                <Delete fontSize="small" />
+                                            <Typography>Eliminar</Typography>
+                                        </MenuItem>
+                                    </Menu>
+                                </>}
                         </Grid>
                         {resetItems()}
                         <Grid item xs={12} sm={7} className={classes.graphicUnitSpacing}>
@@ -237,11 +280,36 @@ export const LearningActivity = ({ index, learningActivity }) => {
                                 )
                             }
                             <StackedBar items={itemsLearningType} type={'Activity'} />
-                            {!isXSDevice && <Tooltip title="Delete">
-                                <IconButton onClick={handleDeleteUnit}>
-                                    <Delete fontSize="small" />
-                                </IconButton>
-                            </Tooltip>}
+                            {!isXSDevice &&
+                                <>
+                                    <IconButton onClick={handleOpenMenu}>
+                                        <MoreVert />
+                                    </IconButton>
+                                    <Menu
+                                        onBlur={()=>setMenuOpen(null)}
+                                        anchorEl={isMenuOpen}
+                                        open={Boolean(isMenuOpen)}
+                                        anchorOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'right',
+                                        }}
+                                        keepMounted
+                                        transformOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'right',
+                                        }}
+                                        onClose={()=>setMenuOpen(null)}
+                                    >
+                                        <MenuItem onClick={handleOpenModalEvaluation}>
+                                            <Typography>Definir Evaluación</Typography>
+                                        </MenuItem>
+                                        <MenuItem onClick={handleDeleteUnit}>
+                                                <Delete fontSize="small" />
+                                            <Typography>Eliminar</Typography>
+                                        </MenuItem>
+                                    </Menu>
+                                </>
+                            }
                         </Grid>
                     </Grid>
                     <Divider />

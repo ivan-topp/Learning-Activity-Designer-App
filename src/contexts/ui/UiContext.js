@@ -25,6 +25,7 @@ const initialState = {
 	isFolderModalOpen: false,
 	isPDFModalOpen: false,
 	isResourceModalOpen: false,
+	isEvaluationModalOpen: false,
 	folder: {
 		_id: null,
 		name: '',
@@ -40,6 +41,9 @@ const initialState = {
 	resourceLink:{
 		learningActivityIndex: null,
 		taskIndex: null,
+	},
+	evaluationData:{
+		learningActivityIndex: null,
 	}
 };
 
