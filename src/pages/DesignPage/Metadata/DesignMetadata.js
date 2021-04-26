@@ -4,7 +4,6 @@ import { useQuery } from 'react-query';
 import { Alert } from '@material-ui/lab';
 import { useForm } from 'hooks/useForm';
 import { useSocketState } from 'contexts/SocketContext';
-import TimeFormatter from 'utils/timeFormatters';
 import { getCategories } from 'services/CategoryService';
 import { LearningResult } from 'pages/DesignPage/Metadata/LearningResult';
 import { LearningResultModal } from 'pages/DesignPage/Metadata/LearningResultModal';

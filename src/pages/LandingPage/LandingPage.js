@@ -1,7 +1,5 @@
 import { makeStyles } from '@material-ui/core';
 import React from 'react';
-import { LoginModal } from 'pages/LandingPage/LoginModal';
-import { RegisterModal } from 'pages/LandingPage/RegisterModal';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -16,8 +14,7 @@ export const LandingPage = () => {
         <div className={classes.root}>
             <h1>LandingPage</h1>
             <hr/>
-            <LoginModal />
-            <RegisterModal />
+            
         </div>
     );
 };

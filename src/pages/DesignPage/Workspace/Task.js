@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-import { IconButton, makeStyles, Typography, Tooltip, Paper, MenuItem, FormControl, Select, TextField, Box, InputLabel, useTheme, useMediaQuery, Fab, Button } from '@material-ui/core';
+import { IconButton, makeStyles, Typography, Tooltip, Paper, MenuItem, FormControl, Select, TextField, Box, InputLabel, useTheme, useMediaQuery, Button } from '@material-ui/core';
 import { useSocketState } from 'contexts/SocketContext';
 import { useForm } from 'hooks/useForm';
 import { useDesignState } from 'contexts/design/DesignContext';

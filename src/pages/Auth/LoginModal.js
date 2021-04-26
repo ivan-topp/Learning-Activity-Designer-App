@@ -183,6 +183,10 @@ export const LoginModal = () => {
 
     const toResetPassword = (e) => {
         e.preventDefault();
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'Login',
+        });
         history.push('/reset-password');
     };
 
