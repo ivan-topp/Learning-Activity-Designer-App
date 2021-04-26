@@ -205,7 +205,7 @@ export const DesignReader = ({ type }) => {
                             { metadata && metadata.workingTimeDesign &&(
                                     <>
                                         <Typography variant="body2" color='textSecondary' className={classes.textLefPanelMetadata}>Tiempo de trabajo Diseño</Typography>
-                                        <Typography variant="body2"> { metadata.workingTimeDesign }</Typography>
+                                        <Typography variant="body2"> {metadata.workingTimeDesign.hours} : {metadata.workingTimeDesign.minutes}</Typography>
                                         <Divider/>
                                     </>
                                 )

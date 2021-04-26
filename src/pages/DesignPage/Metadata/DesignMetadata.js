@@ -92,8 +92,8 @@ export const DesignMetadata = forwardRef((props, ref) => {
         name: metadata.name,
         category: metadata.category.name ?? 'Sin categoría',
         classSize: metadata.classSize,
-        workingTimeDesignHours: TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[0],
-        workingTimeDesignMinutes: TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[1],
+        workingTimeDesignHours: metadata.workingTimeDesign.hours ?? 0,
+        workingTimeDesignMinutes: metadata.workingTimeDesign.minutes ?? 0,
         workingTimeHours: metadata.workingTime.hours ?? 0,
         workingTimeMinutes: metadata.workingTime.minutes ?? 0,
         priorKnowledge: metadata.priorKnowledge,
@@ -173,16 +173,16 @@ export const DesignMetadata = forwardRef((props, ref) => {
 
     useEffect(() => {
         if (isMounted.current) {
-            if (form.workingTimeDesignHours !== TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[0]) {
-                handleInputChange({target: {name: 'workingTimeDesignHours', value: TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[0]}});
+            if (form.workingTimeDesignHours !== metadata.workingTimeDesign.hours) {
+                handleInputChange({target: {name: 'workingTimeDesignHours', value: metadata.workingTimeDesign.hours}});
             }
         }
     }, [metadata.workingTimeDesign, form.workingTimeDesignHours, setValues, handleInputChange]);
 
     useEffect(() => {
         if (isMounted.current) {
-            if (form.workingTimeDesignMinutes !== TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[1]) {
-                handleInputChange({target: {name: 'workingTimeDesignMinutes', value: TimeFormatter.toHoursAndMinutes(metadata.workingTimeDesign)[1]}});
+            if (form.workingTimeDesignMinutes !== metadata.workingTimeDesign.minutes) {
+                handleInputChange({target: {name: 'workingTimeDesignMinutes', value: metadata.workingTimeDesign.minutes ?? 0}});
             }
         }
     }, [metadata.workingTimeDesign, form.workingTimeDesignMinutes, setValues, handleInputChange]);

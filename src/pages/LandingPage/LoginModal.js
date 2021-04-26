@@ -15,6 +15,7 @@ import { useUiState } from 'contexts/ui/UiContext';
 import { ModalFormWithImage } from 'components/ModalFormWithImage';
 import { useAuthState } from 'contexts/AuthContext';
 import types from 'types';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
     formcontrol: {
@@ -82,6 +83,7 @@ const initialErrors = {
 export const LoginModal = () => {
 
     const classes = useStyles();
+    const history = useHistory();
     const { uiState, dispatch } = useUiState();
     const { login } = useAuthState();
     const [formErrors, setFormErrors] = useState(initialErrors);
@@ -162,11 +164,6 @@ export const LoginModal = () => {
         reset();
     };
 
-    const recoverPassword = (e) => {
-        e.preventDefault();
-        console.log('Redirigir a recuperar contraseña...');
-    }
-
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
@@ -182,6 +179,11 @@ export const LoginModal = () => {
             type: types.ui.toggleModal,
             payload: 'Register',
         });
+    };
+
+    const toResetPassword = (e) => {
+        e.preventDefault();
+        history.push('/reset-password');
     };
 
     return (
@@ -234,7 +236,7 @@ export const LoginModal = () => {
                                 Iniciar Sesión
                             </Button>
                             <div style={{ paddingTop: 20 }}>
-                                <Link href='#' align='center' variant="body1" onClick={recoverPassword}>
+                                <Link href='#' align='center' variant="body1" onClick={toResetPassword}>
                                     ¿Olvidaste tu contraseña?
                                 </Link>
                             </div>
