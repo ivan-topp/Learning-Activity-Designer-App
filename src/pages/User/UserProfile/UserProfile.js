@@ -16,6 +16,7 @@ import { ShowContactsModal } from 'pages/User/UserProfile/ShowContactsModal';
 import { createDesign, getPublicDesignsByUser } from 'services/DesignService';
 import { DesignsContainer } from 'components/DesignsContainer';
 import types from 'types';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     designPanel:{
@@ -78,6 +79,7 @@ export const UserProfile = () => {
     const history = useHistory();
     const urlparams = useParams();
     const uid = urlparams.uid;
+    const { enqueueSnackbar } = useSnackbar();
 
     const { isLoading, isError, data, error, refetch } = useQuery(['user-profile', uid], async () => {
         return await getUser(uid);
@@ -100,7 +102,12 @@ export const UserProfile = () => {
                 user: Object.assign({}, {...prevState.user, contacts})
             }));
             queryClient.invalidateQueries(['user-profile', uid]);
-        }
+        },
+        onError: (error) => {
+            // TODO: Emitir notificación o message para denotar el error.
+            console.log(error);
+            enqueueSnackbar('No se ha actualizado su lista de contactos',  {variant: 'error', autoHideDuration: 2000},   );
+        },
     });
 
     const createDesignMutation = useMutation(createDesign, {
@@ -117,6 +124,7 @@ export const UserProfile = () => {
         onError: (error) => {
             // TODO: Emitir notificación o message para denotar el error.
             console.log(error);
+            enqueueSnackbar('No se han cargado sus diseño',  {variant: 'error', autoHideDuration: 2000},   );
         },
         onSuccess: data => {
             history.push(`/designs/${data.design._id}`);

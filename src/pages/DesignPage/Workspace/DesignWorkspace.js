@@ -16,6 +16,7 @@ import ObjectID from 'bson-objectid';
 import { ViewAndDownloadPDFModal } from 'pages/DesignPage/PDF/ViewAndDownloadPDFModal';
 import { useUserConfigState } from 'contexts/UserConfigContext';
 import { ResourceLinksModal } from './ResourceLinksModal';
+import { EvaluationModal } from './EvaluationModal';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -37,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
     },
     rightPanel: {
         display: 'flex',
+        position: 'relative',
         flexDirection: 'column',
         borderLeft: `1px solid ${theme.palette.divider}`,
         background: theme.palette.background.paper
@@ -46,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
-    textLefPanel: {
+    textLeftPanel: {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1)
     },
@@ -77,12 +79,6 @@ const useStyles = makeStyles((theme) => ({
             overflow: 'auto',
             overflowX: 'hidden',
         },
-    },
-    chartRightPanel: {
-        backgroundColor: '#FFFFFF',
-        position: 'absolute',
-        right: 0,
-        height: 700,
     },
     buttonZone: {
         width: '100%',
@@ -193,7 +189,7 @@ export const DesignWorkspace = () => {
             <Grid container>
                 <Grid item xs={12} md={3} lg={2} className={classes.leftPanel}>
                     <Grid container alignItems='center' justify='center'>
-                        <Typography className={classes.textLefPanel}> INFORMACIÓN DISEÑO </Typography>
+                        <Typography className={classes.textLeftPanel}> INFORMACIÓN DISEÑO </Typography>
                     </Grid>
                     <Divider className={classes.spaceData} />
                     <Grid className={classes.LeftPanelMetadata}>
@@ -247,14 +243,16 @@ export const DesignWorkspace = () => {
                             )
                             }
                         </Grid>
-                        {metadata && metadata.classSize && (
-                            <>
-                                <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Tamaño de la clase </Typography>
-                                <Typography variant='body2'> {metadata.classSize} </Typography>
-                                <Divider />
-                            </>
-                        )
-                        }
+                        <Grid>
+                            {metadata && (
+                                <>
+                                    <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Tamaño de la clase </Typography>
+                                    <Typography variant='body2'> {metadata.classSize} </Typography>
+                                    <Divider />
+                                </>
+                            )
+                            }
+                        </Grid>
                         <Grid>
                             {metadata && metadata.priorKnowledge && (
                                 <>
@@ -332,104 +330,105 @@ export const DesignWorkspace = () => {
                         </Fab>
                     </Tooltip>
                 </Grid>
-                <Grid item xs={12} md={3} lg={2} className={classes.rightPanel} style={{ zIndex: 1 }}>
+                <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}>
                     {resetItems()}
-                    <Grid className={classes.graphicsSpacing} >
-                        {
-                            design.data.learningActivities && design.data.learningActivities.map((learningActivity) =>
-                                learningActivity.tasks && learningActivity.tasks.forEach((task) => {
-                                    itemsLearningType.forEach((item) => {
-                                        if (item.title === task.learningType) {
-                                            item.value = item.value + 1;
-                                        }
-                                    });
-                                    itemsLearningTypePie.forEach((item) => {
-                                        if (item.title === task.learningType) {
-                                            item.value = item.value + 1;
-                                        }
-                                    });
-                                    itemsFormat.forEach((item) => {
-                                        if (item.title === task.format) {
-                                            item.value = item.value + 1;
-                                        }
-                                    });
-                                    itemsModality.forEach((item) => {
-                                        if (item.title === task.modality) {
-                                            item.value = item.value + 1;
-                                        }
-                                    });
-                                }))
-                        }
-                        {showGraphicLearningType &&
-                            <div className={classes.betweenGraphics} >
-                                <PieGraphic items={itemsLearningTypePie} colorGraphicToPdf={true}></PieGraphic>
-                            </div>
-                        }
-                        {showGraphicFormat &&
-                            <div className={classes.betweenGraphics}>
-                                <Typography>Formato</Typography>
-                                <StackedBar items={itemsFormat} type={'Format'} legends={true} colorGraphicToPdf={true} ></StackedBar>
-                            </div>
-                        }
-                        {showGraphicModality &&
-                            <div className={classes.betweenGraphics}>
-                                <Typography>Modalidad</Typography>
-                                <StackedBar items={itemsModality} type={'Modality'} legends={true} colorGraphicToPdf={true}></StackedBar>
-                            </div>
-                        }
-                    </Grid>
-                </Grid>
-                <Grid item xs={12} md={3} lg={2} className={classes.chartRightPanel} style={{ zIndex: 0 }}>
-                    {resetItems()}
-                    <Grid className={classes.graphicsSpacing} ref={imgGraphic}>
-                        {
-                            design.data.learningActivities && design.data.learningActivities.map((learningActivity) =>
-                                learningActivity.tasks && learningActivity.tasks.forEach((task) => {
-                                    itemsLearningType.forEach((item) => {
-                                        if (item.title === task.learningType) {
-                                            item.value = item.value + 1;
-                                        }
-                                    });
-                                    itemsLearningTypePie.forEach((item) => {
-                                        if (item.title === task.learningType) {
-                                            item.value = item.value + 1;
-                                        }
-                                    });
-                                    itemsFormat.forEach((item) => {
-                                        if (item.title === task.format) {
-                                            item.value = item.value + 1;
-                                        }
-                                    });
-                                    itemsModality.forEach((item) => {
-                                        if (item.title === task.modality) {
-                                            item.value = item.value + 1;
-                                        }
-                                    });
-                                }))
-                        }
-                        {showGraphicLearningType &&
-                            <div className={classes.betweenGraphics}>
-                                <PieGraphic items={itemsLearningTypePie} colorGraphicToPdf={false}></PieGraphic>
-                            </div>
-                        }
-                        {showGraphicFormat &&
-                            <div className={classes.betweenGraphics}>
-                                {
-                                    userConfig.darkTheme ? <Typography style={{ color: '#000000' }}>Formato</Typography> : <Typography >Formato</Typography>
-                                }
+                    <div style ={{position: 'absolute', zIndex: 1, width: '100%'}}>
+                        <Grid className={classes.graphicsSpacing} >
+                            {
+                                design.data.learningActivities && design.data.learningActivities.map((learningActivity) =>
+                                    learningActivity.tasks && learningActivity.tasks.forEach((task) => {
+                                        itemsLearningType.forEach((item) => {
+                                            if (item.title === task.learningType) {
+                                                item.value = item.value + 1;
+                                            }
+                                        });
+                                        itemsLearningTypePie.forEach((item) => {
+                                            if (item.title === task.learningType) {
+                                                item.value = item.value + 1;
+                                            }
+                                        });
+                                        itemsFormat.forEach((item) => {
+                                            if (item.title === task.format) {
+                                                item.value = item.value + 1;
+                                            }
+                                        });
+                                        itemsModality.forEach((item) => {
+                                            if (item.title === task.modality) {
+                                                item.value = item.value + 1;
+                                            }
+                                        });
+                                    }))
+                            }
+                            {showGraphicLearningType &&
+                                <div className={classes.betweenGraphics} >
+                                    <PieGraphic items={itemsLearningTypePie} colorGraphicToPdf={true}></PieGraphic>
+                                </div>
+                            }
+                            {showGraphicFormat &&
+                                <div className={classes.betweenGraphics}>
+                                    <Typography>Formato</Typography>
+                                    <StackedBar items={itemsFormat} type={'Format'} legends={true} colorGraphicToPdf={true} ></StackedBar>
+                                </div>
+                            }
+                            {showGraphicModality &&
+                                <div className={classes.betweenGraphics}>
+                                    <Typography>Modalidad</Typography>
+                                    <StackedBar items={itemsModality} type={'Modality'} legends={true} colorGraphicToPdf={true}></StackedBar>
+                                </div>
+                            }
+                        </Grid>
+                    </div>
+                    <div style ={{position: 'absolute', zIndex: 0, width: '100%'}}>
+                        <Grid className={classes.graphicsSpacing} ref={imgGraphic}>
+                            {
+                                design.data.learningActivities && design.data.learningActivities.map((learningActivity) =>
+                                    learningActivity.tasks && learningActivity.tasks.forEach((task) => {
+                                        itemsLearningType.forEach((item) => {
+                                            if (item.title === task.learningType) {
+                                                item.value = item.value + 1;
+                                            }
+                                        });
+                                        itemsLearningTypePie.forEach((item) => {
+                                            if (item.title === task.learningType) {
+                                                item.value = item.value + 1;
+                                            }
+                                        });
+                                        itemsFormat.forEach((item) => {
+                                            if (item.title === task.format) {
+                                                item.value = item.value + 1;
+                                            }
+                                        });
+                                        itemsModality.forEach((item) => {
+                                            if (item.title === task.modality) {
+                                                item.value = item.value + 1;
+                                            }
+                                        });
+                                    }))
+                            }
+                            {showGraphicLearningType &&
+                                <div className={classes.betweenGraphics}>
+                                    <PieGraphic items={itemsLearningTypePie} colorGraphicToPdf={false}></PieGraphic>
+                                </div>
+                            }
+                            {showGraphicFormat &&
+                                <div className={classes.betweenGraphics}>
+                                    {
+                                        userConfig.darkTheme ? <Typography style={{ color: '#000000' }}>Formato</Typography> : <Typography >Formato</Typography>
+                                    }
 
-                                <StackedBar items={itemsFormat} type={'Format'} legends={true} colorGraphicToPdf={false}></StackedBar>
-                            </div>
-                        }
-                        {showGraphicModality &&
-                            <div className={classes.betweenGraphics}>
-                                {
-                                    userConfig.darkTheme ? <Typography style={{ color: '#000000' }}>Modalidad</Typography> : <Typography >Modalidad</Typography>
-                                }
-                                <StackedBar items={itemsModality} type={'Modality'} legends={true} colorGraphicToPdf={false} ></StackedBar>
-                            </div>
-                        }
-                    </Grid>
+                                    <StackedBar items={itemsFormat} type={'Format'} legends={true} colorGraphicToPdf={false}></StackedBar>
+                                </div>
+                            }
+                            {showGraphicModality &&
+                                <div className={classes.betweenGraphics}>
+                                    {
+                                        userConfig.darkTheme ? <Typography style={{ color: '#000000' }}>Modalidad</Typography> : <Typography >Modalidad</Typography>
+                                    }
+                                    <StackedBar items={itemsModality} type={'Modality'} legends={true} colorGraphicToPdf={false} ></StackedBar>
+                                </div>
+                            }
+                        </Grid>
+                    </div>
                 </Grid>
                 <ShareModal />
                 {
@@ -439,6 +438,10 @@ export const DesignWorkspace = () => {
                 {
                     (uiState.isResourceModalOpen)  &&
                         <ResourceLinksModal/>
+                }
+                {
+                    (uiState.isEvaluationModalOpen)  &&
+                        <EvaluationModal/>
                 }
             </Grid>
         </>

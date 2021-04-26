@@ -8,8 +8,6 @@ import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 import { useSnackbar } from 'notistack';
 import { Delete } from '@material-ui/icons';
-//import ObjectID from 'bson-objectid';
-//import { ResourceLinks } from './ResourceLinks';
 
 const useStyles = makeStyles((theme) => ({
     trashIcon: {
@@ -98,6 +96,8 @@ const useStyles = makeStyles((theme) => ({
     },
     format: {
         gridArea: 'format',
+        display: 'flex',
+        justifyContent: 'space-between',
         alignSelf: 'flex-end',
         [theme.breakpoints.down('md')]: {
             marginTop: 10,
@@ -138,7 +138,6 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const isMediumDevice = useMediaQuery(theme.breakpoints.down('md'));
-    //const resourceLinksRefs = useRef([]);
 
     const [form, handleInputChange, , setValues] = useForm({
         description: task.description,
@@ -147,6 +146,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
         format: task.format && task.format.trim() !== '' ? task.format : 'Seleccionar',
         timeHours: task.duration.hours ?? 0,
         timeMinutes: task.duration.minutes ?? 0,
+        groupSize: task.groupSize && task.groupSize !== 2 ? task.groupSize : 2,
     });
 
     useImperativeHandle(
@@ -232,7 +232,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
         }
     }, [form.timeMinutes, task.duration.minutes, setValues]);
 
-    const { description, learningType, modality, format, timeHours, timeMinutes, } = form;
+    const { description, learningType, modality, format, timeHours, timeMinutes, groupSize,  } = form;
 
     const handleEditTaskField = ({ target }) => {
         let { name: field, value } = target;
@@ -250,11 +250,6 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
         handleInputChange({ target });
         socket.emit('edit-task-field', { designId: design._id, learningActivityID, taskID: task.id, field, value, subfield });
     };
-
-    //const handleAddResource = () => {
-    //    const id = ObjectID().toString();
-    //    socket.emit('new-resource-link', { designId: design._id, learningActivityIndex, index, id});
-    //};
 
     const handleOpenResourceModal = () => {
         dispatch({
@@ -429,33 +424,42 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                                 </div>
                                 <div style={{marginTop: 20}}>
                                     <Button variant={'outlined'} onClick={handleOpenResourceModal}> Administrar recursos</Button>
-                                    {/*
-                                    <div className={classes.resourceLinkGrid}>
-                                        <Typography variant="body2" color="textSecondary" > Enlace de Recursos </Typography>
-                                        <Tooltip title='Agregar recurso' arrow>
-                                            <Fab aria-label='add-resource-link' className= {classes.fab} color='primary' onClick={handleAddResource} >
-                                                <Add className={classes.icon}/>
-                                            </Fab>
-                                        </Tooltip>
-                                    </div>
-                                    {design.data.learningActivities[learningActivityIndex] && design.data.learningActivities[learningActivityIndex].tasks && design.data.learningActivities[learningActivityIndex].tasks[index].resourceLinks && design.data.learningActivities[learningActivityIndex].tasks[index].resourceLinks.map((resourceLink, i)=> <ResourceLinks ref={(ref) => resourceLinksRefs.current.push(ref)} key={`resourceLink-${i}-task-${index}-learningActivity-${learningActivityIndex}`} index={i} resourceLink={resourceLink} taskIndex={index} learningActivityIndex= {learningActivityIndex} /> ) 
-                                    */}
                                 </div>
-                                <FormControl fullWidth={isMediumDevice} variant='outlined' className={classes.format}>
-                                    <InputLabel id={`format-task-${task.id}-learningActivity-${learningActivityID}`}> Formato </InputLabel>
-                                    <Select
-                                        labelId={`format-task-${task.id}-learningActivity-${learningActivityID}`}
-                                        label='Formato'
-                                        name='format'
-                                        value={format}
-                                        onChange={handleChangeDropdown}
-                                    >
-                                        <MenuItem value={'Seleccionar'}> Seleccionar </MenuItem>
-                                        <MenuItem value={'Grupal'}> Grupal</MenuItem>
-                                        <MenuItem value={'Individual'}> Individual</MenuItem>
-                                        <MenuItem value={'Toda la clase'}> Toda la clase</MenuItem>
-                                    </Select>
-                                </FormControl>
+                                <div className={classes.format}>
+                                    <FormControl fullWidth variant='outlined' >
+                                        <InputLabel id={`format-task-${task.id}-learningActivity-${learningActivityID}`}> Formato </InputLabel>
+                                        <Select
+                                            labelId={`format-task-${task.id}-learningActivity-${learningActivityID}`}
+                                            label='Formato'
+                                            name='format'
+                                            value={format}
+                                            onChange={handleChangeDropdown}
+                                        >
+                                            <MenuItem value={'Seleccionar'}> Seleccionar </MenuItem>
+                                            <MenuItem value={'Grupal'}> Grupal</MenuItem>
+                                            <MenuItem value={'Individual'}> Individual</MenuItem>
+                                            <MenuItem value={'Toda la clase'}> Toda la clase</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                    { (format === 'Grupal') &&
+                                        <FormControl fullWidth variant='outlined'>
+                                            <InputLabel id={`group-task-${task.id}-learningActivity-${learningActivityID}`}> Personas </InputLabel>
+                                            <Select
+                                                labelId={`group-quantity-task-${task.id}-learningActivity-${learningActivityID}`}
+                                                label='Cantidad'
+                                                name='groupSize'
+                                                value={groupSize}
+                                                onChange={handleChangeDropdown}
+                                                type = 'number'
+                                            >
+                                            <MenuItem value={2}> 2 </MenuItem>
+                                            <MenuItem value={3}> 3</MenuItem>
+                                            <MenuItem value={4}> 4</MenuItem>
+                                            <MenuItem value={5}> 5</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    }
+                                </div>
                                 <TextField
                                     style={{ gridArea: 'description', marginTop: 10, }}
                                     label='Descripción'
