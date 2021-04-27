@@ -98,7 +98,7 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                             </View>
                             <View style={styles.tableRow}> 
                                 <View style={styles.tableCol}> 
-                                    <Text style={[styles.tableCell, {marginBottom: 10}]}> {design.metadata.workingTime.hours} hrs : {design.metadata.workingTime.minutes} mins</Text>
+                                    <Text style={[styles.tableCell, {marginBottom: 10}]}> {design.metadata.workingTime.hours} hrs : {design.metadata.workingTime.minutes} min</Text>
                                 </View>
                                 <View style={styles.tableCol}>
                                     {(design.metadata.name === '') ?
@@ -163,16 +163,13 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                 { learningActivity.tasks && learningActivity.tasks.map((task, indexTask) =>
                                         <View key = {`task-${indexTask}`} >
                                             <View>
-                                                <View style={[styles.table, { marginBottom: 15, borderTop: 1, borderColor: '#808080'} ]}>
+                                                <View style={[styles.table, { marginBottom: 20, borderTop: 1, borderColor: '#808080'} ]}>
                                                     <View style={ styles.tableRow }>
                                                         {(typeUserPDF === 'teacher') && 
                                                             <View style={styles.tableCol}>
                                                                 <Text style={[styles.tableCell,  {color: '#979797'}]}>Aprendizaje</Text>
                                                             </View>
                                                         }
-                                                        <View style={styles.tableCol}>
-                                                            <Text style={[styles.tableCell,  {color: '#979797'}]}>Formato</Text>
-                                                        </View>
                                                         <View style={styles.tableCol}>
                                                             <Text style={[styles.tableCell,  {color: '#979797'}]}>Tiempo</Text>
                                                         </View>
@@ -191,25 +188,51 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                                             </View>
                                                         }
                                                         <View style={styles.tableCol}>
-                                                            {(task.format === 'Seleccionar') ? 
-                                                                <Text style={styles.tableCell}> No especificado. </Text> 
-                                                                : 
-                                                                <Text style={styles.tableCell}> {task.format}. </Text>
-                                                            }
-                                                        </View>
-                                                        <View style={styles.tableCol}>
-                                                            <Text style={styles.tableCell}>{task.duration.hours} hrs : {task.duration.minutes} mins.</Text>
+                                                            <Text style={styles.tableCell}>{task.duration.hours} hrs : {task.duration.minutes} min.</Text>
                                                         </View>
                                                         <View style={styles.tableCol}>
                                                             {(task.modality === 'Seleccionar') ? 
                                                                 <Text style={styles.tableCell}> No especificado. </Text> 
                                                                 : 
-                                                                <Text style={styles.tableCell}> {task.modality}. </Text>
+                                                                <Text style={styles.tableCell}> {task.modality} </Text>
                                                             }
                                                         </View>
                                                     </View>
+                                                    <View style={ styles.tableRow }>
+                                                        <View style={styles.tableCol}>
+                                                            <Text style={[styles.tableCell,  {color: '#979797'}]}>Formato</Text>
+                                                        </View>
+                                                        {  (task.format === 'Grupal') &&
+                                                            <>
+                                                            <View style={styles.tableCol}>
+                                                                <Text style={[styles.tableCell,  {color: '#979797'}]}>Número de integrantes</Text>
+                                                            </View>
+                                                            <View style={styles.tableCol}>
+                                                            </View>
+                                                            </>
+                                                        }  
+                                                    </View>
+                                                    <View style={ styles.tableRow }>
+                                                        <View style={styles.tableCol}>
+                                                            {(task.format === 'Seleccionar') ? 
+                                                                <Text style={styles.tableCell}> No especificado. </Text> 
+                                                                : 
+                                                                <Text style={styles.tableCell}> {task.format} </Text>
+                                                            }
+                                                        </View>
+                                                        {  (task.format === 'Grupal') &&
+                                                            <>
+                                                                <View style={styles.tableCol}>
+                                                                    <Text style={styles.tableCell}> {task.groupSize}</Text> 
+                                                                </View>
+                                                                <View style={styles.tableCol}>
+                                                                </View>
+                                                            </> 
+                                                        }
+                                                             
+                                                    </View>
                                                     <View>
-                                                        <Text style={{fontSize: 12, color: '#979797', marginTop: 10, marginBottom: 10}} >Descripción</Text>
+                                                        <Text style={{fontSize: 12, color: '#979797', marginTop: 20, marginBottom: 5}} >Descripción</Text>
                                                         {(task.description === '') ? 
                                                             <Text wrap style={{fontSize: 12, justifyContent: 'center'}}> No especificado. </Text> 
                                                             : 
@@ -217,7 +240,7 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                                         }
                                                     </View>
                                                     <View>
-                                                        <Text style={{fontSize: 12, color: '#979797', marginTop: 15}} >Enlaces de recursos</Text>
+                                                        <Text style={{fontSize: 12, color: '#979797', marginTop: 20, marginBottom: 5}} >Enlaces de recursos</Text>
                                                         { (task.resourceLinks.length === 0) ?
                                                             <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>No se han proporcionado recursos</Text>
                                                             : 
@@ -236,15 +259,26 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                         </View>
                                 )}
                                 <View style = {{marginLeft: 50, marginRight: 50}}>
-                                    <Text style={{fontSize: 12, color: '#979797', marginTop: 15}} >Evaluación de la actividad.</Text>
+                                    <Text style={{fontSize: 15, color: '#979797', marginTop: 5}} >Evaluación de la actividad.</Text>
                                     <Text style={{fontSize: 12, color: '#979797', marginTop: 10, marginBottom: 10}} >Titulo</Text>
-                                    <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>{learningActivity.evaluation.title}</Text>
+                                    {
+                                        (learningActivity.evaluation.title === '') ? 
+                                        <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>No definido.</Text>
+                                        :
+                                        <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>{learningActivity.evaluation.title}</Text>
+                                    }
                                     <Text style={{fontSize: 12, color: '#979797', marginTop: 10, marginBottom: 10}} >Descripción</Text>
-                                    <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>{learningActivity.evaluation.description}</Text>
+                                    {
+                                        (learningActivity.evaluation.description === '') ? 
+                                        <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>No definido.</Text>
+                                        :
+                                        <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>{learningActivity.evaluation.description}</Text>
+                                    }
+                                    
                                 </View>
                             </View>
                         )}
-                        <View>
+                        <View style = {{marginTop: 15}}>
                             {(typeUserPDF === 'teacher' ) &&
                                 <Image
                                     src={img}

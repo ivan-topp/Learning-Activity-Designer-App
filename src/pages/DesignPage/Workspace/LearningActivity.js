@@ -10,7 +10,7 @@ import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 import { useSnackbar } from 'notistack';
 import { itemsLearningType } from 'assets/resource/items'
-import { Add, Delete, MoreVert } from '@material-ui/icons';
+import { Add, Delete, ListAlt, MoreVert } from '@material-ui/icons';
 import ObjectID from 'bson-objectid';
 
 const useStyles = makeStyles((theme) => ({
@@ -258,10 +258,11 @@ export const LearningActivity = ({ index, learningActivity }) => {
                                         onClose={()=>setMenuOpen(null)}
                                     >
                                         <MenuItem onClick={handleOpenModalEvaluation}>
+                                            <ListAlt fontSize = 'small'/>
                                             <Typography>Definir Evaluación</Typography>
                                         </MenuItem>
                                         <MenuItem onClick={handleDeleteUnit}>
-                                                <Delete fontSize="small" />
+                                            <Delete fontSize="small" />
                                             <Typography>Eliminar</Typography>
                                         </MenuItem>
                                     </Menu>
@@ -301,11 +302,12 @@ export const LearningActivity = ({ index, learningActivity }) => {
                                         onClose={()=>setMenuOpen(null)}
                                     >
                                         <MenuItem onClick={handleOpenModalEvaluation}>
+                                            <ListAlt fontSize = 'small' style={{marginRight: 8}}/>
                                             <Typography>Definir Evaluación</Typography>
                                         </MenuItem>
                                         <MenuItem onClick={handleDeleteUnit}>
-                                                <Delete fontSize="small" />
-                                            <Typography>Eliminar</Typography>
+                                            <Delete fontSize="small" style={{marginRight: 8}}/>
+                                            <Typography>Eliminar Actividad</Typography>
                                         </MenuItem>
                                     </Menu>
                                 </>

@@ -378,7 +378,7 @@ export const DesignWorkspace = () => {
                             }
                         </Grid>
                     </div>
-                    <div style ={{position: 'absolute', zIndex: 0, width: '100%'}}>
+                    <div style ={{ zIndex: 0, width: '100%'}}>
                         <Grid className={classes.graphicsSpacing} ref={imgGraphic}>
                             {
                                 design.data.learningActivities && design.data.learningActivities.map((learningActivity) =>
