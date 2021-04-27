@@ -223,6 +223,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
                         <Grid item xs={12} sm={5} className={classes.titleUnitSpacing}>
                             <TextField
                                 label='Título'
+                                InputLabelProps = {{shrink: true}}
                                 fullWidth
                                 margin='none'
                                 variant='outlined'
@@ -333,6 +334,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
                                 <Grid className={classes.spacingDescription}>
                                     <TextField
                                         label='Descripción'
+                                        InputLabelProps = {{shrink: true}}
                                         fullWidth
                                         margin='none'
                                         variant='outlined'

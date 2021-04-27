@@ -269,9 +269,9 @@ export const DesignMetadata = forwardRef((props, ref) => {
         }
         socket.emit('edit-metadata-field', { designId: design._id, field, value, subfield });
         if(subfield){
-            if (design.metadata[field][subfield].toString() !== value.toString()) handleInputChange(e);
+            if (!design.metadata[field] || !design.metadata[field][subfield] || design.metadata[field][subfield].toString() !== value.toString()) handleInputChange(e);
         } else {
-            if (design.metadata[field].toString() !== value.toString()) handleInputChange(e);
+            if (!design.metadata[field] || design.metadata[field].toString() !== value.toString()) handleInputChange(e);
         }
         
     };
@@ -305,6 +305,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
                         <Grid item className={classes.grid} xs={12} sm={9}  >
                             <TextField
                                 label='Nombre'
+                                InputLabelProps = {{shrink: true}}
                                 fullWidth
                                 margin='none'
                                 variant='outlined'
@@ -353,6 +354,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
                             <TextField
                                 label='Tamaño de la clase'
+                                InputLabelProps = {{shrink: true}}
                                 fullWidth
                                 margin='none'
                                 variant='outlined'
@@ -377,6 +379,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
                                 <div className={classes.timeField}>
                                     <TextField
                                         label='Horas'
+                                        InputLabelProps = {{shrink: true}}
                                         fullWidth
                                         margin='none'
                                         variant='outlined'
@@ -397,6 +400,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
                                     <Typography style={{ marginLeft: 10, marginRight: 10 }}> : </Typography>
                                     <TextField
                                         label='Minutos'
+                                        InputLabelProps = {{shrink: true}}
                                         fullWidth
                                         margin='none'
                                         variant='outlined'
@@ -425,6 +429,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
                                     <TextField
                                         //margin="dense"
                                         variant="outlined"
+                                        InputLabelProps = {{shrink: true}}
                                         name="workingTimeDesignHours"
                                         value={workingTimeDesignHours}
                                         label="Horas"
@@ -436,6 +441,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
                                     <TextField
                                         //margin="dense"
                                         variant="outlined"
+                                        InputLabelProps = {{shrink: true}}
                                         name="workingTimeDesignMinutes"
                                         value={workingTimeDesignMinutes}
                                         label="Minutos"
@@ -449,6 +455,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
                         <Grid item className={classes.grid} xs={12}>
                             <TextField
                                 label='Descripción'
+                                InputLabelProps = {{shrink: true}}
                                 fullWidth
                                 margin='none'
                                 variant='outlined'
@@ -470,6 +477,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
                             <TextField
                                 label='Conocimiento previo'
+                                InputLabelProps = {{shrink: true}}
                                 fullWidth
                                 margin='none'
                                 variant='outlined'
@@ -491,6 +499,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
                             <TextField
                                 label='Objetivos'
+                                InputLabelProps = {{shrink: true}}
                                 fullWidth
                                 margin='none'
                                 variant='outlined'

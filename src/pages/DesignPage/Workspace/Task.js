@@ -329,7 +329,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                             <div className={classes.gridContainer}>
                                 <div className={classes.learningTypeContainer}>
                                     <FormControl fullWidth variant='outlined' className={classes.learningType}>
-                                        <InputLabel id={`learningType-task-${task.id}-learningActivity-${learningActivityID}`}>Aprendizaje</InputLabel>
+                                        <InputLabel id={`learningType-task-${task.id}-learningActivity-${learningActivityID}`} shrink>Aprendizaje</InputLabel>
                                         <Select
                                             labelId={`learningType-task-${task.id}-learningActivity-${learningActivityID}`}
                                             label='Aprendizaje'
@@ -355,7 +355,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                                 </div>
                                 <div className={classes.modality}>
                                     <FormControl fullWidth variant='outlined'>
-                                        <InputLabel id={`modality-task-${task.id}-learningActivity-${learningActivityID}`}> Modalidad </InputLabel>
+                                        <InputLabel id={`modality-task-${task.id}-learningActivity-${learningActivityID}`} shrink> Modalidad </InputLabel>
                                         <Select
                                             labelId={`modality-task-${task.id}-learningActivity-${learningActivityID}`}
                                             label='Aprendizaje'
@@ -381,6 +381,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                                     <div className={classes.timeField}>
                                         <TextField
                                             label='Horas'
+                                            InputLabelProps = {{shrink: true}}
                                             fullWidth
                                             margin='none'
                                             variant='outlined'
@@ -401,6 +402,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                                         <Typography style={{ marginLeft: 10, marginRight: 10 }}> : </Typography>
                                         <TextField
                                             label='Minutos'
+                                            InputLabelProps = {{shrink: true}}
                                             fullWidth
                                             margin='none'
                                             variant='outlined'
@@ -427,7 +429,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                                 </div>
                                 <div className={classes.format}>
                                     <FormControl fullWidth variant='outlined' >
-                                        <InputLabel id={`format-task-${task.id}-learningActivity-${learningActivityID}`}> Formato </InputLabel>
+                                        <InputLabel id={`format-task-${task.id}-learningActivity-${learningActivityID}`} shrink> Formato </InputLabel>
                                         <Select
                                             labelId={`format-task-${task.id}-learningActivity-${learningActivityID}`}
                                             label='Formato'
@@ -443,7 +445,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                                     </FormControl>
                                     { (format === 'Grupal') &&
                                         <FormControl fullWidth variant='outlined'>
-                                            <InputLabel id={`group-task-${task.id}-learningActivity-${learningActivityID}`}> Personas </InputLabel>
+                                            <InputLabel id={`group-task-${task.id}-learningActivity-${learningActivityID}`} shrink> Personas </InputLabel>
                                             <Select
                                                 labelId={`group-quantity-task-${task.id}-learningActivity-${learningActivityID}`}
                                                 label='Cantidad'
@@ -462,6 +464,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                                 </div>
                                 <TextField
                                     style={{ gridArea: 'description', marginTop: 10, }}
+                                    InputLabelProps = {{shrink: true}}
                                     label='Descripción'
                                     fullWidth
                                     margin='none'
