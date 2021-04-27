@@ -180,7 +180,7 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                                     <View style={ styles.tableRow }>
                                                         {(typeUserPDF === 'teacher') && 
                                                             <View style={styles.tableCol}>
-                                                                { (task.learningType === 'Seleccionar') ?
+                                                                { (task.learningType === 'Seleccionar' || task.learningType.trim().length === 0) ?
                                                                     <Text style={styles.tableCell}>No especificado.</Text>
                                                                     :
                                                                     <Text style={styles.tableCell}>{task.learningType}</Text>
@@ -191,7 +191,7 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                                             <Text style={styles.tableCell}>{task.duration.hours} hrs : {task.duration.minutes} min.</Text>
                                                         </View>
                                                         <View style={styles.tableCol}>
-                                                            {(task.modality === 'Seleccionar') ? 
+                                                            {(task.modality === 'Seleccionar' || task.modality.trim().length === 0) ? 
                                                                 <Text style={styles.tableCell}> No especificado. </Text> 
                                                                 : 
                                                                 <Text style={styles.tableCell}> {task.modality} </Text>
@@ -214,7 +214,7 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                                     </View>
                                                     <View style={ styles.tableRow }>
                                                         <View style={styles.tableCol}>
-                                                            {(task.format === 'Seleccionar') ? 
+                                                            {(task.format === 'Seleccionar' || task.format.trim().length === 0) ? 
                                                                 <Text style={styles.tableCell}> No especificado. </Text> 
                                                                 : 
                                                                 <Text style={styles.tableCell}> {task.format} </Text>

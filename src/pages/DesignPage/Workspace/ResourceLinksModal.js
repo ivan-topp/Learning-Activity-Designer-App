@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, makeStyles} from '@material-ui/core';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, makeStyles } from '@material-ui/core';
 import React, { useState } from 'react'
 import types from 'types';
 import { useUiState } from 'contexts/ui/UiContext';

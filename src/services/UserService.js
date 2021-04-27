@@ -47,3 +47,35 @@ export const updateProfileInformation = async(  {uid, name, lastname, occupation
     }
 };
 
+export const getUserByEmail = async( email ) => {
+    try {
+        return await fetchWithToken(`user/search-by-email/`, { 
+           email
+        }, 'POST');
+    } catch (error) {
+        console.log(error);
+        return { ok: false, message: 'Ha ocurrido un error al hacer la petición, compruebe su conexión a internet o vuelva a intentarlo más tarde.'};
+    }
+};
+
+export const resendVerificationCode = async( email ) => {
+    try {
+        return await fetchWithToken(`user/resend-code/`, { 
+            email
+        }, 'POST');
+    } catch (error) {
+        console.log(error);
+        return { ok: false, message: 'Ha ocurrido un error al hacer la petición, compruebe su conexión a internet o vuelva a intentarlo más tarde.'};
+    }
+};
+
+export const changeUserPassword = async( { uid, newPassword } ) => {
+    try {
+        return await fetchWithToken(`auth/reset-password/${uid}`, { 
+            newPassword
+        }, 'PUT');
+    } catch (error) {
+        console.log(error);
+        return { ok: false, message: 'Ha ocurrido un error al hacer la petición, compruebe su conexión a internet o vuelva a intentarlo más tarde.'};
+    }
+};

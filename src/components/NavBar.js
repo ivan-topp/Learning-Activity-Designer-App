@@ -10,6 +10,8 @@ import { useUiState } from 'contexts/ui/UiContext';
 import { useAuthState } from 'contexts/AuthContext';
 import { useUserConfigState } from 'contexts/UserConfigContext';
 import types from 'types';
+import { LoginModal } from 'pages/Auth/LoginModal';
+import { RegisterModal } from 'pages/Auth/RegisterModal';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -220,6 +222,8 @@ export const NavBar = () => {
                     }
                 </Toolbar>
             </AppBar>
+            <LoginModal />
+            <RegisterModal />
         </div>
     );
 }

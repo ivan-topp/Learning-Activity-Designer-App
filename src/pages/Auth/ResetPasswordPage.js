@@ -1,6 +1,9 @@
-import { Box, Button, Container, makeStyles, Step, StepLabel, Stepper, TextField, Typography } from '@material-ui/core';
-import { Code, Email, VpnKey } from '@material-ui/icons';
+import { Backdrop, Box, Button, CircularProgress, Container, makeStyles, Step, StepLabel, Stepper, TextField, Typography } from '@material-ui/core';
+import { Code, Done, Email, VpnKey } from '@material-ui/icons';
 import React, { useState } from 'react';
+import { changeUserPassword, getUserByEmail, resendVerificationCode } from 'services/UserService';
+import { useSnackbar } from 'notistack';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -21,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
         height: '100%',
         [theme.breakpoints.down('xs')]: {
             borderStyle: 'none',
+            padding: 0,
         },
     },
     backButton: {
@@ -36,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'flex-end',
         [theme.breakpoints.down('sm')]: {
             marginTop: 30,
+            paddingRight: 20,
         },
     },
     body: {
@@ -53,32 +58,68 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
         padding: 20,
-        //backgroundColor: 'green',
+        [theme.breakpoints.down('sm')]: {
+            padding: 40,
+        },
     },
     input: {
         marginTop: 30,
     },
+    codeForm: {
+        width: '100%',
+        display: 'flex',
+        marginTop: 30,
+    },
+    codeButton: {
+        borderTopLeftRadius: 0,
+        borderBottomLeftRadius: 0,
+    },
+    codeInput: {
+        '& fieldset': {
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: 0,
+        }
+    },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+    },
 }));
+
+const emailInitialValue = {
+    value: '',
+    error: null
+};
+
+const codeInitialValue = {
+    value: '',
+    error: null
+};
+
+const passwordInitialValue = {
+    password: '',
+    confirm: '',
+    passwordError: null,
+    confirmError: null
+};
 
 export const ResetPasswordPage = () => {
     const classes = useStyles();
+    const history = useHistory();
+    const { enqueueSnackbar } = useSnackbar();
     const [activeStep, setActiveStep] = useState(0);
-    const [email, setEmail] = useState({
-        value: '',
-        error: null
-    });
-    const [passwordForm, setPasswordForm] = useState({
-        password: '',
-        confirm: '',
-        passwordError: null,
-        confirmError: null
-    });
+    const [loading, setLoading] = useState(false);
+    const [uid, setUid] = useState(null);
+    const [verificationCode, setVerificationCode] = useState(null);
+    const [codeForm, setCodeForm] = useState(codeInitialValue);
+    const [email, setEmail] = useState(emailInitialValue);
+    const [passwordForm, setPasswordForm] = useState(passwordInitialValue);
     const steps = [
         { icon: Email, label: 'Buscar cuenta por email' },
         { icon: Code, label: 'Código de verificación' },
         { icon: VpnKey, label: 'Restablecer contraseña' },
+        { icon: Done, label: 'Contraseña restablecida' },
     ];
-    //console.log(email);
 
     const isEmailValid = () => {
         if (!/^[-\w.%+]{1,64}@(?:[A-Z0-9]{1,63}\.){1,125}[A-Z]{2,63}$/i.test(email.value)) {
@@ -92,6 +133,14 @@ export const ResetPasswordPage = () => {
     };
 
     const paswordsMatchs = () => {
+        if (!passwordForm.password.trim().length) return setPasswordForm({
+            ...passwordForm,
+            passwordError: 'Este campo es obligatorio',
+        });
+        if (!passwordForm.confirm.trim().length) return setPasswordForm({
+            ...passwordForm,
+            confirmError: 'Este campo es obligatorio',
+        });
         if(!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,16}$/.test(passwordForm.password)){
             setPasswordForm((prevState) => ({
                 ...prevState,
@@ -116,6 +165,8 @@ export const ResetPasswordPage = () => {
 
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
+        setVerificationCode(null);
+        setEmail(emailInitialValue);
     };
 
     const handleChangeEmail = ({ target }) => {
@@ -125,39 +176,39 @@ export const ResetPasswordPage = () => {
         });
     };
 
-    const handleSearchAccount = (e) => {
+    const handleSearchAccount = async (e) => {
         e.preventDefault();
         if (!email.value.trim().length) return setEmail({
             ...email,
             error: 'Este campo es obligatorio',
         });
         if (!isEmailValid()) return;
-        //TODO: Petición al backend para buscar cuenta de usuario.
-        const resp = { ok: true };
-        if (!resp.ok) return;
+        setLoading(true);
+        const resp = await getUserByEmail(email.value);
+        setLoading(false);
+        if (!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 5000 });
+        enqueueSnackbar('Se ha enviado un código de verificación a su correo electrónico.', { variant: 'success', autoHideDuration: 5000 });
+        setVerificationCode(resp.data.randomCode);
+        setUid(resp.data.user._id);
         handleNext();
-        console.log(email);
     };
 
     const handleVerifyCode = (e) => {
         e.preventDefault();
-        console.log('Verificar código');
+        if(codeForm.value.trim().toUpperCase() !== verificationCode.trim().toUpperCase()) return setCodeForm({
+            ...codeForm,
+            error: 'El código ingresado no coincide'
+        });
         handleNext();
     };
 
-    const handleResetPassword = (e) => {
+    const handleResetPassword = async (e) => {
         e.preventDefault();
-        if (!passwordForm.password.trim().length) return setPasswordForm({
-            ...passwordForm,
-            passwordError: 'Este campo es obligatorio',
-        });
-        if (!passwordForm.confirm.trim().length) return setPasswordForm({
-            ...passwordForm,
-            confirmError: 'Este campo es obligatorio',
-        });
-        if(!paswordsMatchs()) return ;
-
-        console.log('Resetear contraseña...');
+        if(!paswordsMatchs()) return;
+        const resp = await changeUserPassword({ uid, newPassword: passwordForm.password });
+        if (!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 5000 });
+        enqueueSnackbar(resp.message, { variant: 'success', autoHideDuration: 5000 });
+        handleNext();
     };
 
     const handleChangePassword = ({target}) => {
@@ -168,6 +219,29 @@ export const ResetPasswordPage = () => {
             confirmError: null,
         });
     }
+    
+    const handleChangeCode = ({target}) => {
+        setCodeForm({
+            ...codeForm,
+            value: target.value,
+            error: null,
+        });
+    }
+
+    const handleResendCode = async (e) => {
+        setLoading(true);
+        setCodeForm(codeInitialValue);
+        const resp = await resendVerificationCode(email.value);
+        setLoading(false);
+        if (!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 5000 });
+        enqueueSnackbar(resp.message, { variant: 'success', autoHideDuration: 2000 });
+        setVerificationCode(resp.data.randomCode);
+    }
+    
+    const handleFinish = (e) => {
+        e.preventDefault();
+        history.push('/');
+    };
 
     const emailForm = () => {
         return (
@@ -194,8 +268,8 @@ export const ResetPasswordPage = () => {
             </Box>
         );
     };
-
-    const codeForm = () => {
+    
+    const verificationCodeForm = () => {
         return (
             <Box className={classes.content}>
                 <Typography variant='h5' align='center' gutterBottom>
@@ -203,17 +277,33 @@ export const ResetPasswordPage = () => {
                 </Typography>
                 <Typography variant='body1' align='center' gutterBottom>
                     Introduce el código de verificación que hemos enviado a tu correo electrónico.
-                    Si este no ha llegado a tu correo, puedes reenviar un código haciendo click en el botón "Reenviar".
+                    Si este no ha llegado a tu correo, puedes reenviar un código haciendo click en el botón "Reenviar Código".
                 </Typography>
-                <TextField
-                    className={classes.input}
-                    value=''
-                    label='Código verificación'
-                    type='text'
-                    placeholder='Ingresa código verificación'
-                    variant='outlined'
-                    fullWidth
-                />
+                <div className={classes.codeForm}>
+                    <TextField
+                        className={classes.codeInput}
+                        value={codeForm.value}
+                        error={!!codeForm.error}
+                        helperText={codeForm.error}
+                        onChange={handleChangeCode}
+                        label='Código verificación'
+                        type='text'
+                        placeholder='Ingresa código verificación'
+                        variant='outlined'
+                        inputProps={{ style: { textTransform: "uppercase"} }}
+                        fullWidth
+                        />
+                    <Button
+                        className={classes.codeButton}
+                        size='small'
+                        variant="contained" 
+                        color="primary"
+                        disableElevation 
+                        onClick={handleResendCode}
+                    >
+                        Reenviar Código
+                    </Button>
+                </div>
             </Box>
         );
     };
@@ -222,7 +312,7 @@ export const ResetPasswordPage = () => {
         return (
             <Box className={classes.content}>
                 <Typography variant='h5' align='center' gutterBottom>
-                    Reestablecer contraseña
+                    Restablecer contraseña
                 </Typography>
                 <Typography variant='body1' align='center' gutterBottom>
                     Complete el siguiente formulario para reestablecer su contraseña.
@@ -257,14 +347,30 @@ export const ResetPasswordPage = () => {
         );
     };
 
+    const finishStep = () => {
+        return (
+            <Box className={classes.content}>
+                <Typography variant='h5' align='center' gutterBottom>
+                    Contraseña restablecida
+                </Typography>
+                <Typography variant='body1' align='center' gutterBottom>
+                    La contraseña de su cuenta se ha reestablecido con éxito.
+                    Por favor haga click en el boton "Finalizar" para redirigirlo a la página de inicio.
+                </Typography>
+            </Box>
+        );
+    };
+
     const getStepContent = (step) => {
         switch (step) {
             case 0:
                 return emailForm();
             case 1:
-                return codeForm();
+                return verificationCodeForm();
             case 2:
                 return resetPasswordForm();
+            case 3:
+                return finishStep();
             default:
                 return 'Unknown step';
         }
@@ -280,7 +386,7 @@ export const ResetPasswordPage = () => {
                         </Step>
                     ))}
                 </Stepper>
-                <form className={classes.body} onSubmit={activeStep === 0 ? handleSearchAccount : activeStep === 1 ? handleVerifyCode : handleResetPassword } noValidate>
+                <form className={classes.body} onSubmit={activeStep === 0 ? handleSearchAccount : activeStep === 1 ? handleVerifyCode : activeStep === 2 ? handleResetPassword : handleFinish } noValidate>
                     {getStepContent(activeStep)}
                         <Box className={classes.buttonZone}>
                             {activeStep === 1 && (<Button
@@ -296,6 +402,9 @@ export const ResetPasswordPage = () => {
                         </Box>
                 </form>
             </Box>
+            <Backdrop className={classes.backdrop} open={loading}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
         </Container>
     );
 };
