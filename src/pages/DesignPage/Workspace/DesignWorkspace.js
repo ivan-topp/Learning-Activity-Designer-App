@@ -17,6 +17,7 @@ import { ViewAndDownloadPDFModal } from 'pages/DesignPage/PDF/ViewAndDownloadPDF
 import { useUserConfigState } from 'contexts/UserConfigContext';
 import { ResourceLinksModal } from './ResourceLinksModal';
 import { EvaluationModal } from './EvaluationModal';
+import { exportJsonToFile } from 'utils/files';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -168,6 +169,29 @@ export const DesignWorkspace = () => {
         setOpenMenuPDF(null);
     };
 
+    const handleExportToFile = ( e ) => {
+        const designToExport = JSON.parse(JSON.stringify(design));
+        designToExport.comments = [];
+        designToExport.assessments = [];
+        designToExport.folder = '';
+        designToExport.origin = designToExport._id;
+        designToExport.privileges = [];
+        designToExport.owner = '';
+        designToExport.metadata.scoreMean = 0;
+        for (const learningActivity of designToExport.data.learningActivities) {
+            learningActivity.id = ObjectID().toString();
+            for (const task of learningActivity.tasks) {
+                task.id = ObjectID().toString();
+            }
+        }
+        delete designToExport._id;
+        delete designToExport.createdAt;
+        delete designToExport.updatedAt;
+        delete designToExport.readOnlyLink;
+        exportJsonToFile(designToExport, `${design.metadata.name.trim().length === 0 ? 'Diseño sin nombre' :  design.metadata.name.trim()}.json`);
+        handleCloseMenu();
+    };
+
     design.data.learningActivities.forEach((activities) => {
         if (activities.tasks !== undefined) {
             activities.tasks.forEach(task => {
@@ -306,6 +330,7 @@ export const DesignWorkspace = () => {
                         >
                             <MenuItem onClick={() => handleOpenModalPDF('teacher')}>PDF Docente</MenuItem>
                             <MenuItem onClick={() => handleOpenModalPDF('student')}>PDF Estudiante</MenuItem>
+                            <MenuItem onClick={handleExportToFile}>Exportar a JSON</MenuItem>
                         </Menu>
                         <ButtonGroup size='small' fullWidth={isMediumDevice} className={classes.buttonGroupWorkSpace}>
                             <Button onClick={handleOpenMenu}>Exportar</Button>
