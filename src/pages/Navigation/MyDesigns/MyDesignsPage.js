@@ -28,7 +28,11 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: 30,
         paddingRight: 30,
         background: theme.palette.background.workSpace,
-        minHeight: 'calc(100vh - 128px)'
+        minHeight: 'calc(100vh - 128px)',
+        [theme.breakpoints.down('xs')]: {
+            paddingLeft: 10,
+            paddingRight: 10,
+        },
     },
     rightPanel: {
         display: 'flex',

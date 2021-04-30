@@ -30,6 +30,14 @@ const useStyles = makeStyles((theme) => ({
         height: theme.spacing(30),
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
+        [theme.breakpoints.down('md')]: {
+            width: theme.spacing(25),
+            height: theme.spacing(25),
+        },
+        [theme.breakpoints.down('sm')]: {
+            width: theme.spacing(15),
+            height: theme.spacing(15),
+        },
     },
     spaceFirstDataFirstData:{ 
         marginBottom: theme.spacing(1),
@@ -43,14 +51,22 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(2),   
     },
     spaceData:{
-        marginLeft: theme.spacing(5),
+        marginLeft: theme.spacing(3),
         marginBottom: theme.spacing(2),
-        marginRight: theme.spacing(5),
+        marginRight: theme.spacing(3),
+        [theme.breakpoints.down('xs')]: {
+            marginLeft: theme.spacing(1),
+            marginRight: theme.spacing(1),
+        },
     },
     spaceDesign:{
         marginLeft: theme.spacing(7),
         marginTop: theme.spacing(2),
-        marginRight: theme.spacing(7) 
+        marginRight: theme.spacing(7),
+        [theme.breakpoints.down('xs')]: {
+            marginLeft: theme.spacing(1),
+            marginRight: theme.spacing(1),
+        },
     },
     spaceIcons:{
         marginRight: theme.spacing(1)
@@ -186,7 +202,7 @@ export const UserProfile = () => {
         <Grid container>
             <Grid item xs={12} sm={3}>
                 <Grid container alignItems='center' justify='center'>
-                    <Avatar alt={data.name + ' ' + data.lastname} className={classes.photoProfile} src={ data.img ?? ''}/>
+                    <Avatar alt={data.name + ' ' + data.lastname} className={classes.photoProfile} src={ data.img && data.img.length > 0 ? `${process.env.REACT_APP_URL}uploads/users/${data.img}` : '' }/>
                 </Grid>
                 <Grid container alignItems='center' justify='center'>
                     { data && <Typography  align='center' variant='h5' component='h2'>{data.name + ' ' + data.lastname}</Typography>}

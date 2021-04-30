@@ -143,10 +143,7 @@ export const RegisterModal = React.memo(() => {
         if (!paswordsMatchs()) return;
         let resp = await register( formData );
         if (!resp.ok) setErrorFromServer(resp.message);
-        else dispatch({
-            type: types.ui.toggleModal,
-            payload: 'Register',
-        });
+        else handleClose();
     };
 
     const toLogin = (e) => {
