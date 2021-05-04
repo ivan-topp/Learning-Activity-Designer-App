@@ -444,7 +444,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                                         </Select>
                                     </FormControl>
                                     { (format === 'Grupal') &&
-                                        (design.metadata.classSize > 1) ?
+                                        (design.metadata.classSize > 1) &&
                                             <FormControl fullWidth variant='outlined'>
                                                 <InputLabel id={`group-task-${task.id}-learningActivity-${learningActivityID}`} shrink> Personas </InputLabel>
                                                 <Select
@@ -466,10 +466,6 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                                                 <MenuItem value={5}> {5} </MenuItem>
                                                 </Select>
                                             </FormControl>
-                                            :
-                                            <div style={{marginLeft: 5}}>
-                                                <Typography>No hay alumnos suficientes</Typography>
-                                            </div>
                                     }
                                 </div>
                                 <TextField
