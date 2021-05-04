@@ -26,6 +26,7 @@ const initialState = {
 	isPDFModalOpen: false,
 	isResourceModalOpen: false,
 	isEvaluationModalOpen: false,
+	isImportDesignsModalOpen: false,
 	folder: {
 		_id: null,
 		name: '',

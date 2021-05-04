@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, Card, CardActionArea, CardActions, CardContent, IconButton, makeStyles, Typography } from '@material-ui/core';
+import { Avatar, Card, CardActionArea, CardActions, CardContent, IconButton, makeStyles, Tooltip, Typography } from '@material-ui/core';
 import { Delete, Description, Star } from '@material-ui/icons';
 import { useAuthState } from 'contexts/AuthContext';
 import { formatName, getUserInitials } from 'utils/textFormatters';
@@ -168,7 +168,9 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, privile
                         <Description className={classes.designIcon} />
                         <div className={classes.col}>
                             <div className={classes.row}>
-                                <Typography className={classes.ellipsis} variant='h5' component="h2" >{title}</Typography>
+                                <Tooltip title={`${title}`} arrow placement="top">
+                                    <Typography className={classes.ellipsis} variant='h5' component="h2" >{title}</Typography>
+                                </Tooltip>
                             </div>
                             <div className={classes.row}>
                                 <Typography className={classes.ellipsis} variant="body1" component="p">{metadata.category ? metadata.category.name : 'Sin categoría'}</Typography>
@@ -193,12 +195,11 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, privile
                 </IconButton>)
             }
             <CardActionArea component={Link} to={`/profile/${owner._id}`}>
-
                 <CardActions className={classes.ownerInfo}>
                     <Avatar
                         alt={formatName(owner.name, owner.lastname)}
-                        src={owner.img ?? ''}
-                    >
+                        src={ owner.img && owner.img.length > 0 ? `${process.env.REACT_APP_URL}uploads/users/${owner.img}` : '' }
+                        >
                         {getUserInitials(owner.name, owner.lastname)}
                     </Avatar>
                     <div>
@@ -206,7 +207,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, privile
                         <Typography color="textSecondary">{owner.occupation ?? 'Sin ocupación'}</Typography>
                     </div>
                 </CardActions>
-            </CardActionArea>    
+            </CardActionArea>
         </Card>
     );
 };

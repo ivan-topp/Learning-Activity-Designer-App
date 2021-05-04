@@ -101,5 +101,10 @@ export const duplicateDesign = async ({ id }) => {
     return resp.data;
 };
 
-
-
+export const importDesign = async ({ path, filename, design, last }) => {
+    const resp = await fetchWithToken(`design/import`, { path, filename, design }, 'POST');
+    if(!resp.ok){
+        throw new Error(resp.message);
+    };
+    return resp;
+};

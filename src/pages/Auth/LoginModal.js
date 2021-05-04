@@ -150,10 +150,7 @@ export const LoginModal = () => {
         if (!isPasswordValid()) return;
         const resp = await login(email, password);
         if (!resp.ok) setErrorFromServer(resp.message);
-        else dispatch({
-            type: types.ui.toggleModal,
-            payload: 'Login',
-        });
+        else handleClose();
     };
 
     const handleClose = () => {
@@ -162,6 +159,9 @@ export const LoginModal = () => {
             payload: 'Login',
         });
         reset();
+        setFormErrors(initialErrors);
+        setShowPassword(false);
+        setErrorFromServer(null);
     };
 
     const handleClickShowPassword = () => {

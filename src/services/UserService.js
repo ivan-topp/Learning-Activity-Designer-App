@@ -1,4 +1,4 @@
-import { fetchWithToken } from "utils/fetch";
+import { fetchWithToken, uploadFetchWithToken } from "utils/fetch";
 
 export const getUser = async ( id ) => {
     const resp = await fetchWithToken(`user/${id}`);
@@ -33,10 +33,10 @@ export const updateContact = async(  {uid, contacts} ) => {
     }
 };
 
-export const updateProfileInformation = async(  {uid, name, lastname, occupation, institution, country, city, description} ) => {
+export const updateProfileInformation = async(  {uid, img, name, lastname, occupation, institution, country, city, description} ) => {
     try {
         const resp = await fetchWithToken(`user/${uid}`, { 
-           newData: { uid, name, lastname, occupation, institution, country, city, description }
+           newData: { uid, img, name, lastname, occupation, institution, country, city, description }
         }, 'PUT');
         if(!resp.ok){
             throw new Error(resp.message);
@@ -44,6 +44,7 @@ export const updateProfileInformation = async(  {uid, name, lastname, occupation
         return resp.data;
     } catch (error) {
         console.log(error);
+        return { ok: false, message: 'Ha ocurrido un error al hacer la petición, compruebe su conexión a internet o vuelva a intentarlo más tarde.'};
     }
 };
 
@@ -74,6 +75,15 @@ export const changeUserPassword = async( { uid, newPassword } ) => {
         return await fetchWithToken(`auth/reset-password/${uid}`, { 
             newPassword
         }, 'PUT');
+    } catch (error) {
+        console.log(error);
+        return { ok: false, message: 'Ha ocurrido un error al hacer la petición, compruebe su conexión a internet o vuelva a intentarlo más tarde.'};
+    }
+};
+
+export const updateUserImage = async( formData ) => {
+    try {
+        return await uploadFetchWithToken(`user/update/user-img`, formData, 'PUT', {});
     } catch (error) {
         console.log(error);
         return { ok: false, message: 'Ha ocurrido un error al hacer la petición, compruebe su conexión a internet o vuelva a intentarlo más tarde.'};

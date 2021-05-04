@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory, useParams } from "react-router-dom";
-import { Button, ButtonGroup, Divider, Grid, makeStyles, Typography } from '@material-ui/core';
+import { Divider, Grid, makeStyles, Typography, useMediaQuery, useTheme } from '@material-ui/core';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from 'react-query';
 import { DesignsContainer } from 'components/DesignsContainer';
 import { createDesign, getDesignsByFolder } from 'services/DesignService';
@@ -14,6 +14,9 @@ import { DesignsBreadcrumbs } from 'pages/Navigation/MyDesigns/DesignsBreadcrumb
 import { RecentDesigns } from 'pages/Navigation/MyDesigns/RecentDesigns';
 import { FolderModal } from './FolderModal';
 import { useSnackbar } from 'notistack';
+import { AddCircle, CreateNewFolder, NoteAdd, Publish } from '@material-ui/icons';
+import { CustomMenu } from 'components/CustomMenu';
+import { ImportDesignsModal } from './ImportDesignsModal';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -25,7 +28,11 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: 30,
         paddingRight: 30,
         background: theme.palette.background.workSpace,
-        minHeight: 'calc(100vh - 128px)'
+        minHeight: 'calc(100vh - 128px)',
+        [theme.breakpoints.down('xs')]: {
+            paddingLeft: 10,
+            paddingRight: 10,
+        },
     },
     rightPanel: {
         display: 'flex',
@@ -57,11 +64,6 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between', 
         alignItems:'flex-end', 
         paddingBottom: 5,
-        [theme.breakpoints.down('xs')]:{
-            flexDirection: 'column',
-            alignItems: 'start',
-            justifyContent: 'center',
-        },
     },
     button: {
         height: 35,
@@ -74,6 +76,8 @@ export const MyDesignsPage = () => {
     const history = useHistory();
     const urlparams = useParams();
     const designsRef = useRef(null);
+    const theme = useTheme();
+    const isXSDevice = useMediaQuery(theme.breakpoints.down('xs'));
     const { uiState, dispatch } = useUiState();
     const { enqueueSnackbar } = useSnackbar();
     const queryClient = useQueryClient();
@@ -142,6 +146,13 @@ export const MyDesignsPage = () => {
         });
     };
 
+    const handleImportDesign = (e) => {
+        dispatch({
+            type: types.ui.toggleModal,
+            payload: 'ImportDesigns',
+        });
+    };
+
     return (
         <>
             <Grid container>
@@ -158,14 +169,16 @@ export const MyDesignsPage = () => {
                             <Typography variant='h4'>
                                 {path === '/' ? 'Mis Diseños' : folderName}
                             </Typography>
-                            <ButtonGroup className={classes.button}>
-                                <Button variant='outlined' fullWidth size='large' color='default' onClick={(e)=>handleCreateDesign(e, path)}> 
-                                    Crear Diseño
-                                </Button>
-                                <Button variant='outlined' fullWidth size='large' color='default' onClick={handleOpenFolderModal}> 
-                                    Crear Carpeta
-                                </Button>
-                            </ButtonGroup>
+                            <CustomMenu
+                                Icon={<AddCircle />}
+                                text='Nuevo'
+                                fullWidth={isXSDevice}
+                                options={[
+                                    { icon: <NoteAdd  />, label: 'Nuevo Diseño', onSelect: (e)=>handleCreateDesign(e, path) },
+                                    { icon: <CreateNewFolder  />, label: 'Nueva Carpeta', onSelect: handleOpenFolderModal },
+                                    { icon: <Publish  />, label: 'Importar Diseños', onSelect: handleImportDesign },
+                                ]} 
+                            />
                         </div>
                         <Divider />
                         <FoldersContainer {...foldersQuery}/>
@@ -175,6 +188,7 @@ export const MyDesignsPage = () => {
                 <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
             </Grid>
             <FolderModal />
+            <ImportDesignsModal />
         </>
     );
 };

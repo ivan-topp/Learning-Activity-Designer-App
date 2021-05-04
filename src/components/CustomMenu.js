@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Box, IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
+import { Box, Button, IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
 import { MoreVert } from '@material-ui/icons';
 
-export const CustomMenu = ({ options, Icon=MoreVert }) => {
+export const CustomMenu = ({ options, Icon, text, fullWidth = false }) => {
     const [isOpen, setOpen] = useState(null);
 
     const handleOpen = (e) => {
@@ -44,10 +44,18 @@ export const CustomMenu = ({ options, Icon=MoreVert }) => {
     };
 
     return (
-        <div>
-            <IconButton onClick={handleOpen}>
-                <Icon />   
-            </IconButton>
+        <div style={{width: fullWidth ? '100%': 'auto'}}>
+            {
+                text 
+                    ? <Button fullWidth={fullWidth} variant='outlined' onClick={handleOpen}>
+                        {Icon ?? <MoreVert />}
+                        <Typography style={{marginLeft: 10}}>{text}</Typography> 
+                    </Button>
+                    : <IconButton onClick={handleOpen}>
+                        {Icon ?? <MoreVert />} 
+                    </IconButton>
+            }
+            
             <Menu
                 anchorEl={isOpen}
                 open={Boolean(isOpen)}

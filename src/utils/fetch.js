@@ -42,7 +42,22 @@ const fetchWithToken = async (endpoint, data, method = 'GET') => {
     }
 };
 
+const uploadFetchWithToken = async (endpoint, data, method = 'POST') => {
+    const url = `${baseUrl}/${endpoint}`;
+    const token = localStorage.getItem('token') || '';
+
+    const resp = await fetch(url, {
+        method,
+        headers: {
+            'x-token': token,
+        },
+        body: data
+    });
+    return await resp.json();
+};
+
 export {
     fetchWithoutToken,
     fetchWithToken,
+    uploadFetchWithToken,
 };
