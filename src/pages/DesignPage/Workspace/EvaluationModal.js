@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, makeStyles, TextField, Typography } from '@material-ui/core'
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, makeStyles, Typography } from '@material-ui/core'
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 import React, { useState } from 'react'
@@ -6,14 +6,40 @@ import CloseIcon from '@material-ui/icons/Close';
 import { useDesignState } from 'contexts/design/DesignContext';
 import { useSocketState } from 'contexts/SocketContext';
 import { useSnackbar } from 'notistack';
+import { Evaluation } from './Evaluation';
 
 const useStyles = makeStyles((theme) => ({
+    spaceInit:{
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    },
     closeButton: {
         position: 'absolute',
         right: theme.spacing(1),
         top: theme.spacing(1),
         color: theme.palette.grey[500],
-    },
+    },buttonZone: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-between',
+        [theme.breakpoints.down('xs')]: {
+            flexWrap: 'wrap',
+        },
+    },resourceZone: {
+        height: 'auto',
+        [theme.breakpoints.up('xs')]: {
+            height: '100%',
+            overflow: 'auto',
+            overflowX: 'hidden',
+        },
+    },contentSpace:{
+        height: 'auto',
+        paddingBottom: theme.spacing(6),
+        [theme.breakpoints.up('xs')]: {
+            height: 'calc(100vh - 500px)',
+            overflow: 'auto'
+        },
+    }
 }));
 
 export const EvaluationModal = () => {
@@ -22,9 +48,9 @@ export const EvaluationModal = () => {
     const { designState } = useDesignState();
     const { design } = designState;
     const { socket } = useSocketState();
-    const { enqueueSnackbar } = useSnackbar();
     const { learningActivityIndex } = uiState.evaluationData;
-    const [ newEvaluation, setNewEvaluation ] = useState(design.data.learningActivities[learningActivityIndex].evaluation);
+    const [ newEvaluation, setNewEvaluation ] = useState([...design.data.learningActivities[learningActivityIndex].evaluation]);
+    const { enqueueSnackbar } = useSnackbar();
 
     const handleClose = () => {
         setNewEvaluation(design.data.learningActivities[learningActivityIndex].evaluation);
@@ -40,29 +66,21 @@ export const EvaluationModal = () => {
         });
     };
 
+    const handleAddEvaluation = () =>{
+        const newEvaluationInArray = {
+            type: 'Seleccionar',
+            description: '',
+        }
+        setNewEvaluation([...newEvaluation, newEvaluationInArray]);
+    };
+
     const handleAddEvaluationInDesign = () =>{
-        socket.emit('add-evaluation-in-activity', { designId: design._id, learningActivityID: design.data.learningActivities[learningActivityIndex].id, evaluation: newEvaluation});
+        socket.emit('add-evaluation-in-activity', { designId: design._id, learningActivityID: design.data.learningActivities[learningActivityIndex].id, evaluation: [...newEvaluation]});
         dispatch({
             type: types.ui.toggleModal,
             payload: 'Evaluation',
         });
         enqueueSnackbar('Se ha agregado su evaluación correctamente', { variant: 'success', autoHideDuration: 2000 });
-    };
-
-    const changeTitle = (e) => {
-        const newTitle = e.target.value;
-        setNewEvaluation({
-            ...newEvaluation,
-            title: newTitle,
-        });
-    };
-
-    const changeDescription = (e) => {
-        const newDescription = e.target.value;
-        setNewEvaluation({
-            ...newEvaluation,
-            description: newDescription,
-        });
     };
 
     return (
@@ -75,29 +93,19 @@ export const EvaluationModal = () => {
                     <CloseIcon/>
                 </IconButton>
                 <DialogContent dividers >
-                    <Typography color='textSecondary' style={{marginBottom: 10}}> Lorem ipsum dolor sit amet consectetur adipiscing elit dapibus leo pharetra semper, nisl vivamus sodales vitae morbi libero quis et eu. Magna hendrerit congue odio placerat mus auctor donec iaculis, primis feugiat metus et etiam arcu erat, natoque malesuada rhoncus fames ultricies porta montes. Habitant tellus imperdiet eget himenaeos scelerisque tincidunt et habitasse posuere metus, potenti enim diam euismod est nostra magnis inceptos accumsan odio, nisi quis litora fusce montes class orci phasellus curae. Congue facilisi metus ante mattis ad nec inceptos, lacinia arcu tempor enim a suscipit, curabitur dignissim feugiat purus proin habitasse.</Typography>
-                    <TextField
-                        variant='outlined'
-                        margin='dense' 
-                        name='title' 
-                        value={ newEvaluation.title } 
-                        onChange={ (e) => changeTitle(e) } 
-                        label='Título' 
-                        type='text' 
-                        fullWidth 
-                    />
-                    <TextField
-                        variant='outlined'
-                        margin='dense' 
-                        name='description' 
-                        value={ newEvaluation.description } 
-                        onChange={(e) => changeDescription (e)} 
-                        label='Descripción' 
-                        type='text' 
-                        fullWidth 
-                        multiline
-                        rows = {4}
-                    />
+                    <Typography color='textSecondary' style={{marginBottom: 10}}> En el siguiente apartado el docente deberá definir las evaluaciones que el estudiante deberá realizar en cada actividad, se tienen 3 tipos de evaluaciones. La primera evaluación es de tipo diagnostico. La segunda de tipo Formativa. La tercera será de tipo sumativa.</Typography>
+                    <div className={classes.buttonZone}>
+                        <Button variant={'outlined'} color = {'primary'} onClick = {handleAddEvaluation}>Agregar evaluación</Button>
+                    </div>
+                    <Grid className={classes.contentSpace}>
+                        <Box className={classes.resourceZone}>
+                            <Box >
+                            {
+                                newEvaluation.map((evaluation, i) => <Evaluation key={`evaluation-${i}-learningActivity-${learningActivityIndex}`} index={i} evaluation = {evaluation} newEvaluation={newEvaluation} setNewEvaluation={setNewEvaluation} learningActivityIndex = {learningActivityIndex}/>)
+                            }
+                            </Box>
+                        </Box>
+                    </Grid>
                 </DialogContent>
                 <DialogActions >
                     <Button onClick={handleClose}>

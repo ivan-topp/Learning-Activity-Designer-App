@@ -10,6 +10,7 @@ const ui = {
     setPDF: '[UI] set pdf',
     setResourceLink: '[UI] set resource link',
     setEvaluation: '[UI] set evaluation',
+    setPDFConfig: '[UI] set pdf config',
 };
 
 export default ui;

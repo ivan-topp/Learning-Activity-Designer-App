@@ -53,6 +53,14 @@ export const uiReducer = ( state, action ) => {
                 ...state,
                 evaluationData: action.payload,
             };
+        case types.ui.setPDFConfig:
+            return{
+                ...state,
+                pdf: {
+                    ...state.pdf,
+                    [action.payload.field]: action.payload.value
+                },
+            };
         default:
             return state;
     }

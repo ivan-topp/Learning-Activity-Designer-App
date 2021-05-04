@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Page, Text, View, Document, StyleSheet, Image, Link } from '@react-pdf/renderer';
 import Logo from 'assets/img/Logo.png';
+import { useBetween } from 'use-between';
+import { MiniContext } from './MiniContext';
 
 export const DocumentPDF = ({design, img, typeUserPDF}) => {
+    const { selectedDate, confirmDateConfiguration, privileges} = useBetween(MiniContext);
+    const [ authorSelected, setAuthorSelected] = useState(false);
     const styles = StyleSheet.create({
         logo: {
             width: 100,
@@ -42,12 +46,19 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
             fontSize: 15,
             marginLeft: 50,
             marginTop: 15,
-            marginBottom: 10
         }, body:{
             paddingTop: 35,
             paddingBottom: 65,
         }
     });
+    
+    useEffect(() => {
+        privileges.forEach(author => {
+            if(author.selected){
+                setAuthorSelected(true)
+            } 
+        })
+    }, [privileges, authorSelected])
     
     return (
         <>
@@ -63,6 +74,23 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                             : 
                             <Text style={styles.title}> {design.metadata.name}. </Text>
                         }
+                        <View style={{textAlign: 'center', marginBottom: 15}}>
+                            {
+                                (authorSelected) &&
+                                <Text style={{fontSize: 12, color: '#979797'}}>Autores</Text>
+                            }
+                            {privileges.map((author, i) =>
+                                {   
+                                    if (!author.selected) {
+                                        return <div key= {`author-${i}`}></div>
+                                    }
+                                    return (
+                                    <div key= {`author-${i}`}>   
+                                        <Text style={{fontSize: 12, marginLeft: 10}}>{author.user.name + ' ' + author.user.lastname}</Text>
+                                    </div> 
+                                )}
+                            )}
+                        </View>
                         <View style={styles.table}>
                             {(typeUserPDF === 'teacher') && 
                                 <View style={styles.tableRow}>
@@ -70,7 +98,7 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                         <Text style={[styles.tableCell,  {color: '#979797'}]}>Nombre</Text>
                                     </View>
                                     <View style={styles.tableCol}>
-                                        <Text style={[styles.tableCell,  {color: '#979797', marginLeft: 6}]}>Área disciplinar</Text>
+                                        <Text style={[styles.tableCell,  {color: '#979797',  marginLeft: 150}]}>Área disciplinar</Text>
                                     </View>
                                 </View>
                             }
@@ -84,7 +112,7 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                         }
                                     </View>
                                     <View style={styles.tableCol}>
-                                        <Text style={[styles.tableCell, {marginBottom: 10, marginLeft: 6}]}>{design.metadata.category.name}</Text>
+                                        <Text style={[styles.tableCell, {marginBottom: 10, marginLeft: 150}]}>{design.metadata.category.name}</Text>
                                     </View>
                                 </View>
                             }
@@ -93,7 +121,7 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                     <Text style={[styles.tableCell,  {color: '#979797'}]}>Tiempo de trabajo</Text>
                                 </View>
                                 <View style={styles.tableCol}>
-                                    <Text style={[styles.tableCell,  {color: '#979797', marginLeft: 6}]}>Modo de Entrega</Text>
+                                    <Text style={[styles.tableCell,  {color: '#979797', marginLeft: 150}]}>Modo de Entrega</Text>
                                 </View>
                             </View>
                             <View style={styles.tableRow}> 
@@ -102,9 +130,9 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                 </View>
                                 <View style={styles.tableCol}>
                                     {(design.metadata.name === '') ?
-                                        <Text style={[styles.tableCell, {marginLeft: 6}]}> No especificado. </Text>
+                                        <Text style={[styles.tableCell, {marginLeft: 150}]}> No especificado. </Text>
                                         : 
-                                        <Text style={[styles.tableCell, {marginLeft: 6}]}> {design.metadata.name}. </Text>
+                                        <Text style={[styles.tableCell, {marginLeft: 150}]}> {design.metadata.name}. </Text>
                                     }
                                 </View>
                             </View>
@@ -115,7 +143,7 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                             <Text style={[styles.tableCell,  {color: '#979797'}]}>Tamaño de la clase</Text>
                                         </View>
                                         <View style={styles.tableCol}>
-                                            <Text style={[styles.tableCell,  {color: '#979797', marginLeft: 6}]}>Conocimiento Previo</Text>
+                                            <Text style={[styles.tableCell,  {color: '#979797', marginLeft: 150}]}>Conocimiento Previo</Text>
                                         </View>
                                     </View>
                                     <View style={styles.tableRow}>
@@ -124,9 +152,9 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                         </View>
                                         <View style={styles.tableCol}>
                                             {(design.metadata.priorKnowledge === '') ?
-                                                <Text style={[styles.tableCell, {marginBottom: 10, marginLeft: 6}]}>No especificado.</Text>
+                                                <Text style={[styles.tableCell, {marginBottom: 10, marginLeft: 150}]}>No especificado.</Text>
                                                 :
-                                                <Text style={[styles.tableCell, {marginBottom: 10, marginLeft: 6}]}>{design.metadata.priorKnowledge}</Text>
+                                                <Text style={[styles.tableCell, {marginBottom: 10, marginLeft: 150}]}>{design.metadata.priorKnowledge}</Text>
                                             }
                                         </View>
                                     </View>
@@ -137,7 +165,7 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                     <Text style={[styles.tableCell,  {color: '#979797'}]}>Descripción</Text>
                                 </View>
                                 <View style={styles.tableCol}>
-                                    <Text style={[styles.tableCell,  {color: '#979797', marginLeft: 6}]}>Objetivos</Text>
+                                    <Text style={[styles.tableCell,  {color: '#979797', marginLeft: 150}]}>Objetivos</Text>
                                 </View>
                             </View>
                             <View style={styles.tableRow}> 
@@ -150,12 +178,20 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                 </View>
                                 <View style={styles.tableCol}>
                                     {(design.metadata.objective === '') ?
-                                      <Text style={[styles.tableCell, {marginBottom: 10, marginLeft: 6}]}> No especificado. </Text>
+                                      <Text style={[styles.tableCell, {marginBottom: 10, marginLeft: 150}]}> No especificado. </Text>
                                       : 
-                                      <Text style={[styles.tableCell, {marginBottom: 10, marginLeft: 6}]}> {design.metadata.objective}. </Text>
+                                      <Text style={[styles.tableCell, {marginBottom: 10, marginLeft: 150}]}> {design.metadata.objective}. </Text>
                                     } 
                                 </View>
                             </View>
+                        </View>
+                        <View style={{alignItems: 'center'}}>
+                            {/*
+                                (confirmDateConfiguration) && <Text style={{fontSize: 12}}> {new Date(selectedDate).toLocaleDateString()} </Text>
+                            */}
+                            {
+                                <Text style={{fontSize: 12}}> {new Date(selectedDate).toLocaleDateString()} </Text>
+                            }
                         </View>
                         { design.data.learningActivities && design.data.learningActivities.map((learningActivity, index) =>
                             <View key = {`learning-activity-${index}`}> 

@@ -444,22 +444,32 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                                         </Select>
                                     </FormControl>
                                     { (format === 'Grupal') &&
-                                        <FormControl fullWidth variant='outlined'>
-                                            <InputLabel id={`group-task-${task.id}-learningActivity-${learningActivityID}`} shrink> Personas </InputLabel>
-                                            <Select
-                                                labelId={`group-quantity-task-${task.id}-learningActivity-${learningActivityID}`}
-                                                label='Cantidad'
-                                                name='groupSize'
-                                                value={groupSize}
-                                                onChange={handleChangeDropdown}
-                                                type = 'number'
-                                            >
-                                            <MenuItem value={2}> 2 </MenuItem>
-                                            <MenuItem value={3}> 3</MenuItem>
-                                            <MenuItem value={4}> 4</MenuItem>
-                                            <MenuItem value={5}> 5</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        (design.metadata.classSize > 1) ?
+                                            <FormControl fullWidth variant='outlined'>
+                                                <InputLabel id={`group-task-${task.id}-learningActivity-${learningActivityID}`} shrink> Personas </InputLabel>
+                                                <Select
+                                                    labelId={`group-quantity-task-${task.id}-learningActivity-${learningActivityID}`}
+                                                    label='Cantidad'
+                                                    name='groupSize'
+                                                    value={groupSize}
+                                                    onChange={handleChangeDropdown}
+                                                    type = 'number'
+                                                >
+                                                {/* 
+                                                    Array.from({ length: (design.metadata.classSize-1)}, (_, i) => (
+                                                            {i}
+                                                    ))
+                                                */}
+                                                <MenuItem value={2}> {2} </MenuItem>
+                                                <MenuItem value={3}> {3} </MenuItem>
+                                                <MenuItem value={4}> {4} </MenuItem>
+                                                <MenuItem value={5}> {5} </MenuItem>
+                                                </Select>
+                                            </FormControl>
+                                            :
+                                            <div style={{marginLeft: 5}}>
+                                                <Typography>No hay alumnos suficientes</Typography>
+                                            </div>
                                     }
                                 </div>
                                 <TextField
