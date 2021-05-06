@@ -1,4 +1,4 @@
-import React, { /*useEffect,*/ useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Box, Button, ButtonGroup, Divider, Fab, Grid, makeStyles, Menu, MenuItem, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { LearningActivity } from 'pages/DesignPage/Workspace/LearningActivity';
@@ -114,6 +114,8 @@ export const DesignWorkspace = () => {
     let showGraphicLearningType = false;
     let showGraphicFormat = false;
     let showGraphicModality = false;
+    let sumHours = 0;
+    let sumMinutes = 0;
 
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
@@ -343,7 +345,7 @@ export const DesignWorkspace = () => {
                             <Grid className={classes.workSpaceUnits}>
                                 <Grid >
                                     {
-                                        design.data.learningActivities && design.data.learningActivities.map((learningActivity, index) => <LearningActivity key={`learningActivity-${index}`} index={index} learningActivity={learningActivity} />)
+                                        design.data.learningActivities && design.data.learningActivities.map((learningActivity, index) => <LearningActivity key={`learningActivity-${index}`} index={index} learningActivity={learningActivity} sumHours = {sumHours} sumMinutes = {sumMinutes}/>)
                                     }
                                 </Grid>
                             </Grid>
@@ -364,22 +366,26 @@ export const DesignWorkspace = () => {
                                     learningActivity.tasks && learningActivity.tasks.forEach((task) => {
                                         itemsLearningType.forEach((item) => {
                                             if (item.title === task.learningType) {
-                                                item.value = item.value + 1;
+                                                item.minutes = (task.duration.hours * 60) + task.duration.minutes;
+                                                item.value = item.value + item.minutes;
                                             }
                                         });
                                         itemsLearningTypePie.forEach((item) => {
                                             if (item.title === task.learningType) {
-                                                item.value = item.value + 1;
+                                                item.minutes = (task.duration.hours * 60) + task.duration.minutes;
+                                                item.value = item.value + item.minutes;
                                             }
                                         });
                                         itemsFormat.forEach((item) => {
                                             if (item.title === task.format) {
-                                                item.value = item.value + 1;
+                                                item.minutes = (task.duration.hours * 60) + task.duration.minutes;
+                                                item.value = item.value + item.minutes;
                                             }
                                         });
                                         itemsModality.forEach((item) => {
                                             if (item.title === task.modality) {
-                                                item.value = item.value + 1;
+                                                item.minutes = (task.duration.hours * 60) + task.duration.minutes;
+                                                item.value = item.value + item.minutes;
                                             }
                                         });
                                     }))
@@ -410,22 +416,26 @@ export const DesignWorkspace = () => {
                                     learningActivity.tasks && learningActivity.tasks.forEach((task) => {
                                         itemsLearningType.forEach((item) => {
                                             if (item.title === task.learningType) {
-                                                item.value = item.value + 1;
+                                                item.minutes = (task.duration.hours * 60) + task.duration.minutes;
+                                                item.value = item.value + item.minutes;
                                             }
                                         });
                                         itemsLearningTypePie.forEach((item) => {
                                             if (item.title === task.learningType) {
-                                                item.value = item.value + 1;
+                                                item.minutes = (task.duration.hours * 60) + task.duration.minutes;
+                                                item.value = item.value + item.minutes;
                                             }
                                         });
                                         itemsFormat.forEach((item) => {
                                             if (item.title === task.format) {
-                                                item.value = item.value + 1;
+                                                item.minutes = (task.duration.hours * 60) + task.duration.minutes;
+                                                item.value = item.value + item.minutes;
                                             }
                                         });
                                         itemsModality.forEach((item) => {
                                             if (item.title === task.modality) {
-                                                item.value = item.value + 1;
+                                                item.minutes = (task.duration.hours * 60) + task.duration.minutes;
+                                                item.value = item.value + item.minutes;
                                             }
                                         });
                                     }))

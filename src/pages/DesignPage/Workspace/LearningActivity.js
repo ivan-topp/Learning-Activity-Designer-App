@@ -82,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const LearningActivity = ({ index, learningActivity }) => {
+export const LearningActivity = ({ index, learningActivity, sumHours, sumMinutes }) => {
     const classes = useStyles();
     const { designState } = useDesignState();
     const { design } = designState;
@@ -275,7 +275,8 @@ export const LearningActivity = ({ index, learningActivity }) => {
                                 design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.forEach((task) => {
                                     itemsLearningType.forEach((item) => {
                                         if (item.title === task.learningType) {
-                                            item.value = item.value + 1;
+                                            item.minutes = (task.duration.hours * 60) + task.duration.minutes;
+                                            item.value = item.value + item.minutes;
                                         }
                                     });
                                 }
@@ -320,7 +321,7 @@ export const LearningActivity = ({ index, learningActivity }) => {
                         <Grid item xs={12} sm={8} className={classes.taskContainer}>
                             <Grid id='tasks' className={classes.gridTask}>
                                 {
-                                    design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i) => <Task ref={(ref) => taskRefs.current.push(ref)} key={`task-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index} learningActivityID={learningActivity.id} />)
+                                    design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i) => <Task ref={(ref) => taskRefs.current.push(ref)} key={`task-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index} learningActivityID={learningActivity.id} sumHours={sumHours} sumMinutes={sumMinutes}/>)
                                 }
                             </Grid>
                             <Tooltip title='Agregar tarea' arrow>
