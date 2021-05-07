@@ -7,6 +7,7 @@ import { getPublicFilteredDesigns } from 'services/DesignService';
 import { DesignsContainer } from 'components/DesignsContainer';
 import { Close } from '@material-ui/icons';
 import { KeywordManager } from 'components/KeywordManager';
+import { Skeleton } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -134,6 +135,17 @@ export const PublicRepositoryPage = () => {
         setFilter('');
     };
 
+    const categoriesSkeletonsList = () => {
+        return [...Array(10).keys()].map((index) => (
+            <div key={`category-skeleton-${index}`} style={{margin: 10, display: 'flex', alignItems: 'center'}}>
+                <Skeleton style={{borderRadius: 4, marginRight: 5 }} variant="rect" height={20} width={20} animation='wave'/>
+                <div style={{width: '100%'}}>
+                    <Skeleton style={{borderRadius: 4}} variant="rect" height={20} animation='wave'/>
+                </div>
+            </div>
+        ));
+    };
+
     return (
         <>
             <Grid container>
@@ -142,20 +154,22 @@ export const PublicRepositoryPage = () => {
                     <Typography style={{ marginTop: 20, marginLeft: 20 }}>Categorías</Typography>
                     <div className={classes.categoriesContainer}>
                         {
-                            categoriesFilter.map((category, index) => (
-                                    <FormControlLabel
-                                        className={classes.category}
-                                        key={category._id}
-                                        control={
-                                            <Checkbox
-                                                checked={category.selected}
-                                                onChange={(e) => handleToggleCategory(index)}
-                                            />
-                                        }
-                                        label={category.name}
-                                    />
+                            categoriesQuery.isLoading
+                                ? categoriesSkeletonsList()
+                                : categoriesFilter && categoriesFilter.map((category, index) => (
+                                        <FormControlLabel
+                                            className={classes.category}
+                                            key={category._id}
+                                            control={
+                                                <Checkbox
+                                                    checked={category.selected}
+                                                    onChange={(e) => handleToggleCategory(index)}
+                                                />
+                                            }
+                                            label={category.name}
+                                        />
+                                    )
                                 )
-                            )
                         }
                     </div>
                 </Grid>
@@ -206,9 +220,7 @@ export const PublicRepositoryPage = () => {
                                 ? <Typography>{categoriesQuery.error.message}</Typography>
                                 : (designsQuery.isError) 
                                     ? <Typography>{designsQuery.error.message}</Typography>
-                                    : (categoriesQuery.isLoading || designsQuery.isLoading)
-                                        ? <Typography>Cargando...</Typography>
-                                        : <DesignsContainer {...designsQuery} label='public-repository'/>
+                                    : <DesignsContainer {...designsQuery} label='public-repository'/>
                         }                        
                     </div>
                 </Grid>

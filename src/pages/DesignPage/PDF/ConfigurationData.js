@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, Checkbox, FormControl, FormControlLabel, Grid, Typography, Switch, makeStyles } from '@material-ui/core'
+import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, Checkbox, FormControl, FormControlLabel, Grid, Typography, makeStyles } from '@material-ui/core'
 import React from 'react'
 import { useBetween } from 'use-between';
 import { MiniContext } from './MiniContext';
@@ -22,9 +22,7 @@ const useStyles = makeStyles((theme) => ({
 export const ConfigurationData = () => {
     const classes = useStyles();
     const { uiState, dispatch } = useUiState();
-    const { 
-        confirmDateConfiguration, 
-        setDateConfiguration, 
+    const {
         selectedDate, 
         setSelectedDate, 
         privileges,

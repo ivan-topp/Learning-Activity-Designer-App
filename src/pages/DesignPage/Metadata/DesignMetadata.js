@@ -1,7 +1,7 @@
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 import { Button, Divider, FormControl, FormControlLabel, Grid, InputLabel, Link, makeStyles, MenuItem, Select, Switch, TextField, Typography } from '@material-ui/core'
 import { useQuery } from 'react-query';
-import { Alert } from '@material-ui/lab';
+import { Alert, Skeleton } from '@material-ui/lab';
 import { useForm } from 'hooks/useForm';
 import { useSocketState } from 'contexts/SocketContext';
 import { getCategories } from 'services/CategoryService';
@@ -66,7 +66,11 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             textDecoration: 'underline'
         }
-    }
+    },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+    },
 }));
 
 export const DesignMetadata = forwardRef((props, ref) => {
@@ -141,7 +145,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     useEffect(() => {
         if (isMounted.current) {
             if (form.category !== metadata.category.name) {
-                handleInputChange({target: {name: 'category', value: metadata.category.name ?? 'Sin categoría'}});
+                handleInputChange({ target: { name: 'category', value: metadata.category.name ?? 'Sin categoría' } });
             }
         }
     }, [metadata.category, form.category, setValues, handleInputChange]);
@@ -149,7 +153,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     useEffect(() => {
         if (isMounted.current) {
             if (form.name !== metadata.name) {
-                handleInputChange({target: {name: 'name', value: metadata.name}});
+                handleInputChange({ target: { name: 'name', value: metadata.name } });
             }
         }
     }, [metadata.name, form.name, setValues, handleInputChange]);
@@ -157,7 +161,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     useEffect(() => {
         if (isMounted.current) {
             if (form.classSize !== metadata.classSize) {
-                handleInputChange({target: {name: 'classSize', value: metadata.classSize}});
+                handleInputChange({ target: { name: 'classSize', value: metadata.classSize } });
             }
         }
     }, [metadata.classSize, form.classSize, setValues, handleInputChange]);
@@ -165,7 +169,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     useEffect(() => {
         if (isMounted.current) {
             if (form.description !== metadata.description) {
-                handleInputChange({target: {name: 'description', value: metadata.description}});
+                handleInputChange({ target: { name: 'description', value: metadata.description } });
             }
         }
     }, [metadata.description, form.description, setValues, handleInputChange]);
@@ -173,7 +177,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     useEffect(() => {
         if (isMounted.current) {
             if (form.workingTimeDesignHours !== metadata.workingTimeDesign.hours) {
-                handleInputChange({target: {name: 'workingTimeDesignHours', value: metadata.workingTimeDesign.hours}});
+                handleInputChange({ target: { name: 'workingTimeDesignHours', value: metadata.workingTimeDesign.hours } });
             }
         }
     }, [metadata.workingTimeDesign, form.workingTimeDesignHours, setValues, handleInputChange]);
@@ -181,7 +185,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     useEffect(() => {
         if (isMounted.current) {
             if (form.workingTimeDesignMinutes !== metadata.workingTimeDesign.minutes) {
-                handleInputChange({target: {name: 'workingTimeDesignMinutes', value: metadata.workingTimeDesign.minutes ?? 0}});
+                handleInputChange({ target: { name: 'workingTimeDesignMinutes', value: metadata.workingTimeDesign.minutes ?? 0 } });
             }
         }
     }, [metadata.workingTimeDesign, form.workingTimeDesignMinutes, setValues, handleInputChange]);
@@ -189,7 +193,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     useEffect(() => {
         if (isMounted.current) {
             if (form.workingTimeHours !== metadata.workingTime.hours) {
-                handleInputChange({target: {name: 'workingTimeHours', value: metadata.workingTime.hours ?? 0}});
+                handleInputChange({ target: { name: 'workingTimeHours', value: metadata.workingTime.hours ?? 0 } });
             }
         }
     }, [metadata.workingTime.hours, form.workingTimeHours, setValues, handleInputChange]);
@@ -197,7 +201,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     useEffect(() => {
         if (isMounted.current) {
             if (form.workingTimeMinutes !== metadata.workingTime.minutes) {
-                handleInputChange({target: {name: 'workingTimeMinutes', value: metadata.workingTime.minutes ?? 0}});
+                handleInputChange({ target: { name: 'workingTimeMinutes', value: metadata.workingTime.minutes ?? 0 } });
             }
         }
     }, [metadata.workingTime.minutes, form.workingTimeMinutes, setValues, handleInputChange]);
@@ -205,7 +209,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     useEffect(() => {
         if (isMounted.current) {
             if (form.priorKnowledge !== metadata.priorKnowledge) {
-                handleInputChange({target: {name: 'priorKnowledge', value: metadata.priorKnowledge}});
+                handleInputChange({ target: { name: 'priorKnowledge', value: metadata.priorKnowledge } });
             }
         }
     }, [metadata.priorKnowledge, form.priorKnowledge, setValues, handleInputChange]);
@@ -213,7 +217,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     useEffect(() => {
         if (isMounted.current) {
             if (form.objective !== metadata.objective) {
-                handleInputChange({target: {name: 'objective', value: metadata.objective}});
+                handleInputChange({ target: { name: 'objective', value: metadata.objective } });
             }
         }
     }, [metadata.objective, form.objective, setValues, handleInputChange]);
@@ -221,7 +225,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     useEffect(() => {
         if (isMounted.current) {
             if (form.isPublic !== metadata.isPublic) {
-                handleInputChange({target: {name: 'isPublic', value: metadata.isPublic}});
+                handleInputChange({ target: { name: 'isPublic', value: metadata.isPublic } });
             }
         }
     }, [metadata.isPublic, form.isPublic, setValues, handleInputChange]);
@@ -234,10 +238,6 @@ export const DesignMetadata = forwardRef((props, ref) => {
 
     if (isError) {
         return (<Typography>{error.message}</Typography>);
-    }
-
-    if (isLoading) {
-        return (<Typography>Cargando...</Typography>);
     }
 
     const createCategoryList = () => {
@@ -268,12 +268,23 @@ export const DesignMetadata = forwardRef((props, ref) => {
                 break;
         }
         socket.emit('edit-metadata-field', { designId: design._id, field, value, subfield });
-        if(subfield){
-            if (!design.metadata[field] || !design.metadata[field][subfield] || design.metadata[field][subfield].toString() !== value.toString()) handleInputChange(e);
+        if (subfield) {
+            if (
+                (metadata[field] === undefined || metadata[field] === null) ||
+                (metadata[field][subfield] === undefined || metadata[field][subfield] === null)
+                || metadata[field][subfield].toString() !== value.toString()
+            ) {
+                handleInputChange(e);
+            }
         } else {
-            if (!design.metadata[field] || design.metadata[field].toString() !== value.toString()) handleInputChange(e);
+            if (
+                (metadata[field] === undefined || metadata[field] === null) ||
+                metadata[field].toString() !== value.toString()
+            ) {
+                handleInputChange(e);
+            }
         }
-        
+
     };
 
     const handleSaveDesign = (e) => {
@@ -297,248 +308,322 @@ export const DesignMetadata = forwardRef((props, ref) => {
                 <Grid item xs={12} md={3} lg={2} className={classes.leftPanel}></Grid>
                 <Grid item xs={12} md={6} lg={8} className={classes.workspace}>
                     <div className={classes.title}>
-                        <Typography variant='h4'>Información Diseño</Typography>
-                        <Button variant='outlined' color='default' onClick={handleSaveDesign}>Guardar Información</Button>
+                        {
+                            isLoading
+                                ? (<>
+                                    <Skeleton width={300} height={50} />
+                                    <Skeleton width={150} height={50} />
+                                </>)
+                                : (<>
+                                    <Typography variant='h4'>Información Diseño</Typography>
+                                    <Button variant='outlined' color='default' onClick={handleSaveDesign}>Guardar Información</Button>
+                                </>)
+                        }
                     </div>
                     <Divider />
                     <Grid container spacing={3} className={classes.content}>
-                        <Grid item className={classes.grid} xs={12} sm={9}  >
-                            <TextField
-                                label='Nombre'
-                                InputLabelProps = {{shrink: true}}
-                                fullWidth
-                                margin='none'
-                                variant='outlined'
-                                color='primary'
-                                InputProps={{
-                                    inputComponent: SharedTextFieldTipTapEditor,
-                                    inputProps: {
-                                        ref: nameRef,
-                                        name: 'name',
-                                        placeholder: 'Nombre',
-                                        initialvalue: name,
-                                        onChange: handleChangeMetadataField,
-                                    }
-                                }}
-                            />
+                        <Grid item className={classes.grid} xs={12} sm={9}>
+                            {
+                                isLoading ? (<Skeleton width={'100%'} height={70} />)
+                                    : (<TextField
+                                        label='Nombre'
+                                        InputLabelProps={{ shrink: true }}
+                                        fullWidth
+                                        margin='none'
+                                        variant='outlined'
+                                        color='primary'
+                                        InputProps={{
+                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputProps: {
+                                                ref: nameRef,
+                                                name: 'name',
+                                                placeholder: 'Nombre',
+                                                initialvalue: name,
+                                                onChange: handleChangeMetadataField,
+                                            }
+                                        }}
+                                    />)
+                            }
+
                         </Grid>
                         <Grid item className={classes.grid} xs={12} sm={3}>
-                            <div>
-                                <Typography variant='body2'>Visibilidad</Typography>
-                                <FormControlLabel
-                                    control={<Switch
-                                        name='isPublic'
-                                        checked={isPublic}
-                                        onChange={handleChangeMetadataField}
-                                        disabled={!(design.owner === authState.user.uid)}
-                                    />}
-                                    label={isPublic ? 'Público' : 'Privado'}
-                                />
+                            <div style={{ width: '100%' }}>
+                                {
+                                    isLoading
+                                        ? (<>
+                                            <Skeleton width={80} height={20} />
+                                            <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
+                                                <Skeleton width={40} height={20} style={{ marginRight: 10 }} />
+                                                <Skeleton width={'100%'} height={20} />
+                                            </div>
+                                        </>)
+                                        : (<>
+                                            <Typography variant='body2'>Visibilidad</Typography>
+                                            <FormControlLabel
+                                                control={<Switch
+                                                    name='isPublic'
+                                                    checked={isPublic}
+                                                    onChange={handleChangeMetadataField}
+                                                    disabled={!(design.owner === authState.user.uid)}
+                                                />}
+                                                label={isPublic ? 'Público' : 'Privado'}
+                                            />
+                                        </>)
+                                }
+
                             </div>
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
-                            <FormControl className={classes.category} variant='outlined' >
-                                <InputLabel id="category-label">Categoría</InputLabel>
-                                <Select
-                                    labelId="category-label"
-                                    name='category'
-                                    label='Categoría'
-                                    value={category}
-                                    onChange={handleChangeMetadataField}
-                                    MenuProps={{ classes: { paper: classes.categoryPopOver } }}
-                                >
-                                    {createCategoryList()}
-                                </Select>
-                            </FormControl>
+                            {
+                                isLoading ? (<Skeleton width={'100%'} height={70} />)
+                                    : (<FormControl className={classes.category} variant='outlined' >
+                                        <InputLabel id="category-label">Categoría</InputLabel>
+                                        <Select
+                                            labelId="category-label"
+                                            name='category'
+                                            label='Categoría'
+                                            value={category}
+                                            onChange={handleChangeMetadataField}
+                                            MenuProps={{ classes: { paper: classes.categoryPopOver } }}
+                                        >
+                                            {createCategoryList()}
+                                        </Select>
+                                    </FormControl>)
+                            }
+
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
-                            <TextField
-                                label='Tamaño de la clase'
-                                InputLabelProps = {{shrink: true}}
-                                fullWidth
-                                margin='none'
-                                variant='outlined'
-                                color='primary'
-                                InputProps={{
-                                    inputComponent: SharedTextFieldTipTapEditor,
-                                    inputProps: {
-                                        ref: classSizeRef,
-                                        name: 'classSize',
-                                        placeholder: 'Tamaño de la clase',
-                                        initialvalue: classSize ?? 0,
-                                        type: "number",
-                                        min: 0,
-                                        onChange: handleChangeMetadataField,
-                                    }
-                                }}
-                            />
+                            {
+                                isLoading ? (<Skeleton width={'100%'} height={70} />)
+                                    : (<TextField
+                                        label='Tamaño de la clase'
+                                        InputLabelProps={{ shrink: true }}
+                                        fullWidth
+                                        margin='none'
+                                        variant='outlined'
+                                        color='primary'
+                                        InputProps={{
+                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputProps: {
+                                                ref: classSizeRef,
+                                                name: 'classSize',
+                                                placeholder: 'Tamaño de la clase',
+                                                initialvalue: classSize ?? 0,
+                                                type: "number",
+                                                min: 0,
+                                                onChange: handleChangeMetadataField,
+                                            }
+                                        }}
+                                    />)
+                            }
+
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
                             <div style={{ width: '100%' }}>
-                                <Typography > Tiempo de trabajo </Typography>
+                                {
+                                    isLoading ? (<Skeleton width={150} height={20} />)
+                                        : <Typography > Tiempo de trabajo </Typography>
+                                }
                                 <div className={classes.timeField}>
-                                    <TextField
-                                        label='Horas'
-                                        InputLabelProps = {{shrink: true}}
-                                        fullWidth
-                                        margin='none'
-                                        variant='outlined'
-                                        color='primary'
-                                        InputProps={{
-                                            inputComponent: SharedTextFieldTipTapEditor,
-                                            inputProps: {
-                                                ref: hoursRef,
-                                                name: 'workingTimeHours',
-                                                placeholder: 'Horas',
-                                                initialvalue: workingTimeHours,
-                                                type: "number",
-                                                min: 0,
-                                                onChange: handleChangeMetadataField,
-                                            }
-                                        }}
-                                    />
+                                    {
+                                        isLoading ? (<Skeleton width={'100%'} height={70} />)
+                                            : (<TextField
+                                                label='Horas'
+                                                InputLabelProps={{ shrink: true }}
+                                                fullWidth
+                                                margin='none'
+                                                variant='outlined'
+                                                color='primary'
+                                                InputProps={{
+                                                    inputComponent: SharedTextFieldTipTapEditor,
+                                                    inputProps: {
+                                                        ref: hoursRef,
+                                                        name: 'workingTimeHours',
+                                                        placeholder: 'Horas',
+                                                        initialvalue: workingTimeHours,
+                                                        type: "number",
+                                                        min: 0,
+                                                        onChange: handleChangeMetadataField,
+                                                    }
+                                                }}
+                                            />)
+                                    }
                                     <Typography style={{ marginLeft: 10, marginRight: 10 }}> : </Typography>
-                                    <TextField
-                                        label='Minutos'
-                                        InputLabelProps = {{shrink: true}}
-                                        fullWidth
-                                        margin='none'
-                                        variant='outlined'
-                                        color='primary'
-                                        InputProps={{
-                                            inputComponent: SharedTextFieldTipTapEditor,
-                                            inputProps: {
-                                                ref: minutesRef,
-                                                name: 'workingTimeMinutes',
-                                                placeholder: 'Minutos',
-                                                initialvalue: workingTimeMinutes,
-                                                type: "number",
-                                                min: 0,
-                                                max: 59,
-                                                onChange: handleChangeMetadataField,
-                                            }
-                                        }}
-                                    />
+                                    {
+                                        isLoading ? (<Skeleton width={'100%'} height={70} />)
+                                            : (<TextField
+                                                label='Minutos'
+                                                InputLabelProps={{ shrink: true }}
+                                                fullWidth
+                                                margin='none'
+                                                variant='outlined'
+                                                color='primary'
+                                                InputProps={{
+                                                    inputComponent: SharedTextFieldTipTapEditor,
+                                                    inputProps: {
+                                                        ref: minutesRef,
+                                                        name: 'workingTimeMinutes',
+                                                        placeholder: 'Minutos',
+                                                        initialvalue: workingTimeMinutes,
+                                                        type: "number",
+                                                        min: 0,
+                                                        max: 59,
+                                                        onChange: handleChangeMetadataField,
+                                                    }
+                                                }}
+                                            />)
+                                    }
                                 </div>
                             </div>
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
                             <div style={{ width: '100%' }}>
-                                <Typography > Tiempo diseñado </Typography>
+                                {
+                                    isLoading ? (<Skeleton width={150} height={20} />)
+                                        : <Typography > Tiempo diseñado </Typography>
+                                }
                                 <div className={classes.timeField}>
-                                    <TextField
-                                        //margin="dense"
-                                        variant="outlined"
-                                        InputLabelProps = {{shrink: true}}
-                                        name="workingTimeDesignHours"
-                                        value={workingTimeDesignHours}
-                                        label="Horas"
-                                        type="number"
-                                        disabled
-                                        fullWidth
-                                    />
+                                    {
+                                        isLoading ? (<Skeleton width={'100%'} height={70} />)
+                                            : <TextField
+                                                //margin="dense"
+                                                variant="outlined"
+                                                InputLabelProps={{ shrink: true }}
+                                                name="workingTimeDesignHours"
+                                                value={workingTimeDesignHours}
+                                                label="Horas"
+                                                type="number"
+                                                disabled
+                                                fullWidth
+                                            />
+                                    }
                                     <Typography style={{ marginLeft: 10, marginRight: 10 }}> : </Typography>
-                                    <TextField
-                                        //margin="dense"
-                                        variant="outlined"
-                                        InputLabelProps = {{shrink: true}}
-                                        name="workingTimeDesignMinutes"
-                                        value={workingTimeDesignMinutes}
-                                        label="Minutos"
-                                        type="number"
-                                        disabled
-                                        fullWidth
-                                    />
+                                    {
+                                        isLoading ? (<Skeleton width={'100%'} height={70} />)
+                                            : <TextField
+                                                //margin="dense"
+                                                variant="outlined"
+                                                InputLabelProps={{ shrink: true }}
+                                                name="workingTimeDesignMinutes"
+                                                value={workingTimeDesignMinutes}
+                                                label="Minutos"
+                                                type="number"
+                                                disabled
+                                                fullWidth
+                                            />
+                                    }
                                 </div>
                             </div>
                         </Grid>
                         <Grid item className={classes.grid} xs={12}>
-                            <TextField
-                                label='Descripción'
-                                InputLabelProps = {{shrink: true}}
-                                fullWidth
-                                margin='none'
-                                variant='outlined'
-                                color='primary'
-                                InputProps={{
-                                    inputComponent: SharedTextFieldTipTapEditor,
-                                    inputProps: {
-                                        ref: descriptionRef,
-                                        name: 'description',
-                                        placeholder: 'Descripción',
-                                        initialvalue: description ?? '',
-                                        rowMax: 5,
-                                        onChange: handleChangeMetadataField,
-                                        multiline: true,
-                                    }
-                                }}
-                            />
+                            {
+                                isLoading ? (<Skeleton width={'100%'} height={70} />)
+                                    : <TextField
+                                        label='Descripción'
+                                        InputLabelProps={{ shrink: true }}
+                                        fullWidth
+                                        margin='none'
+                                        variant='outlined'
+                                        color='primary'
+                                        InputProps={{
+                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputProps: {
+                                                ref: descriptionRef,
+                                                name: 'description',
+                                                placeholder: 'Descripción',
+                                                initialvalue: description ?? '',
+                                                rowMax: 5,
+                                                onChange: handleChangeMetadataField,
+                                                multiline: true,
+                                            }
+                                        }}
+                                    />
+                            }
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
-                            <TextField
-                                label='Conocimiento previo'
-                                InputLabelProps = {{shrink: true}}
-                                fullWidth
-                                margin='none'
-                                variant='outlined'
-                                color='primary'
-                                InputProps={{
-                                    inputComponent: SharedTextFieldTipTapEditor,
-                                    inputProps: {
-                                        ref: priorKnowledgeRef,
-                                        name: 'priorKnowledge',
-                                        placeholder: 'Conocimiento previo',
-                                        initialvalue: priorKnowledge ?? '',
-                                        rowMax: 5,
-                                        onChange: handleChangeMetadataField,
-                                        multiline: true,
-                                    }
-                                }}
-                            />
+                            {
+                                isLoading ? (<Skeleton width={'100%'} height={70} />)
+                                    : <TextField
+                                        label='Conocimiento previo'
+                                        InputLabelProps={{ shrink: true }}
+                                        fullWidth
+                                        margin='none'
+                                        variant='outlined'
+                                        color='primary'
+                                        InputProps={{
+                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputProps: {
+                                                ref: priorKnowledgeRef,
+                                                name: 'priorKnowledge',
+                                                placeholder: 'Conocimiento previo',
+                                                initialvalue: priorKnowledge ?? '',
+                                                rowMax: 5,
+                                                onChange: handleChangeMetadataField,
+                                                multiline: true,
+                                            }
+                                        }}
+                                    />
+                            }
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
-                            <TextField
-                                label='Objetivos'
-                                InputLabelProps = {{shrink: true}}
-                                fullWidth
-                                margin='none'
-                                variant='outlined'
-                                color='primary'
-                                InputProps={{
-                                    inputComponent: SharedTextFieldTipTapEditor,
-                                    inputProps: {
-                                        ref: objectiveRef,
-                                        name: 'objective',
-                                        placeholder: 'Objetivos',
-                                        initialvalue: objective ?? '',
-                                        rowMax: 5,
-                                        onChange: handleChangeMetadataField,
-                                        multiline: true,
-                                    }
-                                }}
-                            />
+                            {
+                                isLoading ? (<Skeleton width={'100%'} height={70} />)
+                                    : <TextField
+                                        label='Objetivos'
+                                        InputLabelProps={{ shrink: true }}
+                                        fullWidth
+                                        margin='none'
+                                        variant='outlined'
+                                        color='primary'
+                                        InputProps={{
+                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputProps: {
+                                                ref: objectiveRef,
+                                                name: 'objective',
+                                                placeholder: 'Objetivos',
+                                                initialvalue: objective ?? '',
+                                                rowMax: 5,
+                                                onChange: handleChangeMetadataField,
+                                                multiline: true,
+                                            }
+                                        }}
+                                    />
+                            }
                         </Grid>
                     </Grid>
-                    <KeywordManager keywords={keywords} onChangeKeywords={handleChangeKeywords} />
-                    <div className={classes.title}>
-                        <Typography variant='h4'>Resultados de aprendizaje</Typography>
-                        <Button variant='outlined' color='default' onClick={handleOpenLearningResultmodal}>Agregar</Button>
-                    </div>
-                    <Divider />
-                    <div className={classes.content}>
-                        {
-                            metadata.results.length === 0
-                                ? <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                                    Este diseño aún no tiene resultados de aprendizaje. Agrega el primer resultado de aprendizaje haciendo click {' '}
-                                    {<Link className={classes.clickHere} onClick={handleOpenLearningResultmodal}>aquí</Link>}
+                    {
+                        isLoading ? (<>
+                            <div style={{ display: 'flex', width: '100%' }}>
+                                <Skeleton width={'100%'} height={70} style={{ marginRight: 10 }} />
+                                <Skeleton width={'10%'} height={70} />
+                            </div>
+                            <Skeleton width={'100%'} height={30} />
+                        </>)
+                            : <KeywordManager keywords={keywords} onChangeKeywords={handleChangeKeywords} />
+                    }
+                    {
+                        !isLoading ? (<>
+                            <div className={classes.title}>
+                                <Typography variant='h4'>Resultados de aprendizaje</Typography>
+                                <Button variant='outlined' color='default' onClick={handleOpenLearningResultmodal}>Agregar</Button>
+                            </div>
+                            <Divider />
+                            <div className={classes.content}>
+                                {
+                                    metadata.results.length === 0
+                                        ? <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                                            Este diseño aún no tiene resultados de aprendizaje. Agrega el primer resultado de aprendizaje haciendo click {' '}
+                                            {<Link className={classes.clickHere} onClick={handleOpenLearningResultmodal}>aquí</Link>}
                                     !
                                 </Alert>
-                                : metadata.results.map((result, index) => (
-                                    <LearningResult key={`learning-result-${index}`} index={index} {...result} />
-                                ))
+                                        : metadata.results.map((result, index) => (
+                                            <LearningResult key={`learning-result-${index}`} index={index} {...result} />
+                                        ))
 
-                        }
-                    </div>
+                                }
+                            </div></>)
+                            : (<div></div>)
+                    }
                 </Grid>
                 <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
             </Grid>

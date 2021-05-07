@@ -5,7 +5,7 @@ import { useBetween } from 'use-between';
 import { MiniContext } from './MiniContext';
 
 export const DocumentPDF = ({design, img, typeUserPDF}) => {
-    const { selectedDate, confirmDateConfiguration, privileges} = useBetween(MiniContext);
+    const { selectedDate, privileges} = useBetween(MiniContext);
     const [ authorSelected, setAuthorSelected] = useState(false);
     const styles = StyleSheet.create({
         logo: {

@@ -6,7 +6,7 @@ import { getUser, updateContact } from 'services/UserService';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from 'react-query';
 import { useHistory, useParams } from 'react-router-dom';
 import { Star, Apartment, Group, Email, PersonAdd, Edit, Close } from '@material-ui/icons';
-import { Alert } from '@material-ui/lab';
+import { Alert, Skeleton } from '@material-ui/lab';
 
 
 import { EditProfileModal } from 'pages/User/UserProfile/EditProfileModal';
@@ -97,7 +97,7 @@ export const UserProfile = () => {
     const uid = urlparams.uid;
     const { enqueueSnackbar } = useSnackbar();
 
-    const { isLoading, isError, data, error, refetch } = useQuery(['user-profile', uid], async () => {
+    const { isLoading, isError, data, refetch } = useQuery(['user-profile', uid], async () => {
         return await getUser(uid);
     }, { refetchOnWindowFocus: false });
 
@@ -120,7 +120,6 @@ export const UserProfile = () => {
             queryClient.invalidateQueries(['user-profile', uid]);
         },
         onError: (error) => {
-            // TODO: Emitir notificación o message para denotar el error.
             console.log(error);
             enqueueSnackbar('No se ha actualizado su lista de contactos',  {variant: 'error', autoHideDuration: 2000},   );
         },
@@ -138,7 +137,6 @@ export const UserProfile = () => {
             queryClient.invalidateQueries([authState.user.id, 'user-public-designs']);
         },
         onError: (error) => {
-            // TODO: Emitir notificación o message para denotar el error.
             console.log(error);
             enqueueSnackbar('No se han cargado sus diseño',  {variant: 'error', autoHideDuration: 2000},   );
         },
@@ -150,9 +148,9 @@ export const UserProfile = () => {
     const handleCreateDesign = async () => {
         await createDesignMutation.mutate({ path: '/', isPublic: true });
     };
-
+    
     if(isError){
-        return (<div className={ classes.errorContainer }>
+        return (<div className={ classes.designPanel }>
             <Alert severity='error' className={ classes.error }>
                 Ha ocurrido un problema al intentar obtener el usuario en la base de datos. Esto probablemente se deba a un problema de conexión, por favor revise que su equipo tenga conexión a internet e intente más tarde.
                 Si el problema persiste, por favor comuníquese con el equipo de soporte.
@@ -160,9 +158,6 @@ export const UserProfile = () => {
         </div>);
     };
 
-    if(isLoading){
-        return (<Typography>Cargando...</Typography>);
-    };
 
     const handleEditProfile = () => {
         dispatch({
@@ -190,69 +185,97 @@ export const UserProfile = () => {
         await updateConctactMutation.mutate({uid: authState.user.uid, contacts: authState.user.contacts.filter(contact=>contact!==uid)});
         queryClient.invalidateQueries(['user-profile', uid]);
     };
-    
-    if(isError){
-        return (<Typography>Error: {error.message}</Typography>);
-    };
-    if(isLoading){
-        return (<Typography>Cargando...</Typography>);
-    };
 
     return (
         <Grid container>
             <Grid item xs={12} sm={3}>
                 <Grid container alignItems='center' justify='center'>
-                    <Avatar alt={data.name + ' ' + data.lastname} className={classes.photoProfile} src={ data.img && data.img.length > 0 ? `${process.env.REACT_APP_URL}uploads/users/${data.img}` : '' }/>
+                    {
+                        isLoading
+                            ? <Skeleton animation='wave' variant='circle' className={classes.photoProfile}/>
+                            : <Avatar alt={data.name + ' ' + data.lastname} className={classes.photoProfile} src={ data.img && data.img.length > 0 ? `${process.env.REACT_APP_URL}uploads/users/${data.img}` : '' }/>
+                    }
                 </Grid>
                 <Grid container alignItems='center' justify='center'>
-                    { data && <Typography  align='center' variant='h5' component='h2'>{data.name + ' ' + data.lastname}</Typography>}
+                    {
+                        isLoading
+                            ? <Skeleton animation='wave' height={42} width={'80%'}/>
+                            : data && <Typography  align='center' variant='h5' component='h2'>{data.name + ' ' + data.lastname}</Typography>
+                    }
                 </Grid>
                 <Grid container alignItems='center' justify='center'>
-                    { data && data.occupation && <Typography className={classes.spaceFirstData} color='textSecondary'>{data.occupation}</Typography>}
+                    {
+                        isLoading
+                            ? <Skeleton animation='wave' height={20} width={'50%'}/>
+                            : data && data.occupation && <Typography className={classes.spaceFirstData} color='textSecondary'>{data.occupation}</Typography>
+                    }
                 </Grid> 
                 <Grid container alignItems='center' justify='center' className={classes.spaceFirstData}>
                     <Grid item >
-                        { data.contacts.length > 0 ? 
-                            <IconButton onClick={ handleShowContacts }>
-                                <Group />
-                            </IconButton>
-                            :
-                            <Group />
+                        {
+                            isLoading
+                                ? <Skeleton animation='wave' variant='circle' width={20} height={20}/>
+                                : data.contacts.length > 0 
+                                    ? <IconButton onClick={ handleShowContacts }>
+                                        <Group />
+                                    </IconButton>
+                                    :
+                                    <Group />
                         }
                     </Grid>
                     <Grid item >
-                        <Typography style={{ marginLeft: 8 }}> {data.contacts.length}</Typography>
+                        {
+                            isLoading
+                                ? <Skeleton animation='wave' width={20} height={20} style={{marginLeft: 5}}/>
+                                : <Typography style={{ marginLeft: 8 }}> {data.contacts.length}</Typography>
+                        }
                     </Grid>
                     ・
                     <Grid item >
-                    <Star/>
+                        {
+                            isLoading
+                                ? <Skeleton animation='wave' variant='circle' width={20} height={20}/>
+                                : <Star/>
+                        }
                     </Grid>
                     <Grid item>
-                        <Typography style={{ marginLeft: 8 }}> {data.scoreMean}</Typography>
+                        {
+                            isLoading
+                                ? <Skeleton animation='wave' width={20} height={20} style={{marginLeft: 5}}/>
+                                : <Typography style={{ marginLeft: 8 }}> {data.scoreMean}</Typography>
+                        }
                     </Grid>
                 </Grid>
                 <Grid container alignItems='center' justify='center' className={classes.spaceSecondData}>
-                    {(authState.user.uid===uid) ? 
-                        <Button variant ='outlined' size='small' onClick={handleEditProfile} startIcon={<Edit />}>Editar perfil</Button> 
-                        :
-                        (authState.user.contacts.includes(uid)) ? 
-                        <Button variant ='outlined' size='small' onClick={handleDeleteContact} startIcon={<Close />}>Eliminar de mis contactos</Button> 
-                        : 
-                        <Button variant ='outlined' size='small' onClick={handleAddContact} startIcon={<PersonAdd />} >Agregar a mis contactos</Button>}  
+                    {
+                        isLoading
+                            ? <Skeleton animation='wave' width={'50%'} height={42} style={{marginLeft: 5}}/>
+                            : (authState.user.uid===uid) 
+                                ? <Button variant ='outlined' size='small' onClick={handleEditProfile} startIcon={<Edit />}>Editar perfil</Button> 
+                                : (authState.user.contacts.includes(uid)) 
+                                    ? <Button variant ='outlined' size='small' onClick={handleDeleteContact} startIcon={<Close />}>Eliminar de mis contactos</Button> 
+                                    : <Button variant ='outlined' size='small' onClick={handleAddContact} startIcon={<PersonAdd />} >Agregar a mis contactos</Button>
+                    }
                 </Grid>
                 <Divider className={classes.spaceData}/>
                 <Grid className={classes.spaceData}>
-                    { data && data.institution && (
-                        <Grid container className={classes.spaceSecondData} >
-                            <Grid item >
-                                <Apartment className={classes.spaceIcons}/>
-                            </Grid>
-                            <Grid item >
-                            <Typography className={classes.spaceFirstData} color='textSecondary'>{data.institution}</Typography>
-                            </Grid>
-                        </Grid>
-                    )}
-                    { data && data.city && data.country &&(
+                    {
+                        isLoading
+                            ? <Skeleton animation='wave' width={'100%'} height={40} style={{marginLeft: 5}}/>
+                            : data && data.institution && (
+                                <Grid container className={classes.spaceSecondData} >
+                                    <Grid item >
+                                        <Apartment className={classes.spaceIcons}/>
+                                    </Grid>
+                                    <Grid item >
+                                    <Typography className={classes.spaceFirstData} color='textSecondary'>{data.institution}</Typography>
+                                    </Grid>
+                                </Grid>
+                            )
+                    }
+                    { isLoading
+                            ? <Skeleton animation='wave' width={'100%'} height={40} style={{marginLeft: 5}}/>
+                            : data && data.city && data.country &&(
                         <Grid container className={classes.spaceSecondData} >
                             <Grid item >
                                 <RoomIcon className={classes.spaceIcons}/>
@@ -262,7 +285,9 @@ export const UserProfile = () => {
                             </Grid>
                         </Grid>
                     )}
-                    { data && (
+                    { isLoading
+                            ? <Skeleton animation='wave' width={'100%'} height={40} style={{marginLeft: 5}}/>
+                            : data && (
                         <Grid container className={classes.spaceSecondData} >
                             <Grid item >
                                 <Email className={classes.spaceIcons}/>
@@ -273,7 +298,12 @@ export const UserProfile = () => {
                         </Grid>
                     )}
                     <Divider className={classes.spaceSecondData}/>
-                    { data && data.description &&(
+                    { isLoading
+                            ? (<>
+                                <Skeleton animation='wave' width={100} height={20} style={{marginLeft: 5}}/>
+                                <Skeleton animation='wave' width={'100%'} height={40} style={{marginLeft: 5}}/>
+                            </>)
+                            : data && data.description &&(
                         <>
                             <Typography color='textSecondary' className={classes.spaceSecondData}>
                                 Descripción
@@ -293,13 +323,13 @@ export const UserProfile = () => {
                     </Typography>
                     <Divider />
                     {   
-                        (authState.user.uid === uid) && 
+                        !isError && !isLoading && (authState.user.uid === uid) && 
                             <>
                                 <EditProfileModal /> 
                             </> 
                     }
-                    <ShowContactsModal/> 
                     <DesignsContainer {...designsQuery} label='user-profile' handleCreateDesign={handleCreateDesign}/>
+                    {!isError && !isLoading && <ShowContactsModal/> }
                 </Grid>
             </Grid>
         </Grid>

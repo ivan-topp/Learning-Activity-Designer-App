@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Grid, makeStyles, Avatar, Tabs, Tab, Typography } from '@material-ui/core';
+import { Grid, makeStyles, Avatar, Tabs, Tab, Typography, Backdrop, Box } from '@material-ui/core';
 import { useSocketState } from 'contexts/SocketContext';
 import { useAuthState } from 'contexts/AuthContext';
 import { formatName, getUserInitials } from 'utils/textFormatters';
@@ -12,6 +12,7 @@ import { getBloomCategories, getBloomVerbs } from 'services/BloomService';
 import types from 'types';
 import { Alert } from '@material-ui/lab';
 import { useSharedDocContext } from 'contexts/SharedDocContext';
+import { Description } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -23,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: 30,
         paddingRight: 30,
         background: theme.palette.background.workSpace,
-        minHeight: 'calc(100vh - 64px)'
+        minHeight: 'calc(100vh - 128px)'
     },
     rightPanel: {
         display: 'flex',
@@ -56,6 +57,28 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'start',
         minHeight: 'calc(100vh - 128px)',
     },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+    },
+    loadingFile: {
+        '-webkit-backface-visibility': 'hidden',
+        animation: `$spinAndScale 3000ms ${theme.transitions.easing.easeInOut}`,
+        animationIterationCount: 'infinite',
+        animationDirection: 'alternate',
+    },
+    "@keyframes spinAndScale": {
+        from: {
+            height: 300,
+            width: 300,
+            transform: 'rotate(0deg)',
+        },
+        to: {
+            height: 150,
+            width: 150,
+            transform: 'rotate(360deg)',
+        }
+    },
 }));
 
 const a11yProps = (index) => {
@@ -73,12 +96,12 @@ export const DesignPage = () => {
     const { doc, provider, connectToDesign, clearDoc } = useSharedDocContext();
     const { authState } = useAuthState();
     const { socket, online } = useSocketState();
-    const [ users, setUsersList ] = useState([]);
-    const [ tabIndex, setTabIndex ] = useState(0);
+    const [users, setUsersList] = useState([]);
+    const [tabIndex, setTabIndex] = useState(0);
     const { designState, dispatch } = useDesignState();
     const { design } = designState;
     const [error, setError] = useState(null);
-    
+
     const prefetchBloomCategories = useCallback(async () => {
         const data = await getBloomCategories();
         dispatch({
@@ -95,12 +118,12 @@ export const DesignPage = () => {
         });
     }, [dispatch]);
 
-    useEffect(()=>{
+    useEffect(() => {
         prefetchBloomCategories();
         prefetchBloomVerbs();
     }, [prefetchBloomCategories, prefetchBloomVerbs]);
-    
-    useEffect(()=>{
+
+    useEffect(() => {
         let metadataComponent = metadataRef.current;
         return () => {
             metadataComponent?.clearEditors();
@@ -110,23 +133,23 @@ export const DesignPage = () => {
     }, [clearDoc]);
 
     useEffect(() => {
-        if(online){
+        if (online) {
             socket?.emit('join-to-design', { user: authState.user, designId: id, public: false }, (res) => {
-                if(res.data){
-                    const userInPrivileges = res.data.design.privileges.find(privilege => privilege.user._id === authState.user.uid );
-                    if (res.ok && userInPrivileges && userInPrivileges.type === 0){
-                        if(isMounted.current) {
+                if (res.data) {
+                    const userInPrivileges = res.data.design.privileges.find(privilege => privilege.user._id === authState.user.uid);
+                    if (res.ok && userInPrivileges && userInPrivileges.type === 0) {
+                        if (isMounted.current) {
                             dispatch({
                                 type: types.design.updateDesign,
                                 payload: res.data.design
                             });
                             connectToDesign(id);
                         }
-                    }else {
+                    } else {
                         setError(res.message)
                     };
-                      
-                }else {
+
+                } else {
                     setError(res.message)
                 };
             });
@@ -135,7 +158,7 @@ export const DesignPage = () => {
 
     useEffect(() => {
         socket?.on('update-design', (newDesign) => {
-            if(isMounted.current) {
+            if (isMounted.current) {
                 dispatch({
                     type: types.design.updateDesign,
                     payload: newDesign
@@ -143,7 +166,7 @@ export const DesignPage = () => {
             }
         });
         socket?.on('add-design-keyword', (keyword) => {
-            if(isMounted.current) {
+            if (isMounted.current) {
                 dispatch({
                     type: types.design.addDesignKeyword,
                     payload: keyword,
@@ -151,7 +174,7 @@ export const DesignPage = () => {
             }
         });
         socket?.on('remove-design-keyword', (keyword) => {
-            if(isMounted.current) {
+            if (isMounted.current) {
                 dispatch({
                     type: types.design.removeDesignKeyword,
                     payload: keyword,
@@ -159,7 +182,7 @@ export const DesignPage = () => {
             }
         });
         socket?.on('edit-metadata-field', ({ field, value, subfield }) => {
-            if(isMounted.current) {
+            if (isMounted.current) {
                 dispatch({
                     type: types.design.changeMetadataField,
                     payload: { field, value, subfield },
@@ -167,7 +190,7 @@ export const DesignPage = () => {
             }
         });
         socket?.on('edit-task-field', ({ learningActivityID, taskID, field, value, subfield }) => {
-            if(isMounted.current) {
+            if (isMounted.current) {
                 dispatch({
                     type: types.design.changeTaskField,
                     payload: { learningActivityID, taskID, field, value, subfield },
@@ -175,7 +198,7 @@ export const DesignPage = () => {
             }
         });
         socket?.on('users', (users) => {
-            if(isMounted.current) setUsersList(users);
+            if (isMounted.current) setUsersList(users);
         });
         socket?.on('change-design-privileges', (privileges) => {
             dispatch({
@@ -184,7 +207,7 @@ export const DesignPage = () => {
             });
         });
         socket?.on('change-read-only-link', (newLink) => {
-            if(isMounted.current) {
+            if (isMounted.current) {
                 dispatch({
                     type: types.design.updateReadOnlyLink,
                     payload: newLink
@@ -206,26 +229,35 @@ export const DesignPage = () => {
     const handleChange = (event, newValue) => {
         setTabIndex(newValue);
     };
-    
-    if(error){
+
+    if (error) {
         return (
             <div className={classes.error}>
                 <Alert severity='error'>
-                    { error }
+                    {error}
                 </Alert>
             </div>
         );
     }
 
     if (!design || !doc || !provider) {
-        
-        return (<Typography>Cargando...</Typography>);
+        return (<Box className={classes.workspace}>
+            <Backdrop className={classes.backdrop} open={true}>
+                <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Box width={300} height={300} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <Description className={classes.loadingFile} />
+                    </Box>
+                    
+                    <Typography>Cargando Diseño de Aprendizaje...</Typography>
+                </Box>
+            </Backdrop>
+        </Box>);
     }
 
     return (
         <>
             <Grid container className={classes.menu} key={design._id}>
-                <Grid item xs={12} md={3} lg={2} />
+                <Grid item xs={12} md={1} lg={2} />
                 <Grid item xs={12} md={6} lg={8} className={classes.tabBar}>
                     <Tabs
                         value={tabIndex}
@@ -255,7 +287,7 @@ export const DesignPage = () => {
                 <DesignMetadata ref={metadataRef} />
             </TabPanel>
             <TabPanel value={tabIndex} index={1}>
-                <DesignWorkspace/>
+                <DesignWorkspace />
             </TabPanel>
         </>
     )

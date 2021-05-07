@@ -7,6 +7,7 @@ import { Group, Home, Public } from '@material-ui/icons';
 import { searchUsers } from 'services/UserService';
 import { Alert } from '@material-ui/lab';
 import { UserCard } from 'components/UserCard';
+import { UserCardSkeleton } from 'components/UserCardSkeleton';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -19,7 +20,11 @@ const useStyles = makeStyles((theme) => ({
         paddingRight: 30,
         paddingBottom: 50,
         background: theme.palette.background.workSpace,
-        minHeight: 'calc(100vh - 128px)'
+        height: 'auto',
+        [theme.breakpoints.up('md')]: {
+            height: 'calc(100vh - 177px)',
+            overflow: 'auto'
+        },
     },
     rightPanel: {
         display: 'flex',
@@ -44,10 +49,10 @@ const useStyles = makeStyles((theme) => ({
     },
     error: {
         minWidth: '50%',
-        display:'flex',
+        display: 'flex',
         justifyContent: 'center',
         textAlign: 'center',
-        alignItems:'center',
+        alignItems: 'center',
     },
     loadMore: {
         marginTop: 50,
@@ -59,7 +64,7 @@ export const SearchUsersPage = () => {
     const history = useHistory();
     const location = useLocation();
     const { q } = queryString.parse(location.search);
-    
+
     const redirectTo = (path) => {
         history.push(path);
     };
@@ -69,20 +74,26 @@ export const SearchUsersPage = () => {
     }, {
         refetchOnWindowFocus: false,
         getNextPageParam: (lastPage, pages) => {
-            if(lastPage.nPages === pages.length) return undefined; 
+            if (lastPage.nPages === pages.length) return undefined;
             return lastPage.from;
         },
     });
 
     const userList = () => {
         return data.pages.map((page, index) => {
-            return page.users.map((user, i) => <UserCard key={user._id} {...user}/>);
+            return page.users.map((user, i) => <UserCard key={user._id} {...user} />);
         });
     };
 
-    if(!q){
+    const usersSkeletonsList = () => {
+        return [...Array(6).keys()].map((index) => (
+            <UserCardSkeleton key={`user-skeleton-${index}`} />
+        ));
+    };
+
+    if (!q) {
         return (
-            <div className={ classes.errorContainer }>
+            <div className={classes.errorContainer}>
                 <Alert severity='error' className={classes.error}>
                     No se ha ingresado filtro para la búsqueda de usuarios. Por favor ingrese información en la entrada de texto de la barra de navegación para buscar usuarios
                     y presione 'enter' o el ícono de búsqueda.
@@ -90,65 +101,69 @@ export const SearchUsersPage = () => {
             </div>
         );
     }
-
-    return status === 'loading' ? (
-        <p>Loading...</p>
-    ) : status === 'error' ? (
-        <Alert severity='error' className={classes.error}>
-            { error.message }
-        </Alert>
-    ) : (
-            <>
-            <Grid container>
-                <Grid item xs={12} md={3} lg={2} className={classes.leftPanel}>
-                    <List component="nav" aria-label="main mailbox folders">
-                        <ListItem button onClick={() => redirectTo('/my-designs')}>
-                            <Home className={classes.icon} />
-                            <ListItemText primary="Mis Diseños" />
-                        </ListItem>
-                        <Divider />
-                        <ListItem button onClick={() => redirectTo('/shared-with-me')}>
-                            <Group className={classes.icon} />
-                            <ListItemText primary="Compartidos Conmigo" />
-                        </ListItem>
-                        <Divider />
-                        <ListItem button onClick={() => redirectTo('/public-repository')}>
-                            <Public className={classes.icon} />
-                            <ListItemText primary="Repositorio Público" />
-                        </ListItem>
-                        <Divider />
-                    </List>
-                </Grid>
-                <Grid item xs={12} md={6} lg={8} className={classes.workspace}>
-                    <div style={{paddingTop: 15}}>
-                        {
-                            data.pages[0].users.length > 0 
-                                ? (<><Typography variant='h4'>
-                                        Usuarios encontrados
-                                    </Typography>
-                                    <Divider />
-                                    <div className={ classes.usersContainer }>
-                                        { userList() }
-                                        {
-                                            data && hasNextPage && <Button className={classes.loadMore} color='primary' onClick={() => fetchNextPage()}>
+    
+    return <>
+        <Grid container>
+            <Grid item xs={12} md={3} lg={2} className={classes.leftPanel}>
+                <List component="nav" aria-label="main mailbox folders">
+                    <ListItem button onClick={() => redirectTo('/my-designs')}>
+                        <Home className={classes.icon} />
+                        <ListItemText primary="Mis Diseños" />
+                    </ListItem>
+                    <Divider />
+                    <ListItem button onClick={() => redirectTo('/shared-with-me')}>
+                        <Group className={classes.icon} />
+                        <ListItemText primary="Compartidos Conmigo" />
+                    </ListItem>
+                    <Divider />
+                    <ListItem button onClick={() => redirectTo('/public-repository')}>
+                        <Public className={classes.icon} />
+                        <ListItemText primary="Repositorio Público" />
+                    </ListItem>
+                    <Divider />
+                </List>
+            </Grid>
+            <Grid item xs={12} md={6} lg={8} className={classes.workspace}>
+                
+                {
+                    status === 'loading' ? (
+                        <div style={{ paddingTop: 15 }}>
+                            <Typography variant='h4'>Buscando usuarios...</Typography>
+                            <div>
+                                { usersSkeletonsList() }
+                            </div>
+                        </div>
+                    ) : status === 'error' ? (
+                        <Alert severity='error' className={classes.error}>
+                            { error.message}
+                        </Alert>
+                    ) : (
+                        <div style={{ paddingTop: 15 }}>
+                            <Typography variant='h4'>Usuarios encontrados</Typography>
+                            {
+                                data.pages[0].users.length > 0
+                                    ? (<>
+                                        <div className={classes.usersContainer}>
+                                            {userList()}
+                                            {
+                                                data && hasNextPage && <Button className={classes.loadMore} color='primary' onClick={() => fetchNextPage()}>
                                                     {
                                                         isFetchingNextPage
                                                             ? 'Cargando más...'
                                                             : 'Cargar Más'
                                                     }
                                                 </Button>
-                                        }
-                                    </div></>)
-                                : <Alert severity='error' className={classes.error}>
-                                    No se han encontrado coincidencias.
+                                            }
+                                        </div></>)
+                                    : <Alert severity='error' className={classes.error}>
+                                        No se han encontrado coincidencias.
                                 </Alert>
-
-                        }
-                        
-                    </div>
-                </Grid>
-                <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
+                            }
+                        </div>
+                    )
+                }
             </Grid>
-        </>
-    )
+            <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
+        </Grid>
+    </>
 }

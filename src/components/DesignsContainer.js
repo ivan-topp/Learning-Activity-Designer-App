@@ -3,6 +3,7 @@ import { Button, Link, makeStyles } from '@material-ui/core';
 import { Design } from 'components/Design';
 import { Alert } from '@material-ui/lab';
 import { useAuthState } from 'contexts/AuthContext';
+import { DesignSkeleton } from './DesignSkeleton';
 
 const useStyles = makeStyles({
     root: {
@@ -49,6 +50,12 @@ export const DesignsContainer = ({ data, status, isFetchingNextPage, fetchNextPa
         });
     };
 
+    const desingSkeletonsList = () => {
+        return [...Array(10).keys()].map((index) => {
+            return <DesignSkeleton key={`design-skeleton-${index}`} />
+        });
+    };
+
     const alert = () => {
         if(label === 'shared-with-me'){
             return (
@@ -88,9 +95,13 @@ export const DesignsContainer = ({ data, status, isFetchingNextPage, fetchNextPa
             );
         }
     };
-
+    
     return status === 'loading' ? (
-        <p>Loading...</p>
+        <div className={classes.root}>
+            <div className={classes.designsContainer}>
+                { desingSkeletonsList() }
+            </div>
+        </div>
     ) : status === 'error' ? (
         <Alert severity='error' className={classes.error}>
             Ha ocurrido un problema al intentar obtener los diseños. Esto probablemente se deba a un problema de conexión, por favor revise que su equipo tenga conexión a internet e intente más tarde.

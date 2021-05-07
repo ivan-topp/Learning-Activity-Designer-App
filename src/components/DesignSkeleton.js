@@ -4,7 +4,7 @@ import { Card, CardActions, CardContent, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        border: `1px solid ${ theme.palette.divider }`,
+        //border: `1px solid ${ theme.palette.divider }`,
         //paddingTop: 1,
         display: 'flex',
         flexDirection: 'column',
@@ -46,7 +46,6 @@ export const DesignSkeleton = () => {
                     <div className={ classes.col }>
                         <div className={ classes.row } style={{marginLeft: -5}}>
                             <Skeleton style={{marginTop: -3}} animation="wave" height={33} width={'80%'}/>
-                            <Skeleton variant="circle" width={20} height={20} />
                         </div>
                         <div className={ classes.row } style={{marginLeft: -5}}>
                             <Skeleton style={{marginTop: -3}} animation="wave" height={23} width={'70%'}/>

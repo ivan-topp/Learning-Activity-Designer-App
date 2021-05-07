@@ -82,7 +82,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const SharedTextFieldTipTapEditor = forwardRef(({name, multiline, rowMax = 1, maxLength, onChange, placeholder = '', initialvalue = '', type = 'text', max, min, deleteOnRemove = false}, ref) => {
+export const SharedTextFieldTipTapEditor = forwardRef(({name,
+    multiline,
+    rowMax = 1,
+    maxLength,
+    onChange,
+    placeholder = '',
+    initialvalue = '',
+    type = 'text',
+    max,
+    min,
+    deleteOnRemove = false,
+    onSynced,
+}, ref) => {
     const [focused, setFocused] = useState(false);
     const classes = useStyles({
         multiline,
@@ -177,7 +189,7 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name, multiline, rowMax 
             onUpdate: (event) => {
                 const text = htmlToText(event.editor.getHTML().toString());
                 let value = (type === 'number' && !isNaN(text)) ? parseInt(text) : text;
-                if(onChange) onChange({
+                if(onChange && event.transaction.docs[0].textContent.trim() !== text) onChange({
                     target : {
                         name,
                         type,
@@ -198,6 +210,7 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name, multiline, rowMax 
             if(!synced){
                 if (getText() === '') {
                     setText(initialvalue);
+                    if(onSynced) onSynced();
                     setSynced(true);
                 }
             }
@@ -206,12 +219,13 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name, multiline, rowMax 
                 if(!synced){
                     if (getText() === '') {
                         setText(initialvalue);
+                        if(onSynced) onSynced();
                         setSynced(true);
                     }
                 }
             })
         }
-    }, [provider.synced, getText, initialvalue, provider, setText, synced]);
+    }, [provider.synced, getText, initialvalue, onSynced, provider, setText, synced]);
 
     if(!editor){
         return (<div>Conectando...</div>);
