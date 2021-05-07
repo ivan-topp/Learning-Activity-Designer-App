@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Grid, makeStyles, Tabs, Tab, Typography } from '@material-ui/core';
+import { Grid, makeStyles, Tabs, Tab, Typography, Backdrop, Box } from '@material-ui/core';
 import { useSocketState } from 'contexts/SocketContext';
 import { useAuthState } from 'contexts/AuthContext';
 import { TabPanel } from 'components/TabPanel';
@@ -8,6 +8,7 @@ import { useDesignState } from 'contexts/design/DesignContext';
 import types from 'types';
 import { Alert } from '@material-ui/lab';
 import { DesignReader } from './DesignReader/DesignReader';
+import { Description } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
     menu: {
@@ -24,6 +25,28 @@ const useStyles = makeStyles((theme) => ({
         padding: 20,
         alignItems: 'start',
         minHeight: 'calc(100vh - 128px)',
+    },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+    },
+    loadingFile: {
+        '-webkit-backface-visibility': 'hidden',
+        animation: `$spinAndScale 3000ms ${theme.transitions.easing.easeInOut}`,
+        animationIterationCount: 'infinite',
+        animationDirection: 'alternate',
+    },
+    "@keyframes spinAndScale": {
+        from: {
+            height: 300,
+            width: 300,
+            transform: 'rotate(0deg)',
+        },
+        to: {
+            height: 150,
+            width: 150,
+            transform: 'rotate(360deg)',
+        }
     },
 }));
 
@@ -44,7 +67,6 @@ export const DesignPageReader = () => {
     const { designState, dispatch } = useDesignState();
     const { design } = designState;
     const [error, setError] = useState(null);
-
     
     useEffect(() => {
         if(online){
@@ -83,8 +105,17 @@ export const DesignPageReader = () => {
     }
 
     if (!design) {
-        
-        return (<Typography>Cargando...</Typography>);
+        return (
+            <Backdrop className={classes.backdrop} open={true}>
+                <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Box width={300} height={300} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <Description className={classes.loadingFile} />
+                    </Box>
+                    
+                    <Typography>Cargando Diseño de Aprendizaje...</Typography>
+                </Box>
+            </Backdrop>
+        );
     }
 
     return (

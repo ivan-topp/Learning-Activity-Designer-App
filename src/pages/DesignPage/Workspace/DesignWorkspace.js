@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Box, Button, ButtonGroup, Divider, Fab, Grid, makeStyles, Menu, MenuItem, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
+import { Avatar, Box, Button, ButtonGroup, Card, CardActionArea, Divider, Fab, Grid, makeStyles, Menu, MenuItem, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { LearningActivity } from 'pages/DesignPage/Workspace/LearningActivity';
 import { useSocketState } from 'contexts/SocketContext';
@@ -11,13 +11,16 @@ import { useUiState } from 'contexts/ui/UiContext';
 import { ShareModal } from './ShareModal';
 import types from 'types';
 import { useSnackbar } from 'notistack';
-import { Add } from '@material-ui/icons';
+import { Add, Description } from '@material-ui/icons';
 import ObjectID from 'bson-objectid';
 import { ViewAndDownloadPDFModal } from 'pages/DesignPage/PDF/ViewAndDownloadPDFModal';
 import { useUserConfigState } from 'contexts/UserConfigContext';
 import { ResourceLinksModal } from './ResourceLinksModal';
 import { EvaluationModal } from './EvaluationModal';
 import { exportJsonToFile } from 'utils/files';
+import { formatName, getUserInitials } from 'utils/textFormatters';
+import { Link, useHistory } from 'react-router-dom';
+import { useAuthState } from 'contexts/AuthContext';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -94,19 +97,34 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         bottom: 5,
         right: theme.spacing(2),
+    },
+    origin: {
+        marginTop: 10,
+        marginBottom: 10,
+        border: `1px solid ${theme.palette.divider}`,
+        borderRadius: 4,
+        cursor: 'pointer',
+        userSelect: 'none',
+        backgroundColor: theme.palette.background.design,
+        '&:hover': {
+            boxShadow: '0px 0px 10px 0 #bcc3d6',
+            background: theme.palette.background.designHover,
+        },
     }
 }));
 
 export const DesignWorkspace = () => {
     const classes = useStyles();
     const { designState } = useDesignState();
+    const { authState } = useAuthState();
+    const history = useHistory();
     const { design } = designState;
     const { metadata } = design;
     const { socket } = useSocketState();
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const isMediumDevice = useMediaQuery(theme.breakpoints.down('md'));
-    const {uiState, dispatch } = useUiState();
+    const { uiState, dispatch } = useUiState();
     const [openMenuPDF, setOpenMenuPDF] = useState(null);
     const imgGraphic = useRef();
     const { userConfig } = useUserConfigState();
@@ -171,7 +189,7 @@ export const DesignWorkspace = () => {
         setOpenMenuPDF(null);
     };
 
-    const handleExportToFile = ( e ) => {
+    const handleExportToFile = (e) => {
         const designToExport = JSON.parse(JSON.stringify(design));
         designToExport.comments = [];
         designToExport.assessments = [];
@@ -190,8 +208,24 @@ export const DesignWorkspace = () => {
         delete designToExport.createdAt;
         delete designToExport.updatedAt;
         delete designToExport.readOnlyLink;
-        exportJsonToFile(designToExport, `${design.metadata.name.trim().length === 0 ? 'Diseño sin nombre' :  design.metadata.name.trim()}.json`);
+        exportJsonToFile(designToExport, `${design.metadata.name.trim().length === 0 ? 'Diseño sin nombre' : design.metadata.name.trim()}.json`);
         handleCloseMenu();
+    };
+
+    const handleOpenDesign = (design) =>{
+        const inDesign = design.privileges.find(privilege => authState.user.uid === privilege.user._id);
+        if (inDesign) {
+            const typePrivilegeEditor = design.privileges.find(privilege => authState.user.uid === privilege.user && privilege.type === 0);
+            if (typePrivilegeEditor) {
+                history.push(`/designs/${design._id}`);
+            } else {
+                history.push(`/designs/reader/${design._id}`);
+            }
+        } else if(design.metadata.isPublic){
+            history.push(`/designs/reader/${design._id}`);
+        } else {
+            enqueueSnackbar('Usted no tiene acceso a este diseño.', { variant: 'error', autoHideDuration: 2000 });
+        }
     };
 
     design.data.learningActivities.forEach((activities) => {
@@ -302,8 +336,8 @@ export const DesignWorkspace = () => {
                         <Grid>
                             {metadata && metadata.objective && (
                                 <>
-                                    <Typography color='textSecondary' className={classes.textLeftPanelMetadata}> Objetivos </Typography>
-                                    <Typography> {metadata.objective} </Typography>
+                                    <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Objetivos </Typography>
+                                    <Typography variant='body2'> {metadata.objective} </Typography>
                                     <Divider />
                                 </>
                             )
@@ -317,6 +351,36 @@ export const DesignWorkspace = () => {
                                         <Divider/>
                                     </>
                                 )*/
+                            }
+                        </Grid>
+                        <Grid>
+                            {design.origin && (
+                                <>
+                                    <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Derivado del diseño: </Typography>
+                                    <Card className={classes.origin} elevation={0}>
+                                        <CardActionArea onClick={()=>handleOpenDesign(design.origin)}>
+                                            <Box style={{ display: 'flex', alignItems: 'center', padding: 5 }}>
+                                                <Description style={{ marginBottom: 5 }} />
+                                                <Typography style={{ marginLeft: 10 }} variant='body2'>{design.origin.metadata.name}</Typography>
+                                            </Box>
+                                        </CardActionArea>
+                                        <Divider />
+                                        <CardActionArea component={Link} to={`/profile/${design.origin.owner._id}`}>
+                                            <Box style={{ display: 'flex', alignItems: 'center', padding: 5 }}>
+                                                <Avatar
+                                                    style={{ width: 25, height: 25, fontSize: 15 }}
+                                                    alt={formatName(design.origin.owner.name, design.origin.owner.lastname)}
+                                                    src={design.origin.owner.img && design.origin.owner.img.length > 0 ? `${process.env.REACT_APP_URL}uploads/users/${design.origin.owner.img}` : ''}
+                                                >
+                                                    {getUserInitials(design.origin.owner.name, design.origin.owner.lastname)}
+                                                </Avatar>
+                                                <Typography style={{ marginLeft: 10 }} variant='body2'>{formatName(design.origin.owner.name, design.origin.owner.lastname)}</Typography>
+                                            </Box>
+                                        </CardActionArea>
+
+                                    </Card>
+                                </>
+                            )
                             }
                         </Grid>
                     </Grid>
@@ -345,7 +409,7 @@ export const DesignWorkspace = () => {
                             <Grid className={classes.workSpaceUnits}>
                                 <Grid >
                                     {
-                                        design.data.learningActivities && design.data.learningActivities.map((learningActivity, index) => <LearningActivity key={`learningActivity-${index}`} index={index} learningActivity={learningActivity} sumHours = {sumHours} sumMinutes = {sumMinutes}/>)
+                                        design.data.learningActivities && design.data.learningActivities.map((learningActivity, index) => <LearningActivity key={`learningActivity-${index}`} index={index} learningActivity={learningActivity} sumHours={sumHours} sumMinutes={sumMinutes} />)
                                     }
                                 </Grid>
                             </Grid>
@@ -359,7 +423,7 @@ export const DesignWorkspace = () => {
                 </Grid>
                 <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}>
                     {resetItems()}
-                    <div style ={{position: 'absolute', zIndex: 1, width: '100%'}}>
+                    <div style={{ position: 'absolute', zIndex: 1, width: '100%' }}>
                         <Grid className={classes.graphicsSpacing} >
                             {
                                 design.data.learningActivities && design.data.learningActivities.map((learningActivity) =>
@@ -409,7 +473,7 @@ export const DesignWorkspace = () => {
                             }
                         </Grid>
                     </div>
-                    <div style ={{ zIndex: 0, width: '100%'}}>
+                    <div style={{ zIndex: 0, width: '100%' }}>
                         <Grid className={classes.graphicsSpacing} ref={imgGraphic}>
                             {
                                 design.data.learningActivities && design.data.learningActivities.map((learningActivity) =>
@@ -471,12 +535,12 @@ export const DesignWorkspace = () => {
                     <ViewAndDownloadPDFModal imgGraphic={imgGraphic} setPdfView={setPdfView} />
                 }
                 {
-                    (uiState.isResourceModalOpen)  &&
-                        <ResourceLinksModal/>
+                    (uiState.isResourceModalOpen) &&
+                    <ResourceLinksModal />
                 }
                 {
-                    (uiState.isEvaluationModalOpen)  &&
-                        <EvaluationModal/>
+                    (uiState.isEvaluationModalOpen) &&
+                    <EvaluationModal />
                 }
             </Grid>
         </>

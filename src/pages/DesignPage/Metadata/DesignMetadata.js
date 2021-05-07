@@ -90,6 +90,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     const priorKnowledgeRef = useRef();
     const descriptionRef = useRef();
     const objectiveRef = useRef();
+    const evaluationRef = useRef();
 
     const [form, handleInputChange, , setValues] = useForm({
         name: metadata.name,
@@ -103,6 +104,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
         description: metadata.description,
         objective: metadata.objective,
         isPublic: metadata.isPublic,
+        evaluation: metadata.evaluation,
         keywords: design.keywords ?? [],
     });
 
@@ -149,6 +151,14 @@ export const DesignMetadata = forwardRef((props, ref) => {
             }
         }
     }, [metadata.category, form.category, setValues, handleInputChange]);
+
+    useEffect(() => {
+        if (isMounted.current) {
+            if (form.evaluation !== metadata.evaluation) {
+                handleInputChange({ target: { name: 'evaluation', value: metadata.evaluation ?? '' } });
+            }
+        }
+    }, [metadata.evaluation, form.evaluation, setValues, handleInputChange]);
 
     useEffect(() => {
         if (isMounted.current) {
@@ -230,8 +240,8 @@ export const DesignMetadata = forwardRef((props, ref) => {
         }
     }, [metadata.isPublic, form.isPublic, setValues, handleInputChange]);
 
-    const { name, category, classSize, workingTimeDesignHours, workingTimeDesignMinutes, workingTimeHours, workingTimeMinutes, priorKnowledge, description, objective, isPublic, keywords } = form;
-
+    const { name, category, classSize, workingTimeDesignHours, workingTimeDesignMinutes, workingTimeHours, workingTimeMinutes, priorKnowledge, description, objective, isPublic, keywords, evaluation } = form;
+    
     const { isLoading, isError, data, error } = useQuery('categories', async () => {
         return await getCategories();
     }, { refetchOnWindowFocus: false });
@@ -582,6 +592,31 @@ export const DesignMetadata = forwardRef((props, ref) => {
                                                 name: 'objective',
                                                 placeholder: 'Objetivos',
                                                 initialvalue: objective ?? '',
+                                                rowMax: 5,
+                                                onChange: handleChangeMetadataField,
+                                                multiline: true,
+                                            }
+                                        }}
+                                    />
+                            }
+                        </Grid>
+                        <Grid item className={classes.grid} xs={12}>
+                            {
+                                isLoading ? (<Skeleton width={'100%'} height={70} />)
+                                    : <TextField
+                                        label='Evaluación'
+                                        InputLabelProps={{ shrink: true }}
+                                        fullWidth
+                                        margin='none'
+                                        variant='outlined'
+                                        color='primary'
+                                        InputProps={{
+                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputProps: {
+                                                ref: evaluationRef,
+                                                name: 'evaluation',
+                                                placeholder: 'Evaluación',
+                                                initialvalue: evaluation ?? '',
                                                 rowMax: 5,
                                                 onChange: handleChangeMetadataField,
                                                 multiline: true,

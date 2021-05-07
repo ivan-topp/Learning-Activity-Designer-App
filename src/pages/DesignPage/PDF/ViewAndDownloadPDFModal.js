@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
 import { DocumentPDF } from './DocumentPDF';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, makeStyles, Tab, Tabs } from '@material-ui/core';
+import { Backdrop, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, makeStyles, Tab, Tabs, Typography } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
@@ -11,9 +11,10 @@ import { TabPanel } from 'components/TabPanel';
 import { ConfigurationData } from './ConfigurationData';
 import { useBetween } from 'use-between';
 import { MiniContext } from './MiniContext';
+import { PictureAsPdf } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
-    spaceInit:{
+    spaceInit: {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
@@ -38,7 +39,29 @@ const useStyles = makeStyles((theme) => ({
     },
     panel: {
         width: "100%"
-    }
+    },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+    },
+    loadingFile: {
+        '-webkit-backface-visibility': 'hidden',
+        animation: `$scaleAnimation 1000ms ${theme.transitions.easing.easeInOut}`,
+        animationIterationCount: 'infinite',
+        animationDirection: 'alternate',
+    },
+    "@keyframes scaleAnimation": {
+        from: {
+            height: 300,
+            width: 300,
+            //transform: 'rotate(0deg)',
+        },
+        to: {
+            height: 150,
+            width: 150,
+            //transform: 'rotate(360deg)',
+        }
+    },
 }));
 
 const a11yProps = (index) => {
@@ -55,39 +78,54 @@ export const ViewAndDownloadPDFModal = ({ imgGraphic, setPdfView }) => {
     const { designState } = useDesignState();
     const { design } = designState;
     const [img, setImg] = useState(null);
-    const [ tabIndex, setTabIndex ] = useState(0);
+    const [tabIndex, setTabIndex] = useState(0);
     const { setPrivileges } = useBetween(MiniContext);
+    const [pdfDocument, setPdfDocument] = useState(null);
+    const isMounted = useRef(true);
 
     useEffect(() => {
-        const privileges = [];
-        design.privileges.forEach(privilege =>{
-            const p = JSON.parse(JSON.stringify(privilege));
-            p.selected = false;
-            privileges.push(p);
-        })
-        setPrivileges(privileges);
-        dispatch({
-            type: types.ui.setPDFConfig,
-            payload: {
-                field: 'privileges',
-                value: privileges
-            }
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
 
-        })
+    useEffect(() => {
+        if (isMounted.current){
+            const privileges = [];
+            design.privileges.forEach(privilege => {
+                const p = JSON.parse(JSON.stringify(privilege));
+                p.selected = false;
+                privileges.push(p);
+            })
+            setPrivileges(privileges);
+            dispatch({
+                type: types.ui.setPDFConfig,
+                payload: {
+                    field: 'privileges',
+                    value: privileges
+                }
+    
+            })
+        }
     }, [design.privileges, dispatch, setPrivileges]);
 
-    const defineImage = async() =>{
-        const canvas = await html2canvas(imgGraphic.current, {
-            width: 800,
-            height: 700,
-            scrollX: 279
-        })
-        setImg(canvas.toDataURL('image/jpeg'));
+    useEffect(() => {
+        if (isMounted.current){
+            if(img && design && typeUserPDF) setPdfDocument(<DocumentPDF design={design} img={img} typeUserPDF={typeUserPDF} />);
+        }
+    }, [design, img, typeUserPDF, setPdfDocument]);
+
+    const defineImage = async () => {
+        if (isMounted.current){
+            const canvas = await html2canvas(imgGraphic.current, {
+                width: 800,
+                height: 700,
+                scrollX: 279
+            })
+            setImg(canvas.toDataURL('image/jpeg'));
+        }
     }
-    if (!img) {
-        defineImage()
-    }
-    
+
     const handleClose = () => {
         dispatch({
             type: types.ui.setPDF,
@@ -105,11 +143,24 @@ export const ViewAndDownloadPDFModal = ({ imgGraphic, setPdfView }) => {
     };
 
     if (!img) {
-       return <div> Cargando...</div>
+        defineImage();
     }
-    
+
+    if (!img || !pdfDocument){
+        return (
+            <Backdrop className={classes.backdrop} open={true}>
+                <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Box width={300} height={300} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <PictureAsPdf className={classes.loadingFile} />
+                    </Box>
+                    <Typography>Generando archivo pdf...</Typography>
+                </Box>
+            </Backdrop>
+        );
+    }
+
     return (
-        <>  
+        <>
             <Dialog onClose={handleClose} open={uiState.isPDFModalOpen} fullScreen>
                 <DialogTitle className={classes.titleMargin} >
                     Exportar diseño
@@ -123,7 +174,7 @@ export const ViewAndDownloadPDFModal = ({ imgGraphic, setPdfView }) => {
                     >
                         <Tab label="CONFIGURACIÓN" {...a11yProps(0)} />
                         <Tab label="VISTA PREVIA" {...a11yProps(1)} />
-                    </Tabs> 
+                    </Tabs>
                 </DialogTitle>
                 <IconButton aria-label='close' className={classes.closeButton} onClick={handleClose}>
                     <CloseIcon />
@@ -134,9 +185,9 @@ export const ViewAndDownloadPDFModal = ({ imgGraphic, setPdfView }) => {
                             <ConfigurationData />
                         </TabPanel>
                         <TabPanel value={tabIndex} index={1} className={classes.panel} >
-                            <PDFViewer width={'100%'} height ={'100%'} >
-                                {(imgGraphic !== undefined ) &&
-                                    <DocumentPDF design = {design} img = {img} typeUserPDF = {typeUserPDF}/>
+                            <PDFViewer width={'100%'} height={'100%'} >
+                                {(imgGraphic && pdfDocument) &&
+                                    pdfDocument
                                 }
                             </PDFViewer>
                         </TabPanel>
@@ -146,15 +197,15 @@ export const ViewAndDownloadPDFModal = ({ imgGraphic, setPdfView }) => {
                     <Button onClick={handleClose}>
                         Cancelar
                     </Button>
-                    <div className = {classes.spaceInit}>
-                        <PDFDownloadLink document={<DocumentPDF design = {design} img= {img} typeUserPDF = {typeUserPDF} />} fileName="designdata.pdf">
+                    <div className={classes.spaceInit}>
+                        <PDFDownloadLink style={{ textDecoration: 'none' }} document={pdfDocument} fileName="designdata.pdf">
                             {({ blob, url, loading, error }) =>
-                                loading ? 'Cargando documento...' : <Button variant={'contained'}> Descargar </Button>
+                                <Button variant={'contained'} disabled={loading}> Descargar </Button>
                             }
                         </PDFDownloadLink>
-                    </div> 
+                    </div>
                 </DialogActions>
-        </Dialog>
+            </Dialog>
         </>
     )
 }

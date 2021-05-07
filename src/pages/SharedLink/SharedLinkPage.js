@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, makeStyles, Tab, Tabs, Typography } from '@material-ui/core';
+import { Backdrop, Box, Grid, makeStyles, Tab, Tabs, Typography } from '@material-ui/core';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router';
 import { getDesignByLink } from 'services/DesignService';
@@ -8,6 +8,7 @@ import { useDesignState } from 'contexts/design/DesignContext';
 import { TabPanel } from 'components/TabPanel';
 import types from 'types';
 import { Alert } from '@material-ui/lab';
+import { Description } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -26,6 +27,28 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         padding: 20,
         alignItems: 'start',
+    },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+    },
+    loadingFile: {
+        '-webkit-backface-visibility': 'hidden',
+        animation: `$spinAndScale 3000ms ${theme.transitions.easing.easeInOut}`,
+        animationIterationCount: 'infinite',
+        animationDirection: 'alternate',
+    },
+    "@keyframes spinAndScale": {
+        from: {
+            height: 300,
+            width: 300,
+            transform: 'rotate(0deg)',
+        },
+        to: {
+            height: 150,
+            width: 150,
+            transform: 'rotate(360deg)',
+        }
     },
 }));
 
@@ -83,11 +106,25 @@ export const SharedLinkPage = () => {
     };
     
     const renderLoading = () => {
-        return <Typography>Cargando...</Typography>;
+        return (
+            <Backdrop className={classes.backdrop} open={true}>
+                <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Box width={300} height={300} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <Description className={classes.loadingFile} />
+                    </Box>
+                    
+                    <Typography>Cargando Diseño de Aprendizaje...</Typography>
+                </Box>
+            </Backdrop>
+        );
     };
 
     const renderNotFoundMessage = () => {
-        return <Typography>No se ha encontrado diseño.</Typography>;
+        return <div className={classes.error}>
+            <Alert severity='error'>
+                No se ha encontrado diseño.
+            </Alert>
+        </div>;
     };
 
     return (

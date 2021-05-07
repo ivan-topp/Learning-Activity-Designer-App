@@ -257,7 +257,7 @@ export const DesignPage = () => {
     return (
         <>
             <Grid container className={classes.menu} key={design._id}>
-                <Grid item xs={12} md={1} lg={2} />
+                <Grid item xs={12} md={3} lg={2} />
                 <Grid item xs={12} md={6} lg={8} className={classes.tabBar}>
                     <Tabs
                         value={tabIndex}

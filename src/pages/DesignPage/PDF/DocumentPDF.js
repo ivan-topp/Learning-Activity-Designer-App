@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Page, Text, View, Document, StyleSheet, Image, Link } from '@react-pdf/renderer';
 import Logo from 'assets/img/Logo.png';
 import { useBetween } from 'use-between';
@@ -6,7 +6,6 @@ import { MiniContext } from './MiniContext';
 
 export const DocumentPDF = ({design, img, typeUserPDF}) => {
     const { selectedDate, privileges} = useBetween(MiniContext);
-    const [ authorSelected, setAuthorSelected] = useState(false);
     const styles = StyleSheet.create({
         logo: {
             width: 100,
@@ -51,14 +50,13 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
             paddingBottom: 65,
         }
     });
-    
+    const isMounted = useRef(true);
+
     useEffect(() => {
-        privileges.forEach(author => {
-            if(author.selected){
-                setAuthorSelected(true)
-            } 
-        })
-    }, [privileges, authorSelected])
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
     
     return (
         <>
@@ -76,7 +74,7 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                         }
                         <View style={{textAlign: 'center', marginBottom: 15}}>
                             {
-                                (authorSelected) &&
+                                (privileges.map((author)=> author.selected).reduce((a, b)=> a || b)) &&
                                 <Text style={{fontSize: 12, color: '#979797'}}>Autores</Text>
                             }
                             {privileges.map((author, i) =>

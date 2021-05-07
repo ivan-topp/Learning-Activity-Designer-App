@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ButtonGroup, Divider, Grid, makeStyles, Typography } from '@material-ui/core';
+import { Avatar, Box, Button, ButtonGroup, Card, CardActionArea, Divider, Grid, makeStyles, Typography } from '@material-ui/core';
 import { useDesignState } from 'contexts/design/DesignContext';
 import { StackedBar } from 'components/StackedBar';
 import { PieGraphic } from 'components/PieGraphic';
@@ -10,6 +10,8 @@ import { duplicateDesign } from 'services/DesignService';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSnackbar } from 'notistack';
 import { useHistory, useParams } from 'react-router';
+import { Description } from '@material-ui/icons';
+import { formatName, getUserInitials } from 'utils/textFormatters';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -72,6 +74,19 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
+    origin: {
+        marginTop: 10,
+        marginBottom: 10,
+        border: `1px solid ${theme.palette.divider}`,
+        borderRadius: 4,
+        cursor: 'pointer',
+        userSelect: 'none',
+        backgroundColor: theme.palette.background.design,
+        '&:hover': {
+            boxShadow: '0px 0px 10px 0 #bcc3d6',
+            background: theme.palette.background.designHover,
+        },
+    },
     '@global': {
         //Ancho del scrollbar    
         '*::-webkit-scrollbar': {
@@ -125,6 +140,28 @@ export const DesignReader = ({ type }) => {
             history.push(`/designs/${data.newDesign._id}`);
         }
     });
+
+    const handleOpenDesign = (design) =>{
+        if(!authState.user) return enqueueSnackbar('Debe ingresar sesión para poder realizar esta acción.', { variant: 'error', autoHideDuration: 2000 });
+        const inDesign = design.privileges.find(privilege => authState.user.uid === privilege.user._id);
+        if (inDesign) {
+            const typePrivilegeEditor = design.privileges.find(privilege => authState.user.uid === privilege.user._id && privilege.type === 0);
+            if (typePrivilegeEditor) {
+                history.push(`/designs/${design._id}`);
+            } else {
+                history.push(`/designs/reader/${design._id}`);
+            }
+        } else if(design.metadata.isPublic){
+            history.push(`/designs/reader/${design._id}`);
+        } else {
+            enqueueSnackbar('Usted no tiene acceso a este diseño.', { variant: 'error', autoHideDuration: 2000 });
+        }
+    };
+
+    const handleOpenUserProfile = (design) => {
+        if(!authState.user) return enqueueSnackbar('Debe ingresar sesión para poder realizar esta acción.', { variant: 'error', autoHideDuration: 2000 });
+        history.push(`/profile/${design.owner._id}`);
+    };
     
     design.data.learningActivities.forEach((activities) => {
         if (activities.tasks !== undefined) {
@@ -140,7 +177,7 @@ export const DesignReader = ({ type }) => {
                 }
             })
         }
-    });    
+    });
 
     const resetItems = () =>{
         itemsLearningType.forEach((item) =>{
@@ -257,6 +294,36 @@ export const DesignReader = ({ type }) => {
                                         <Divider/>
                                     </>
                                 )
+                            }
+                        </Grid>
+                        <Grid>
+                            {design.origin && (
+                                <>
+                                    <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Derivado del diseño: </Typography>
+                                    <Card className={classes.origin} elevation={0}>
+                                        <CardActionArea onClick={()=>handleOpenDesign(design.origin)}>
+                                            <Box style={{ display: 'flex', alignItems: 'center', padding: 5 }}>
+                                                <Description style={{ marginBottom: 5 }} />
+                                                <Typography style={{ marginLeft: 10 }} variant='body2'>{design.origin.metadata.name}</Typography>
+                                            </Box>
+                                        </CardActionArea>
+                                        <Divider />
+                                        <CardActionArea onClick={()=>handleOpenUserProfile(design.origin)}>
+                                            <Box style={{ display: 'flex', alignItems: 'center', padding: 5 }}>
+                                                <Avatar
+                                                    style={{ width: 25, height: 25, fontSize: 15 }}
+                                                    alt={formatName(design.origin.owner.name, design.origin.owner.lastname)}
+                                                    src={design.origin.owner.img && design.origin.owner.img.length > 0 ? `${process.env.REACT_APP_URL}uploads/users/${design.origin.owner.img}` : ''}
+                                                >
+                                                    {getUserInitials(design.origin.owner.name, design.origin.owner.lastname)}
+                                                </Avatar>
+                                                <Typography style={{ marginLeft: 10 }} variant='body2'>{formatName(design.origin.owner.name, design.origin.owner.lastname)}</Typography>
+                                            </Box>
+                                        </CardActionArea>
+
+                                    </Card>
+                                </>
+                            )
                             }
                         </Grid>
                         <Grid>

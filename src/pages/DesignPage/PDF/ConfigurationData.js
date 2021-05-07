@@ -1,5 +1,5 @@
 import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, Checkbox, FormControl, FormControlLabel, Grid, Typography, makeStyles } from '@material-ui/core'
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useBetween } from 'use-between';
 import { MiniContext } from './MiniContext';
 import { MuiPickersUtilsProvider, KeyboardDatePicker, } from '@material-ui/pickers';
@@ -27,29 +27,41 @@ export const ConfigurationData = () => {
         setSelectedDate, 
         privileges,
         setPrivileges,
-        expanded, 
-        setExpanded,
     } = useBetween(MiniContext);
+    const [ expanded, setExpanded] = useState(false);
+    const isMounted = useRef(true);
 
+    useEffect(() => {
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+    
     const handleDateChange = (date) => {
-        setSelectedDate(date);
+        if (isMounted.current){
+            setSelectedDate(date);
+        }
     };
 
     const handleChangeSelectAuthor = (event, index) => {
-        const newState = JSON.parse(JSON.stringify(privileges));
-        newState[index].selected = !newState[index].selected;
-        setPrivileges(newState);
-        dispatch({
-            type: types.ui.setPDFConfig,
-            payload: {
-                field: 'privileges',
-                value: newState
-            }
-        })
+        if (isMounted.current){
+            const newState = JSON.parse(JSON.stringify(privileges));
+            newState[index].selected = !newState[index].selected;
+            setPrivileges(newState);
+            dispatch({
+                type: types.ui.setPDFConfig,
+                payload: {
+                    field: 'privileges',
+                    value: newState
+                }
+            })
+        }
     };
 
     const handleChangePanel = (panel, /*isChecked*/) =>(event, isExpanded) =>{
-        setExpanded(isExpanded ? panel : false);
+        if (isMounted.current){
+            setExpanded(isExpanded ? panel : false);
+        }
         //if (panel === 'panel1') {
             //if(isChecked){
             //    setDateConfiguration(event.target.checked);
