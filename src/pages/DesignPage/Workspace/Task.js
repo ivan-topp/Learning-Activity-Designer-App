@@ -125,7 +125,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const Task = forwardRef(({ learningActivityIndex, index, task, learningActivityID, ...rest }, ref) => {
+export const Task = forwardRef(({ learningActivityIndex, index, task, learningActivityID, sumHours, sumMinutes, ...rest }, ref) => {
     const classes = useStyles();
     const { socket } = useSocketState();
     const isMounted = useRef(true);
@@ -134,6 +134,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
     const descriptionRef = useRef();
     const { designState } = useDesignState();
     const { design } = designState;
+    const { metadata } = design;
     const { dispatch } = useUiState();
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
@@ -146,6 +147,8 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
         format: task.format && task.format.trim() !== '' ? task.format : 'Seleccionar',
         timeHours: task.duration.hours ?? 0,
         timeMinutes: task.duration.minutes ?? 0,
+        timeDesignHours: metadata.workingTimeDesign.hours ?? 0,
+        timeDesignMinutes: metadata.workingTimeDesign.minutes ?? 0,
         groupSize: task.groupSize && task.groupSize !== 2 ? task.groupSize : 2,
     });
 
@@ -232,7 +235,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
         }
     }, [form.timeMinutes, task.duration.minutes, setValues]);
 
-    const { description, learningType, modality, format, timeHours, timeMinutes, groupSize,  } = form;
+    const { description, learningType, modality, format, timeHours, timeMinutes, groupSize } = form;
 
     const handleEditTaskField = ({ target }) => {
         let { name: field, value } = target;
@@ -248,7 +251,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
             value = isNaN(value) ? 0 : value;
         }
         handleInputChange({ target });
-        socket.emit('edit-task-field', { designId: design._id, learningActivityID, taskID: task.id, field, value, subfield });
+        socket.emit('edit-task-field', { designId: design._id, learningActivityID, taskID: task.id, field, value, subfield, sumHours, sumMinutes});
     };
 
     const handleOpenResourceModal = () => {
@@ -292,6 +295,18 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
         handleInputChange(e);
         socket.emit('edit-task-field', { designId: design._id, learningActivityID, taskID: task.id, field: e.target.name, value: e.target.value, subfield: null });
     };
+
+    useEffect(() => {
+        if(design.metadata.workingTimeDesign.hours >= design.metadata.workingTime.hours){
+            if(design.metadata.workingTimeDesign.hours > design.metadata.workingTime.hours){
+                enqueueSnackbar('Su tiempo de trabajo de diseño es mayor al tiempo de trabajo definido, por favor disminuya el tiempo de trabajo asignado en las tareas o aumente el tiempo en los metadatos.', { variant: 'warning', autoHideDuration: 5000, preventDuplicate: true });
+            } else {
+                if(design.metadata.workingTimeDesign.minutes > design.metadata.workingTime.minutes){
+                    enqueueSnackbar('Su tiempo de trabajo de diseño es mayor al tiempo de trabajo definido, por favor disminuya el tiempo de trabajo asignado en las tareas o aumente el tiempo en los metadatos.', { variant: 'warning', autoHideDuration: 5000, preventDuplicate: true });
+                }
+            }
+        }
+    }, [design.metadata.workingTimeDesign.hours, design.metadata.workingTime.hours, design.metadata.workingTimeDesign.minutes, design.metadata.workingTime.minutes, enqueueSnackbar])
 
     const listTasksArray = () => {
         return (

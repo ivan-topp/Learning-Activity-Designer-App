@@ -7,7 +7,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         width: '100%',
         border: `1px solid ${theme.palette.divider}`,
-        //borderRadius: '6px',
         height: '100%',
     },
     title:{
@@ -39,13 +38,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-/*borderRadius: index === 0 
-    ? '5px 0px 0px 5px'
-    : index === items.length - 1  && item.value !== 0
-        ? '0px 5px 5px 0px'
-        : 0,
-*/
-
 export const StackedBar = ({ height = 25, items, type, legends, colorGraphicToPdf }) => {
     const classes = useStyles();
     const { userConfig } = useUserConfigState();
@@ -53,6 +45,7 @@ export const StackedBar = ({ height = 25, items, type, legends, colorGraphicToPd
     let valueTotal = 0;
     
     items.map ((item) =>( valueTotal = item.value + valueTotal));
+    
     if( type === 'Activity' ){ (userConfig.darkTheme) ? colors = ['#57A8E7', '#E95D5D', '#C8951F', '#087A4C', '#DFDF3F', '#A75BCD'] : colors = ['#57A8E7', '#E95D5D', '#C8951F', '#087A4C', '#DFDF3F', '#A75BCD'];}
     else if( type === 'Format'){ (userConfig.darkTheme) ? colors = ['rgba(61, 156, 65, 0.8)', 'rgba(224, 243, 225, 0.8)', 'rgba(102, 242, 108, 0.75)'] : colors = ['rgba(61, 156, 65, 0.8)', 'rgba(224, 243, 225, 0.8)', 'rgba(102, 242, 108, 0.75)'];}
     else if( type === 'Modality' ){ (userConfig.darkTheme) ? colors = ['#A6CAF6', '#6996CD', '#5FA2EF', '#135BB3'] : colors = ['#A6CAF6', '#6996CD', '#5FA2EF', '#135BB3']};
