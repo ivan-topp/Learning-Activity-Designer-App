@@ -13,10 +13,28 @@ import { useAuthState } from 'contexts/AuthContext';
 import { AssessmentModal } from 'components/AssessmentModal';
 import { useSocketState } from 'contexts/SocketContext';
 import { useUiState } from 'contexts/ui/UiContext';
+import { DesignComments } from 'components/DesignComments';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         minHeight: 'calc(100vh - 128px)',
+    },
+    leftPanel: {
+        display: 'flex',
+        flexDirection: 'column',
+        borderRight: `1px solid ${theme.palette.divider}`,
+    },
+    comments: {
+        paddingTop: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
+        background: theme.palette.background.workSpace,
+        minHeight: 'calc(100vh - 177px)',
+    },
+    rightPanel: {
+        display: 'flex',
+        flexDirection: 'column',
+        borderLeft: `1px solid ${theme.palette.divider}`,
     },
     content: {
         borderBottom: `1px solid ${theme.palette.divider}`,
@@ -108,9 +126,30 @@ export const SharedLinkPage = () => {
                     });
                 }
             });
+            socket?.on('comment-design', (commentary) => {
+                if (isMounted.current) {
+                    dispatch({
+                        type: types.design.commentDesign,
+                        payload: commentary,
+                    });
+                }
+            });
+            socket?.on('delete-comment', (commentaryId) => {
+                if (isMounted.current) {
+                    dispatch({
+                        type: types.design.deleteComment,
+                        payload: commentaryId,
+                    });
+                }
+            });
         }
         return () => {
-            if(authState.user) socket?.off('update-design-rate');
+            if(authState.user) {
+                socket?.off('update-design-rate');
+
+            }
+            socket?.off('comment-design');
+            socket?.off('delete-comment');
         };
     }, [socket, dispatch, authState.user]);
 
@@ -156,7 +195,8 @@ export const SharedLinkPage = () => {
                         onChange={handleChange}
                         aria-label="full width tabs example"
                     >
-                        <Tab label="DISEÑO" {...a11yProps(1)} />
+                        <Tab label="DISEÑO" {...a11yProps(0)} />
+                        <Tab label="COMENTARIOS" {...a11yProps(1)} />
                     </Tabs>
                     {
                         authState.user && authState.user.uid !== design.owner && <Button variant='outlined' color='default' onClick={handleOpenAssessmentModal}>
@@ -167,6 +207,15 @@ export const SharedLinkPage = () => {
             </Grid>
             <TabPanel value={tabIndex} index={0} >
                 <DesignReader type='shared-link' />
+            </TabPanel>
+            <TabPanel value={tabIndex} index={1} >
+                <Grid container>
+                    <Grid item xs={12} md={3} lg={2} className={classes.leftPanel}></Grid>
+                    <Grid item xs={12} md={6} lg={8} className={classes.comments}>
+                        <DesignComments />
+                    </Grid>
+                    <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
+                </Grid>
             </TabPanel>
             { authState.user && <AssessmentModal /> }
         </>;

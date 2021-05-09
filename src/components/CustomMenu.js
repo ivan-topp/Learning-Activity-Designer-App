@@ -59,11 +59,12 @@ export const CustomMenu = ({ options, Icon, text, fullWidth = false }) => {
             <Menu
                 anchorEl={isOpen}
                 open={Boolean(isOpen)}
+                keepMounted
+                getContentAnchorEl={null}
                 anchorOrigin={{
-                    vertical: 'top',
+                    vertical: 'bottom',
                     horizontal: 'right',
                 }}
-                keepMounted
                 transformOrigin={{
                     vertical: 'top',
                     horizontal: 'right',

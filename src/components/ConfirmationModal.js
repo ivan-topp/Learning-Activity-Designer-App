@@ -62,6 +62,9 @@ export const ConfirmationModal = () => {
         } else if (type === 'recurso'){
             socket.emit('delete-resource-link', args);
             enqueueSnackbar('Su recurso se ha eliminado', { variant: 'success', autoHideDuration: 2000 });
+        } else if (type === 'comentario') {
+            socket.emit('delete-comment', args);
+            enqueueSnackbar('Comentario eliminado con éxito', { variant: 'success', autoHideDuration: 2000 });
         }
         dispatch({
             type: types.ui.toggleModal,
