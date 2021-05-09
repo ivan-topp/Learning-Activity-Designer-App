@@ -297,6 +297,28 @@ export const DesignReader = ({ type }) => {
                             }
                         </Grid>
                         <Grid>
+                            {metadata && metadata.scoreMean !== null && (
+                                <>
+                                    <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}> Valoración media (0 - 5) </Typography>
+                                    <Box display='flex' justifyContent='flex-start' alignItems='center'>
+                                        { metadata.scoreMean }
+                                    </Box>
+                                    <Divider />
+                                </>
+                            )
+                            }
+                        </Grid>
+                        <Grid>
+                            { /*metadata && metadata.results &&(
+                                    <>
+                                        <Typography color='textSecondary' className={classes.textLefPanelMetadata}> Resultados </Typography>
+                                        <Typography>{ metadata.results }</Typography>
+                                        <Divider/>
+                                    </>
+                                )*/
+                            }
+                        </Grid>
+                        <Grid>
                             {design.origin && (
                                 <>
                                     <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Derivado del diseño: </Typography>
@@ -324,16 +346,6 @@ export const DesignReader = ({ type }) => {
                                     </Card>
                                 </>
                             )
-                            }
-                        </Grid>
-                        <Grid>
-                            { /*metadata && metadata.results &&(
-                                    <>
-                                        <Typography color='textSecondary' className={classes.textLefPanelMetadata}> Resultados </Typography>
-                                        <Typography>{ metadata.results }</Typography>
-                                        <Divider/>
-                                    </>
-                                )*/
                             }
                         </Grid>
                     </Grid>

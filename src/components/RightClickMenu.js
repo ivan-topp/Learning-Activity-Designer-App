@@ -14,9 +14,7 @@ export const RightClickMenu = ({ options, children }) => {
     const handleClick = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        //console.log({ x: e.clientX, y: e.clientY });
         const area = ref.current.getBoundingClientRect();
-        //console.log();
         if(
             (e.clientX >= area.x && e.clientX <= (area.x + area.width)) &&
             (e.clientY >= area.y && e.clientY <= (area.y + area.height))
@@ -27,8 +25,6 @@ export const RightClickMenu = ({ options, children }) => {
             });
         } else handleClose();
     };
-
-    //console.log(state);
 
     const handleSelect = (e, onSelect) => {
         if(onSelect) onSelect(e);

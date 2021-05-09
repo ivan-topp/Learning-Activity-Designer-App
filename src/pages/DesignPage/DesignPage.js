@@ -101,7 +101,7 @@ export const DesignPage = () => {
     const { designState, dispatch } = useDesignState();
     const { design } = designState;
     const [error, setError] = useState(null);
-
+    
     const prefetchBloomCategories = useCallback(async () => {
         const data = await getBloomCategories();
         dispatch({
@@ -214,6 +214,18 @@ export const DesignPage = () => {
                 });
             }
         });
+        socket?.on('update-design-rate', ({assessments, mean}) => {
+            if (isMounted.current) {
+                dispatch({
+                    type: types.design.setAssessments,
+                    payload: assessments,
+                });
+                dispatch({
+                    type: types.design.setScoreMean,
+                    payload: mean,
+                });
+            }
+        });
         return () => {
             socket?.emit('leave-from-design', { user: authState.user, designId: id });
             socket?.off('updateDesign');
@@ -223,6 +235,7 @@ export const DesignPage = () => {
             socket?.off('change-read-only-link');
             socket?.off('edit-task-field');
             socket?.off('users');
+            socket?.off('update-design-rate');
         };
     }, [socket, authState.user, id, dispatch]);
 

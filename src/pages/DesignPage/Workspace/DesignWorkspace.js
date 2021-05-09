@@ -78,11 +78,7 @@ const useStyles = makeStyles((theme) => ({
     },
     workSpaceUnits: {
         height: 'auto',
-        [theme.breakpoints.up('md')]: {
-            height: '85%',
-            overflow: 'auto',
-            overflowX: 'hidden',
-        },
+        
     },
     buttonZone: {
         width: '100%',
@@ -134,7 +130,7 @@ export const DesignWorkspace = () => {
     let showGraphicModality = false;
     let sumHours = 0;
     let sumMinutes = 0;
-
+    
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
         enqueueSnackbar('Su diseño se ha guardado correctamente', { variant: 'success', autoHideDuration: 2000 });
@@ -338,6 +334,18 @@ export const DesignWorkspace = () => {
                                 <>
                                     <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Objetivos </Typography>
                                     <Typography variant='body2'> {metadata.objective} </Typography>
+                                    <Divider />
+                                </>
+                            )
+                            }
+                        </Grid>
+                        <Grid>
+                            {metadata && metadata.scoreMean !== null && (
+                                <>
+                                    <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Valoración media (0 - 5) </Typography>
+                                    <Box display='flex' justifyContent='flex-start' alignItems='center'>
+                                        { metadata.scoreMean }
+                                    </Box>
                                     <Divider />
                                 </>
                             )

@@ -27,6 +27,7 @@ const initialState = {
 	isResourceModalOpen: false,
 	isEvaluationModalOpen: false,
 	isImportDesignsModalOpen: false,
+	isAssessmentModalOpen: false,
 	folder: {
 		_id: null,
 		name: '',

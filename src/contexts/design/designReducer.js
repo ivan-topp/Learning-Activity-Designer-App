@@ -127,6 +127,25 @@ export const designReducer = ( state, action ) => {
                     readOnlyLink: action.payload,
                 }
             };
+        case types.design.setAssessments:
+            return {
+                ...state,
+                design: {
+                    ...state.design,
+                    assessments: action.payload,
+                }
+            };
+        case types.design.setScoreMean:
+            return {
+                ...state,
+                design: {
+                    ...state.design,
+                    metadata: {
+                        ...state.design.metadata,
+                        scoreMean: action.payload,
+                    },
+                }
+            };
         default:
             return state;
     }
