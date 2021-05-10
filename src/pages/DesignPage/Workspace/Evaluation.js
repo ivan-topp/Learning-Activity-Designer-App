@@ -1,6 +1,8 @@
 import { Box, Divider, FormControl, Grid, IconButton, InputLabel, makeStyles, MenuItem, Select, TextField, Tooltip } from '@material-ui/core'
 import React from 'react'
 import { Delete } from '@material-ui/icons';
+import types from 'types';
+import { useUiState } from 'contexts/ui/UiContext';
 
 const useStyles = makeStyles((theme) => ({
     spaceResource:{
@@ -32,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const Evaluation = ({index, evaluation, newEvaluation, setNewEvaluation, learningActivityIndex}) => {
     const classes = useStyles();
+    const { uiState, dispatch } = useUiState();
 
     const changeType = (event) => {
         const newType = event.target.value;
@@ -41,6 +44,12 @@ export const Evaluation = ({index, evaluation, newEvaluation, setNewEvaluation, 
             }
             return evaluation;
         }));
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
+        };
     };
 
     const changeDescription = (event) => {
@@ -51,6 +60,12 @@ export const Evaluation = ({index, evaluation, newEvaluation, setNewEvaluation, 
             }
             return evaluation;
         }));
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
+        };
     };
     
     const handleDeleteResourceEvaluation = (index) =>{
@@ -63,6 +78,12 @@ export const Evaluation = ({index, evaluation, newEvaluation, setNewEvaluation, 
                 ...newEvaluation.slice(0, index),
                 ...newEvaluation.slice(index + 1, newEvaluation.length)
             ])
+        };
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
         };
     };
 

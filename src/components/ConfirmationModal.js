@@ -31,8 +31,8 @@ export const ConfirmationModal = () => {
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        if(type === 'carpeta') setMessage(`¿Estás realmente seguro de que deseas eliminar tu carpeta? Recuerda que se eliminarán también las carpetas y diseños de aprendizaje que se encuentren al interior de esta o de sus carpetas hijas y este proceso no se podrá deshacer luego de haber elegido la opción de eliminar.`);
-        else setMessage(`¿Estás realmente seguro de que deseas eliminar tu ${type}? Este proceso no se podrá deshacer luego de haber elegido la opción de eliminar.`);
+        if(type === 'carpeta') setMessage(`¿Estás realmente seguro de que deseas eliminar tu carpeta? `);
+        else setMessage(`¿Estás realmente seguro de que deseas eliminar tu ${type}?`);
     }, [type]);
     
     const handleClose = () => {
@@ -73,14 +73,19 @@ export const ConfirmationModal = () => {
         return (
             <Dialog onClose={handleClose} open={uiState.isConfirmationModalOpen}>
                 <DialogTitle className={classes.titleMargin} >
-                    ¿Estás seguro?
+                    Eliminar {type}
                     </DialogTitle>
                 <IconButton aria-label='close' className={classes.closeButton} onClick={handleClose}>
                     <CloseIcon />
                 </IconButton>
                 <DialogContent dividers>
-                    <Typography>
+                    <Typography align = 'center' style ={{marginTop: 15, marginBottom: 25}}>
                         {message}    
+                    </Typography>
+                    <Typography align = 'center' variant = 'caption'>
+                        { (type !== 'carpeta') 
+                            ? 'IMPORTANTE: Este proceso no se podrá deshacer luego de haber elegido la opción de eliminar.'
+                            : 'IMPORTANTE: Recuerda que se eliminarán también las carpetas y diseños de aprendizaje que se encuentren al interior de esta o de sus carpetas hijas y este proceso no se podrá deshacer luego de haber elegido la opción de eliminar.' }  
                     </Typography>
                 </DialogContent>
                 <DialogActions>

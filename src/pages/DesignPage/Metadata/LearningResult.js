@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 export const LearningResult = ({ verb, description, index}) => {
     const classes = useStyles();
     const { socket/*, online*/ } = useSocketState();
-    const { dispatch: uiDispatch } = useUiState();
+    const { uiState, dispatch: uiDispatch } = useUiState();
     const { designState, dispatch: designDispatch } = useDesignState();
     const { design } = designState;
 
@@ -58,6 +58,12 @@ export const LearningResult = ({ verb, description, index}) => {
         design.metadata.results.forEach((result, _index) => {
             if (result.verb === verb && result.description === description) index = _index;
         });
+        if(uiState.userSaveDesign){
+            uiDispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
+        };
         socket.emit('delete-learning-result', { designId: design._id, index });
     };
 

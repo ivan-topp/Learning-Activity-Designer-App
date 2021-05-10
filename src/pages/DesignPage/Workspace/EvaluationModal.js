@@ -72,6 +72,12 @@ export const EvaluationModal = () => {
             description: '',
         }
         setNewEvaluation([...newEvaluation, newEvaluationInArray]);
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
+        };
     };
 
     const handleAddEvaluationInDesign = () =>{
@@ -80,7 +86,7 @@ export const EvaluationModal = () => {
             type: types.ui.toggleModal,
             payload: 'Evaluation',
         });
-        enqueueSnackbar('Se ha agregado su evaluación correctamente', { variant: 'success', autoHideDuration: 2000 });
+        enqueueSnackbar('Se han modificado sus evaluaciones correctamente', { variant: 'success', autoHideDuration: 2000 });
     };
 
     return (

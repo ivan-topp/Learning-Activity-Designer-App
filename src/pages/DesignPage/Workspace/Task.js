@@ -135,7 +135,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
     const { designState } = useDesignState();
     const { design } = designState;
     const { metadata } = design;
-    const { dispatch } = useUiState();
+    const { uiState, dispatch } = useUiState();
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const isMediumDevice = useMediaQuery(theme.breakpoints.down('md'));
@@ -250,6 +250,12 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
             subfield = 'minutes';
             value = isNaN(value) ? 0 : value;
         }
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
+        };
         handleInputChange({ target });
         socket.emit('edit-task-field', { designId: design._id, learningActivityID, taskID: task.id, field, value, subfield, sumHours, sumMinutes});
     };
@@ -283,12 +289,18 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                     args: { designId: design._id, learningActivityID, taskID: task.id },
                     actionMutation: null,
                 }
-            })
+            });
             dispatch({
                 type: types.ui.toggleModal,
                 payload: 'Confirmation',
             });
         }
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
+        };
     };
 
     const handleChangeDropdown = (e) => {

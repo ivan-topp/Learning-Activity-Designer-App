@@ -13,6 +13,8 @@ import types from 'types';
 import { Alert } from '@material-ui/lab';
 import { useSharedDocContext } from 'contexts/SharedDocContext';
 import { Description } from '@material-ui/icons';
+import { useUiState } from 'contexts/ui/UiContext';
+import { CheckSaveDesignModal } from './Workspace/CheckSaveDesignModal';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -101,6 +103,7 @@ export const DesignPage = () => {
     const { designState, dispatch } = useDesignState();
     const { design } = designState;
     const [error, setError] = useState(null);
+    const { uiState } = useUiState();
 
     const prefetchBloomCategories = useCallback(async () => {
         const data = await getBloomCategories();
@@ -230,6 +233,15 @@ export const DesignPage = () => {
         setTabIndex(newValue);
     };
 
+    useEffect(()=>{
+        if(!uiState.userSaveDesign){
+            window.onbeforeunload = function(e){
+                return '¿Seguro que quieres salir?'
+            };
+        }
+        return () => window.onbeforeunload = null;    
+    },[uiState]);
+    
     if (error) {
         return (
             <div className={classes.error}>
@@ -255,7 +267,7 @@ export const DesignPage = () => {
     }
 
     return (
-        <>
+        <>  
             <Grid container className={classes.menu} key={design._id}>
                 <Grid item xs={12} md={1} lg={2} />
                 <Grid item xs={12} md={6} lg={8} className={classes.tabBar}>
@@ -289,6 +301,9 @@ export const DesignPage = () => {
             <TabPanel value={tabIndex} index={1}>
                 <DesignWorkspace />
             </TabPanel>
+            {
+                (uiState.isCheckSaveDesignModalOpen)  && <CheckSaveDesignModal/>
+            }
         </>
     )
 }

@@ -1,6 +1,8 @@
 import { Box, Divider, Grid, IconButton, makeStyles, TextField, Tooltip } from '@material-ui/core'
 import React from 'react'
 import { Delete } from '@material-ui/icons';
+import { useUiState } from 'contexts/ui/UiContext';
+import types from 'types';
 
 const useStyles = makeStyles((theme) => ({
     spaceResource:{
@@ -32,6 +34,8 @@ const useStyles = makeStyles((theme) => ({
 
 export const ResourceLink = ({index, resource, newResource, setNewResource}) => {
     const classes = useStyles();
+    
+    const { uiState, dispatch } = useUiState();
 
     const changeTitle = (event) => {
         const newTitle = event.target.value;
@@ -41,6 +45,12 @@ export const ResourceLink = ({index, resource, newResource, setNewResource}) => 
             }
             return resource;
         }));
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
+        };
     };
 
     const changeLink = (event) => {
@@ -51,6 +61,12 @@ export const ResourceLink = ({index, resource, newResource, setNewResource}) => 
             }
             return resource;
         }));
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
+        };
     };
     
     const handleDeleteResourceLink = (index) =>{
@@ -63,6 +79,12 @@ export const ResourceLink = ({index, resource, newResource, setNewResource}) => 
                 ...newResource.slice(0, index),
                 ...newResource.slice(index + 1, newResource.length)
             ])
+        };
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
         };
     };
 

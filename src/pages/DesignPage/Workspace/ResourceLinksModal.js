@@ -73,6 +73,12 @@ export const ResourceLinksModal = () => {
             link: '',
         }
         setNewResource([...newResource, newLinks]);
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
+        };
     };
 
     const handleAddResourceInDesign = () =>{

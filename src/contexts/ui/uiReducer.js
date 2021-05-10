@@ -61,6 +61,16 @@ export const uiReducer = ( state, action ) => {
                     [action.payload.field]: action.payload.value
                 },
             };
+        case types.ui.setUserSaveDesign:
+            return {
+                ...state,
+                userSaveDesign: action.payload,
+            };
+        case types.ui.setHistoryInCheckSaveDesign:
+            return{
+                ...state,
+                historyData: action.payload,
+            };
         default:
             return state;
     }

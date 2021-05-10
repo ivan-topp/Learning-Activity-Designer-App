@@ -119,11 +119,23 @@ export const DesignWorkspace = () => {
 
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
+        if(!uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: true,
+            })
+        };
         enqueueSnackbar('Su diseño se ha guardado correctamente', { variant: 'success', autoHideDuration: 2000 });
     };
 
     const handleNewUA = () => {
         const id = ObjectID().toString();
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
+        };
         socket.emit('new-learningActivity', { designId: design._id, id });
     };
 

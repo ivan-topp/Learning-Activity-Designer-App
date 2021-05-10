@@ -11,6 +11,8 @@ const ui = {
     setResourceLink: '[UI] set resource link',
     setEvaluation: '[UI] set evaluation',
     setPDFConfig: '[UI] set pdf config',
+    setUserSaveDesign: '[UI] set user save design',
+    setHistoryInCheckSaveDesign: '[UI] set history check save design'
 };
 
 export default ui;

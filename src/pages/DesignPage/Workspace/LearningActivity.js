@@ -87,7 +87,7 @@ export const LearningActivity = ({ index, learningActivity, sumHours, sumMinutes
     const { designState } = useDesignState();
     const { design } = designState;
     const { socket } = useSocketState();
-    const { /*uiState,*/ dispatch } = useUiState();
+    const { uiState, dispatch } = useUiState();
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const isXSDevice = useMediaQuery(theme.breakpoints.down('xs'));
@@ -132,6 +132,12 @@ export const LearningActivity = ({ index, learningActivity, sumHours, sumMinutes
                 payload: 'Confirmation',
             });
         }
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
+        };
     };
 
     const resetItems = () => {
@@ -142,6 +148,12 @@ export const LearningActivity = ({ index, learningActivity, sumHours, sumMinutes
 
     const handleAddTask = () => {
         const id = ObjectID().toString();
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
+        };
         socket.emit('new-task', { designId: design._id, learningActivityID: learningActivity.id, id });
     };
 
@@ -163,14 +175,27 @@ export const LearningActivity = ({ index, learningActivity, sumHours, sumMinutes
                 result
             });
         }
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
+        };
     };
 
     const handleEditLearningActivityField = ({ target }) => {
         let field = target.name;
         if (target.name.includes('title')) field = 'title';
         else if (target.name.includes('description')) field = 'description';
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
+        };
         socket.emit('edit-unit-field', { designId: design._id, learningActivityID: learningActivity.id, field, value: target.value });
         handleInputChange({ target: { ...target, name: field } });
+        
     };
 
     const linkedLearningResult = () => {

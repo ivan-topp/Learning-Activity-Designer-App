@@ -27,6 +27,8 @@ const initialState = {
 	isResourceModalOpen: false,
 	isEvaluationModalOpen: false,
 	isImportDesignsModalOpen: false,
+	isCheckSaveDesignModalOpen: false,
+	userSaveDesign: true,
 	folder: {
 		_id: null,
 		name: '',
@@ -45,6 +47,9 @@ const initialState = {
 	},
 	evaluationData:{
 		learningActivityIndex: null,
+	},
+	historyData:{
+		url: null,
 	}
 };
 

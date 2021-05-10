@@ -25,7 +25,7 @@ export const LearningResultModal = ({ design, isOpen }) => {
     const classes = useStyles();
     const { socket/*, online*/ } = useSocketState();
     const { designState, dispatch: designDispatch } = useDesignState();
-    const { dispatch: uiDispatch } = useUiState();
+    const { uiState, dispatch: uiDispatch } = useUiState();
     const { category, verb, editing, index } = designState.currentLearningResult;
     const [ description, setDescription ] = useState(designState.currentLearningResult.description ?? '');
     const [activeStep, setActiveStep] = useState(0);
@@ -70,7 +70,13 @@ export const LearningResultModal = ({ design, isOpen }) => {
         if(!editing) socket.emit('add-learning-result', { designId: design._id, learningResult: { verb, description } });
         else if (editing){
             socket.emit('edit-learning-result', { designId: design._id, index, learningResult: { verb, description } });
-        }
+        };
+        if(uiState.userSaveDesign){
+            uiDispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            });
+        };
         handleCloseModal();
     };
 

@@ -284,11 +284,23 @@ export const DesignMetadata = forwardRef((props, ref) => {
                 handleInputChange(e);
             }
         }
-
+        
+        if(uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: false,
+            })
+        }
     };
 
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
+        if(!uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.setUserSaveDesign,
+                payload: true,
+            })
+        };
         enqueueSnackbar('Su diseño se ha guardado correctamente', { variant: 'success', autoHideDuration: 2000 });
     };
 
@@ -303,7 +315,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     };
 
     return (
-        <>
+        <>  
             <Grid container key={design._id}>
                 <Grid item xs={12} md={3} lg={2} className={classes.leftPanel}></Grid>
                 <Grid item xs={12} md={6} lg={8} className={classes.workspace}>

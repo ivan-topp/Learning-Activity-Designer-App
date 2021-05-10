@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useQueryClient } from 'react-query';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Search } from '@material-ui/icons';
@@ -13,6 +13,7 @@ import types from 'types';
 import { LoginModal } from 'pages/Auth/LoginModal';
 import { RegisterModal } from 'pages/Auth/RegisterModal';
 import { formatName, getUserInitials } from 'utils/textFormatters';
+import { useDesignState } from 'contexts/design/DesignContext';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -72,9 +73,11 @@ export const NavBar = () => {
     const theme = useTheme();
     const isXSDevice = useMediaQuery(theme.breakpoints.down('xs'));
     const { userConfig, setUserConfig } = useUserConfigState();
-    const { dispatch } = useUiState();
+    const { uiState, dispatch } = useUiState();
     const { authState, logout } = useAuthState();
     const [filter, setFilter] = useState('');
+    const { designState } = useDesignState();
+    const { design } = designState;
 
     const handleLogout = () => {
         queryClient.clear();
@@ -111,21 +114,69 @@ export const NavBar = () => {
     const handleSearchUsers = async (e) => {
         e.preventDefault();
         if (filter.trim().length > 0) {
-            history.push(`/users/search?q=${filter.trim()}`);
+            if(design !== null && !uiState.userSaveDesign){
+                dispatch({
+                    type: types.ui.toggleModal,
+                    payload: 'CheckSaveDesign'
+                })
+                dispatch({
+                    type: types.ui.setHistoryInCheckSaveDesign,
+                    payload: {
+                        url: `/users/search?q=${filter.trim()}`,
+                    }
+                })
+            } else{
+                history.push(`/users/search?q=${filter.trim()}`);
+            }
             setFilter('');
         }
     };
+
+    const handleGoUserProfile = async (e) =>{
+        e.preventDefault();
+        if(design !== null && !uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.toggleModal,
+                payload: 'CheckSaveDesign'
+            })
+            dispatch({
+                type: types.ui.setHistoryInCheckSaveDesign,
+                payload: {
+                    url: `/profile/${authState.user.uid}`,
+                }
+            })
+        } else{
+            history.push(`/profile/${authState.user.uid}`);
+        }
+    }
+
+    const handleGoHomePage = async (e) =>{
+        e.preventDefault();
+        if(design !== null && !uiState.userSaveDesign){
+            dispatch({
+                type: types.ui.toggleModal,
+                payload: 'CheckSaveDesign'
+            })
+            dispatch({
+                type: types.ui.setHistoryInCheckSaveDesign,
+                payload: {
+                    url: `/`,
+                }
+            })
+        } else{
+            history.push(`/`);
+        }
+    }
 
     const handleMenu = (e) => {
         setMenuOpen(e.currentTarget);
     };
 
-
     const classes = useStyles();
 
     const renderUserOptions = () => {
         return (<Grid item xs={!isXSDevice ? 12 : 6} sm={4} lg={2} className={classes.userAndOptions}>
-            <Button size='small' component={Link} to={`/profile/${authState.user.uid}`} style={{ display: 'flex', alignItems: 'center', textTransform: 'none' }}>
+            <Button size='small' onClick = {handleGoUserProfile} style={{ display: 'flex', alignItems: 'center', textTransform: 'none' }}>
                 <Avatar
                     style={{ marginRight: 10, width: 30, height: 30 }}
                     alt={formatName(authState.user.name, authState.user.lastname)}
@@ -184,7 +235,7 @@ export const NavBar = () => {
                 <Toolbar style={{ padding: 0 }}>
                     <Grid container>
                         <Grid item xs={!isXSDevice ? 12 : 6} sm={3} lg={2}>
-                            <Button size='small' component={Link} to='/' className={classes.brand}>
+                            <Button size='small' onClick={handleGoHomePage} className={classes.brand}>
                                 <Avatar className={classes.logo} src={Logo} alt="Logo" />
                                 <Typography variant="h6" className={classes.title}>
                                     LAD
@@ -231,6 +282,7 @@ export const NavBar = () => {
             </AppBar>
             <LoginModal />
             <RegisterModal />
+            
         </div>
     );
 }
