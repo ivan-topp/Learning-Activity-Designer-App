@@ -15,20 +15,24 @@ import { formatName, getUserInitials } from 'utils/textFormatters';
 
 
 const useStyles = makeStyles((theme) => ({
+    root:{
+        background: theme.palette.background.workSpace,
+        minHeight: 'calc(100vh - 112px)',
+    },
     leftPanel: {
         display: 'flex',
         flexDirection: 'column',
         borderRight: `1px solid ${theme.palette.divider}`,
+        height: 'auto',
     },
     workspace: {
         paddingLeft: 15,
         paddingRight: 15,
         background: theme.palette.background.workSpace,
-        paddingBottom: theme.spacing(3),
         height: 'auto',
+        paddingBottom: theme.spacing(1),
         [theme.breakpoints.up('md')]: {
-            height: 'calc(100vh - 177px)',
-            overflow: 'auto'
+            height: 'calc(100vh - 112px)',
         },
     },
     rightPanel: {
@@ -47,8 +51,13 @@ const useStyles = makeStyles((theme) => ({
     },
     LeftPanelMetadata:{
         marginTop: theme.spacing(1),
-        marginLeft: theme.spacing(2),
-        marginRight: theme.spacing(2)
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        height: 'auto',
+        overflow: 'auto'
+       // [theme.breakpoints.up('md')]: {
+       //     height: `calc(100vh - 160px + ${theme.spacing(1)}px)`,
+       // },
     },
     textLefPanelMetadata:{
         marginTop: theme.spacing(3)
@@ -201,7 +210,7 @@ export const DesignReader = ({ type }) => {
     
     return (
         <>  
-            <Grid container>
+            <Grid container className={classes.root}>
                 <Grid item xs={12} md={3} lg={2} className={classes.leftPanel}>
                     <Grid container alignItems='center' justify='center'>
                         <Typography className={classes.textLefPanel}> INFORMACIÓN DISEÑO </Typography>

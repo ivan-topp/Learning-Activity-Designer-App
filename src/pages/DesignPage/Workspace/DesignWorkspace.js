@@ -23,21 +23,25 @@ import { Link, useHistory } from 'react-router-dom';
 import { useAuthState } from 'contexts/AuthContext';
 
 const useStyles = makeStyles((theme) => ({
+    root:{
+        background: theme.palette.background.workSpace,
+        minHeight: 'calc(100vh - 112px)',
+    },
     leftPanel: {
         display: 'flex',
         flexDirection: 'column',
         borderRight: `1px solid ${theme.palette.divider}`,
+        background: theme.palette.background.paper,
     },
     workspace: {
         paddingLeft: 15,
         paddingRight: 15,
         position: 'relative',
         background: theme.palette.background.workSpace,
-        paddingBottom: theme.spacing(6),
         height: 'auto',
+        paddingBottom: theme.spacing(6),
         [theme.breakpoints.up('md')]: {
-            height: 'calc(100vh - 177px)',
-            overflow: 'auto'
+            height: 'calc(100vh - 112px)',
         },
     },
     rightPanel: {
@@ -77,8 +81,13 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(2),
     },
     workSpaceUnits: {
+        width: '100%',
         height: 'auto',
-        
+        [theme.breakpoints.up('md')]: {
+            height: '85%',
+            overflow: 'auto',
+            overflowX: 'hidden',
+        },
     },
     buttonZone: {
         width: '100%',
@@ -242,7 +251,7 @@ export const DesignWorkspace = () => {
 
     return (
         <>
-            <Grid container>
+            <Grid container className={classes.root}>
                 <Grid item xs={12} md={3} lg={2} className={classes.leftPanel}>
                     <Grid container alignItems='center' justify='center'>
                         <Typography className={classes.textLeftPanel}> INFORMACIÓN DISEÑO </Typography>
