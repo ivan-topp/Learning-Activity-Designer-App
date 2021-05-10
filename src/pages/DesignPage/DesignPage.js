@@ -15,6 +15,7 @@ import { useSharedDocContext } from 'contexts/SharedDocContext';
 import { Description } from '@material-ui/icons';
 import { useUiState } from 'contexts/ui/UiContext';
 import { CheckSaveDesignModal } from './Workspace/CheckSaveDesignModal';
+import { DesignComments } from 'components/DesignComments';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -26,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: 30,
         paddingRight: 30,
         background: theme.palette.background.workSpace,
-        minHeight: 'calc(100vh - 128px)'
+        minHeight: 'calc(100vh - 128px)',
     },
     rightPanel: {
         display: 'flex',
@@ -68,6 +69,13 @@ const useStyles = makeStyles((theme) => ({
         animation: `$spinAndScale 3000ms ${theme.transitions.easing.easeInOut}`,
         animationIterationCount: 'infinite',
         animationDirection: 'alternate',
+    },
+    comments: {
+        paddingTop: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
+        background: theme.palette.background.workSpace,
+        minHeight: 'calc(100vh - 177px)',
     },
     "@keyframes spinAndScale": {
         from: {
@@ -217,6 +225,35 @@ export const DesignPage = () => {
                 });
             }
         });
+        socket?.on('update-design-rate', ({assessments, mean}) => {
+            if (isMounted.current) {
+                dispatch({
+                    type: types.design.setAssessments,
+                    payload: assessments,
+                });
+                dispatch({
+                    type: types.design.setScoreMean,
+                    payload: mean,
+                });
+            }
+        });
+        socket?.on('comment-design', (commentary) => {
+            if (isMounted.current) {
+                dispatch({
+                    type: types.design.commentDesign,
+                    payload: commentary,
+                });
+            }
+        });
+        
+        socket?.on('delete-comment', (commentaryId) => {
+            if (isMounted.current) {
+                dispatch({
+                    type: types.design.deleteComment,
+                    payload: commentaryId,
+                });
+            }
+        });
         return () => {
             socket?.emit('leave-from-design', { user: authState.user, designId: id });
             socket?.off('updateDesign');
@@ -226,6 +263,9 @@ export const DesignPage = () => {
             socket?.off('change-read-only-link');
             socket?.off('edit-task-field');
             socket?.off('users');
+            socket?.off('update-design-rate');
+            socket?.off('comment-design');
+            socket?.off('delete-comment');
         };
     }, [socket, authState.user, id, dispatch]);
 
@@ -269,7 +309,7 @@ export const DesignPage = () => {
     return (
         <>  
             <Grid container className={classes.menu} key={design._id}>
-                <Grid item xs={12} md={1} lg={2} />
+                <Grid item xs={12} md={3} lg={2} />
                 <Grid item xs={12} md={6} lg={8} className={classes.tabBar}>
                     <Tabs
                         value={tabIndex}
@@ -278,6 +318,7 @@ export const DesignPage = () => {
                     >
                         <Tab label="METADATOS" {...a11yProps(0)} />
                         <Tab label="DISEÑO" {...a11yProps(1)} />
+                        <Tab label="COMENTARIOS" {...a11yProps(2)} />
                     </Tabs>
                     <div className={classes.usersConnecteds}>
                         {
@@ -300,6 +341,15 @@ export const DesignPage = () => {
             </TabPanel>
             <TabPanel value={tabIndex} index={1}>
                 <DesignWorkspace />
+            </TabPanel>
+            <TabPanel value={tabIndex} index={2}>
+                <Grid container>
+                    <Grid item xs={12} md={3} lg={2} className={classes.leftPanel}></Grid>
+                    <Grid item xs={12} md={6} lg={8} className={classes.comments}>
+                        <DesignComments />
+                    </Grid>
+                    <Grid item xs={12} md={3} lg={2} className={classes.rightPanel}></Grid>
+                </Grid>
             </TabPanel>
             {
                 (uiState.isCheckSaveDesignModalOpen)  && <CheckSaveDesignModal/>

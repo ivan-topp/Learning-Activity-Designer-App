@@ -134,7 +134,7 @@ export const FolderModal = () => {
                     Por favor ingrese el { !folder._id ? '' : 'nuevo' } nombre para su carpeta en la siguiente entrada de texto.
                 </Typography>
                 <Typography variant='caption' >
-                    Importante: No puede existir una carpeta en el directorio con el mismo nombre.
+                    IMPORTANTE: No puede existir una carpeta en el directorio con el mismo nombre.
                 </Typography>
                 <TextField 
                     className={classes.folderNameInput}

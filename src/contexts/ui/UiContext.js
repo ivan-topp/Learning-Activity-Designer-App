@@ -29,6 +29,7 @@ const initialState = {
 	isImportDesignsModalOpen: false,
 	isCheckSaveDesignModalOpen: false,
 	userSaveDesign: true,
+	isAssessmentModalOpen: false,
 	folder: {
 		_id: null,
 		name: '',

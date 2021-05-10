@@ -127,6 +127,46 @@ export const designReducer = ( state, action ) => {
                     readOnlyLink: action.payload,
                 }
             };
+        case types.design.setAssessments:
+            return {
+                ...state,
+                design: {
+                    ...state.design,
+                    assessments: action.payload,
+                }
+            };
+        case types.design.setScoreMean:
+            return {
+                ...state,
+                design: {
+                    ...state.design,
+                    metadata: {
+                        ...state.design.metadata,
+                        scoreMean: action.payload,
+                    },
+                }
+            };
+        case types.design.commentDesign:
+            const comments = [...state.design.comments];
+            const existentCommentary = comments.find(c => c._id.toString() === action.payload._id.toString());
+            const index = comments.indexOf(existentCommentary);
+            if(existentCommentary && index !== -1) comments[index] = action.payload;
+            else comments.push(action.payload);
+            return {
+                ...state,
+                design: {
+                    ...state.design,
+                    comments,
+                }
+            };
+        case types.design.deleteComment:
+            return {
+                ...state,
+                design: {
+                    ...state.design,
+                    comments: state.design.comments.filter(c => c._id.toString() !== action.payload.toString()),
+                }
+            };
         default:
             return state;
     }

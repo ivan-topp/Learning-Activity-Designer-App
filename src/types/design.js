@@ -11,6 +11,10 @@ const design = {
     addDesignKeyword: '[DESIGN] add design keyword',
     removeDesignKeyword: '[DESIGN] remove design keyword',
     updateReadOnlyLink: '[DESIGN] change read only link',
+    setAssessments: '[DESIGN] set assessments',
+    setScoreMean: '[DESIGN] set score mean',
+    commentDesign: '[DESIGN] add a commentary',
+    deleteComment: '[DESIGN] delete a commentary',
 };
 
 export default design;

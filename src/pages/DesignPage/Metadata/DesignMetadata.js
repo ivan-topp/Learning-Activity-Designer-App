@@ -1,5 +1,5 @@
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
-import { Button, Divider, FormControl, FormControlLabel, Grid, InputLabel, Link, makeStyles, MenuItem, Select, Switch, TextField, Typography } from '@material-ui/core'
+import { Box, Button, Divider, FormControl, FormControlLabel, Grid, InputLabel, Link, makeStyles, MenuItem, Select, Switch, TextField, Typography } from '@material-ui/core'
 import { useQuery } from 'react-query';
 import { Alert, Skeleton } from '@material-ui/lab';
 import { useForm } from 'hooks/useForm';
@@ -14,6 +14,7 @@ import { useAuthState } from 'contexts/AuthContext';
 import { SharedTextFieldTipTapEditor } from 'components/SharedTextFieldTipTapEditor';
 import { useSnackbar } from 'notistack';
 import { KeywordManager } from 'components/KeywordManager';
+import { Star } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -26,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: 30,
         paddingRight: 30,
         background: theme.palette.background.workSpace,
-        minHeight: 'calc(100vh - 64px)'
+        minHeight: 'calc(100vh - 177px)',
     },
     rightPanel: {
         display: 'flex',
@@ -90,6 +91,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     const priorKnowledgeRef = useRef();
     const descriptionRef = useRef();
     const objectiveRef = useRef();
+    const evaluationRef = useRef();
 
     const [form, handleInputChange, , setValues] = useForm({
         name: metadata.name,
@@ -103,6 +105,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
         description: metadata.description,
         objective: metadata.objective,
         isPublic: metadata.isPublic,
+        evaluation: metadata.evaluation,
         keywords: design.keywords ?? [],
     });
 
@@ -149,6 +152,14 @@ export const DesignMetadata = forwardRef((props, ref) => {
             }
         }
     }, [metadata.category, form.category, setValues, handleInputChange]);
+
+    useEffect(() => {
+        if (isMounted.current) {
+            if (form.evaluation !== metadata.evaluation) {
+                handleInputChange({ target: { name: 'evaluation', value: metadata.evaluation ?? '' } });
+            }
+        }
+    }, [metadata.evaluation, form.evaluation, setValues, handleInputChange]);
 
     useEffect(() => {
         if (isMounted.current) {
@@ -230,8 +241,8 @@ export const DesignMetadata = forwardRef((props, ref) => {
         }
     }, [metadata.isPublic, form.isPublic, setValues, handleInputChange]);
 
-    const { name, category, classSize, workingTimeDesignHours, workingTimeDesignMinutes, workingTimeHours, workingTimeMinutes, priorKnowledge, description, objective, isPublic, keywords } = form;
-
+    const { name, category, classSize, workingTimeDesignHours, workingTimeDesignMinutes, workingTimeHours, workingTimeMinutes, priorKnowledge, description, objective, isPublic, keywords, evaluation } = form;
+    
     const { isLoading, isError, data, error } = useQuery('categories', async () => {
         return await getCategories();
     }, { refetchOnWindowFocus: false });
@@ -334,7 +345,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
                     </div>
                     <Divider />
                     <Grid container spacing={3} className={classes.content}>
-                        <Grid item className={classes.grid} xs={12} sm={9}>
+                        <Grid item className={classes.grid} xs={12} sm={12} md={6} lg={8}>
                             {
                                 isLoading ? (<Skeleton width={'100%'} height={70} />)
                                     : (<TextField
@@ -358,7 +369,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
                             }
 
                         </Grid>
-                        <Grid item className={classes.grid} xs={12} sm={3}>
+                        <Grid item className={classes.grid} xs={6} sm={6} md={3} lg={2}>
                             <div style={{ width: '100%' }}>
                                 {
                                     isLoading
@@ -381,6 +392,27 @@ export const DesignMetadata = forwardRef((props, ref) => {
                                                 label={isPublic ? 'Público' : 'Privado'}
                                             />
                                         </>)
+                                }
+
+                            </div>
+                        </Grid>
+                        <Grid item className={classes.grid} xs={6} sm={6} md={3} lg={2}>
+                            <div style={{ width: '100%', display: 'flex', alignItems: 'flex-start' }}>
+                                {
+                                    isLoading
+                                        ? (<>
+                                            <Skeleton width={80} height={20} />
+                                            <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
+                                                <Skeleton width={40} height={20} style={{ marginRight: 10 }} />
+                                                <Skeleton width={'100%'} height={20} />
+                                            </div>
+                                        </>)
+                                        : (<Box style={{marginTop: -10}}>
+                                            <Typography variant='body2' gutterBottom>Valoración media </Typography>
+                                            <Box display='flex' >
+                                                <Star style={{marginRight: 10}}/> { metadata.scoreMean }
+                                            </Box>
+                                        </Box>)
                                 }
 
                             </div>
@@ -594,6 +626,31 @@ export const DesignMetadata = forwardRef((props, ref) => {
                                                 name: 'objective',
                                                 placeholder: 'Objetivos',
                                                 initialvalue: objective ?? '',
+                                                rowMax: 5,
+                                                onChange: handleChangeMetadataField,
+                                                multiline: true,
+                                            }
+                                        }}
+                                    />
+                            }
+                        </Grid>
+                        <Grid item className={classes.grid} xs={12}>
+                            {
+                                isLoading ? (<Skeleton width={'100%'} height={70} />)
+                                    : <TextField
+                                        label='Evaluación'
+                                        InputLabelProps={{ shrink: true }}
+                                        fullWidth
+                                        margin='none'
+                                        variant='outlined'
+                                        color='primary'
+                                        InputProps={{
+                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputProps: {
+                                                ref: evaluationRef,
+                                                name: 'evaluation',
+                                                placeholder: 'Evaluación',
+                                                initialvalue: evaluation ?? '',
                                                 rowMax: 5,
                                                 onChange: handleChangeMetadataField,
                                                 multiline: true,
