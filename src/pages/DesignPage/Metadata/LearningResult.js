@@ -4,7 +4,6 @@ import { Delete, Edit } from '@material-ui/icons';
 import { useDesignState } from 'contexts/design/DesignContext';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
-import { useSocketState } from 'contexts/SocketContext';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -29,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
 
 export const LearningResult = ({ verb, description, index}) => {
     const classes = useStyles();
-    const { socket/*, online*/ } = useSocketState();
     const { uiState, dispatch: uiDispatch } = useUiState();
     const { designState, dispatch: designDispatch } = useDesignState();
     const { design } = designState;
@@ -54,9 +52,17 @@ export const LearningResult = ({ verb, description, index}) => {
     };
 
     const handleDelete = () => {
-        let index = 0;
-        design.metadata.results.forEach((result, _index) => {
-            if (result.verb === verb && result.description === description) index = _index;
+        uiDispatch({
+            type: types.ui.setConfirmData,
+            payload: {
+                type: 'resultado de aprendizaje',
+                args: { designId: design._id, index },
+                actionMutation: null,
+            }
+        });
+        uiDispatch({
+            type: types.ui.toggleModal,
+            payload: 'Confirmation',
         });
         if(uiState.userSaveDesign){
             uiDispatch({
@@ -64,7 +70,6 @@ export const LearningResult = ({ verb, description, index}) => {
                 payload: false,
             })
         };
-        socket.emit('delete-learning-result', { designId: design._id, index });
     };
 
     return (

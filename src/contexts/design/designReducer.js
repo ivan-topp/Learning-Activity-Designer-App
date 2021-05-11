@@ -167,6 +167,11 @@ export const designReducer = ( state, action ) => {
                     comments: state.design.comments.filter(c => c._id.toString() !== action.payload.toString()),
                 }
             };
+        case types.design.setConnectedUsers:
+            return {
+                ...state,
+                users: action.payload,
+            };
         default:
             return state;
     }

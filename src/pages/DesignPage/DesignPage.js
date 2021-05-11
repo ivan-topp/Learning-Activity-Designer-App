@@ -141,8 +141,12 @@ export const DesignPage = () => {
             metadataComponent?.clearEditors();
             clearDoc();
             isMounted.current = false;
+            dispatch({
+                type: types.design.updateDesign,
+                payload: null,
+            });
         };
-    }, [clearDoc]);
+    }, [clearDoc, dispatch]);
 
     useEffect(() => {
         if (online) {

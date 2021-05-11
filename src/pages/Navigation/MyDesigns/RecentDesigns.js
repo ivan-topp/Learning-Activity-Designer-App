@@ -1,17 +1,15 @@
 import React from 'react';
 import { Divider, makeStyles, Typography } from '@material-ui/core';
 import { useQuery } from 'react-query';
-import ScrollContainer from 'react-indiana-drag-scroll';
 import { Design } from 'components/Design';
 import { DesignSkeleton } from 'components/DesignSkeleton';
 import { getRecentDesigns } from 'services/DesignService';
+import { HorizontalScrollableContainer } from 'components/HorizontalScrollableContainer';
 
 const useStyles = makeStyles({
     root:{
         paddingTop: 15,
         marginBottom: 15,
-        //marginLeft: -10,
-        //marginRight: -10,
     },
     recentDesigns: {
         width: '100%',
@@ -62,14 +60,14 @@ export const RecentDesigns = ({ width, height }) => {
             }
             {
                 data && data.length > 0 
-                    ? data.length > n ?
-                        <ScrollContainer className={classes.recentDesigns} style={{ cursor: 'grab' }}>
+                    ? data.length > n ? 
+                        <HorizontalScrollableContainer>
                             {
                                 (isLoading) 
                                     ? createSkeletons()
                                     : designList()
                             }
-                        </ScrollContainer>
+                        </HorizontalScrollableContainer>
                         :
                         <div className={classes.recentDesigns}>
                             {

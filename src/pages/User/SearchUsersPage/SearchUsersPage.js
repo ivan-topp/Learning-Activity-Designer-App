@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
         background: theme.palette.background.workSpace,
         height: 'auto',
         [theme.breakpoints.up('md')]: {
-            height: 'calc(100vh - 177px)',
+            height: 'calc(100vh - 128px)',
             overflow: 'auto'
         },
     },

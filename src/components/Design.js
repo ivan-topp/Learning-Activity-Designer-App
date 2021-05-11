@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, Card, CardActionArea, CardActions, CardContent, IconButton, makeStyles, Tooltip, Typography } from '@material-ui/core';
+import { Avatar, Box, Card, CardActionArea, CardActions, CardContent, IconButton, makeStyles, Tooltip, Typography } from '@material-ui/core';
 import { Delete, Description, Star } from '@material-ui/icons';
 import { useAuthState } from 'contexts/AuthContext';
 import { formatName, getUserInitials } from 'utils/textFormatters';
@@ -17,7 +17,6 @@ const useStyles = makeStyles((theme) => ({
         border: `1px solid ${theme.palette.divider}`,
         width: 325,
         minWidth: 325,
-        margin: '10px 10px 10px 0px',
         borderRadius: 5,
         cursor: 'pointer',
         userSelect: 'none',
@@ -134,7 +133,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, privile
             type: types.ui.setConfirmData,
             payload: {
                 type: 'diseño',
-                args: { id:_id },
+                args: { id: _id },
                 actionMutation: deleteMutation,
             }
         })
@@ -143,8 +142,8 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, privile
             payload: 'Confirmation',
         });
     };
-    
-    const handleOpenDesign = () =>{
+
+    const handleOpenDesign = () => {
         const inDesign = privileges.find(privilege => authState.user.uid === privilege.user);
         if (inDesign) {
             const typePrivilegeEditor = privileges.find(privilege => authState.user.uid === privilege.user && privilege.type === 0);
@@ -153,7 +152,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, privile
             } else {
                 history.push(`/designs/reader/${_id}`);
             }
-        } else if(metadata.isPublic){
+        } else if (metadata.isPublic) {
             history.push(`/designs/reader/${_id}`);
         } else {
             history.push(`/`);
@@ -161,53 +160,55 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, privile
     };
 
     return (
-        <Card className={classes.root} elevation={0}>
-            <CardActionArea onClick={handleOpenDesign}>
-                <CardContent>
-                    <div className={classes.row} style={{ width: '100%' }}>
-                        <Description className={classes.designIcon} />
-                        <div className={classes.col}>
-                            <div className={classes.row}>
-                                <Tooltip title={`${title}`} arrow placement="top">
-                                    <Typography className={classes.ellipsis} variant='h5' component="h2" >{title}</Typography>
-                                </Tooltip>
-                            </div>
-                            <div className={classes.row}>
-                                <Typography className={classes.ellipsis} variant="body1" component="p">{metadata.category ? metadata.category.name : 'Sin categoría'}</Typography>
+        <Box style={{ padding: 5 }}>
+            <Card className={classes.root} elevation={0}>
+                <CardActionArea onClick={handleOpenDesign}>
+                    <CardContent>
+                        <div className={classes.row} style={{ width: '100%' }}>
+                            <Description className={classes.designIcon} />
+                            <div className={classes.col}>
+                                <div className={classes.row}>
+                                    <Tooltip title={`${title}`} arrow placement="top">
+                                        <Typography className={classes.ellipsis} variant='h5' component="h2" >{title}</Typography>
+                                    </Tooltip>
+                                </div>
+                                <div className={classes.row}>
+                                    <Typography className={classes.ellipsis} variant="body1" component="p">{metadata.category ? metadata.category.name : 'Sin categoría'}</Typography>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className={classes.rowJustified}>
-                        <Typography variant="body1" component="p">Tiempo de diseño: {`${metadata.workingTime.hours ?? 0}:${metadata.workingTime.minutes ?? 0}`} Hrs</Typography>
-                    </div>
-                    <div className={classes.rowJustified} style={{ marginTop: 10, marginBottom: -5 }}>
-                        <Typography color="textSecondary" variant='body2'>Última modificación: {new Date(updatedAt).toLocaleDateString()}</Typography>
-                        <div className={classes.row} style={{ marginRight: 4 }}>
-                            <Star fontSize='small' />
-                            <Typography variant='body2'> { metadata.scoreMean }</Typography>
+                        <div className={classes.rowJustified}>
+                            <Typography variant="body1" component="p">Tiempo de diseño: {`${metadata.workingTime.hours ?? 0}:${metadata.workingTime.minutes ?? 0}`} Hrs</Typography>
                         </div>
-                    </div>
-                </CardContent>
-            </CardActionArea>
-            {
-                canDelete && authState.user.uid === owner._id && (<IconButton className={classes.deleteIcon} onClick={handleDeleteDesign}>
-                    <Delete />
-                </IconButton>)
-            }
-            <CardActionArea component={Link} to={`/profile/${owner._id}`}>
-                <CardActions className={classes.ownerInfo}>
-                    <Avatar
-                        alt={formatName(owner.name, owner.lastname)}
-                        src={ owner.img && owner.img.length > 0 ? `${process.env.REACT_APP_URL}uploads/users/${owner.img}` : '' }
+                        <div className={classes.rowJustified} style={{ marginTop: 10, marginBottom: -5 }}>
+                            <Typography color="textSecondary" variant='body2'>Última modificación: {new Date(updatedAt).toLocaleDateString()}</Typography>
+                            <div className={classes.row} style={{ marginRight: 4 }}>
+                                <Star fontSize='small' />
+                                <Typography variant='body2'> {metadata.scoreMean}</Typography>
+                            </div>
+                        </div>
+                    </CardContent>
+                </CardActionArea>
+                {
+                    canDelete && authState.user.uid === owner._id && (<IconButton className={classes.deleteIcon} onClick={handleDeleteDesign}>
+                        <Delete />
+                    </IconButton>)
+                }
+                <CardActionArea component={Link} to={`/profile/${owner._id}`}>
+                    <CardActions className={classes.ownerInfo}>
+                        <Avatar
+                            alt={formatName(owner.name, owner.lastname)}
+                            src={owner.img && owner.img.length > 0 ? `${process.env.REACT_APP_URL}uploads/users/${owner.img}` : ''}
                         >
-                        {getUserInitials(owner.name, owner.lastname)}
-                    </Avatar>
-                    <div>
-                        <Typography color='textPrimary'>{formatName(owner.name, owner.lastname)}</Typography>
-                        <Typography color="textSecondary">{owner.occupation ?? 'Sin ocupación'}</Typography>
-                    </div>
-                </CardActions>
-            </CardActionArea>
-        </Card>
+                            {getUserInitials(owner.name, owner.lastname)}
+                        </Avatar>
+                        <div>
+                            <Typography color='textPrimary'>{formatName(owner.name, owner.lastname)}</Typography>
+                            <Typography color="textSecondary">{owner.occupation ?? 'Sin ocupación'}</Typography>
+                        </div>
+                    </CardActions>
+                </CardActionArea>
+            </Card>
+        </Box>
     );
 };

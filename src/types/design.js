@@ -15,6 +15,7 @@ const design = {
     setScoreMean: '[DESIGN] set score mean',
     commentDesign: '[DESIGN] add a commentary',
     deleteComment: '[DESIGN] delete a commentary',
+    setConnectedUsers: '[DESIGN] set connected users',
 };
 
 export default design;
