@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import { Box, Checkbox, Divider, Fab, FormControlLabel, Grid, IconButton, makeStyles, Menu, MenuItem, Paper, TextField, Tooltip, Typography, useMediaQuery, useTheme } from '@material-ui/core'
 import { Task } from 'pages/DesignPage/Workspace/Task';
 import { useSocketState } from 'contexts/SocketContext';
@@ -82,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const LearningActivity = ({ index, learningActivity, sumHours, sumMinutes }) => {
+export const LearningActivity = forwardRef(({ index, learningActivity, sumHours, sumMinutes, toLastActivity}, ref) => {
     const classes = useStyles();
     const { designState } = useDesignState();
     const { design } = designState;
@@ -92,7 +92,7 @@ export const LearningActivity = ({ index, learningActivity, sumHours, sumMinutes
     const theme = useTheme();
     const isXSDevice = useMediaQuery(theme.breakpoints.down('xs'));
     const [isMenuOpen, setMenuOpen] = useState(null);
-
+    
     const titleRef = useRef();
     const descriptionRef = useRef();
     const taskRefs = useRef([]);
@@ -145,6 +145,8 @@ export const LearningActivity = ({ index, learningActivity, sumHours, sumMinutes
             item.value = 0;
         });
     };
+    
+    
 
     const handleAddTask = () => {
         const id = ObjectID().toString();
@@ -156,6 +158,8 @@ export const LearningActivity = ({ index, learningActivity, sumHours, sumMinutes
         };
         socket.emit('new-task', { designId: design._id, learningActivityID: learningActivity.id, id });
     };
+
+    
 
     const handleToggleLearningResult = (e, isSelected, result) => {
         if (isSelected) {
@@ -242,7 +246,7 @@ export const LearningActivity = ({ index, learningActivity, sumHours, sumMinutes
 
     const listlearningActivityArray = () => {
         return (
-            <Grid key={index}>
+            <Grid key={index} /*ref = {ref}*/>
                 <Paper className={classes.unitSpacing}>
                     <Grid container>
                         <Grid item xs={12} sm={5} className={classes.titleUnitSpacing}>
@@ -400,4 +404,4 @@ export const LearningActivity = ({ index, learningActivity, sumHours, sumMinutes
             }
         </>
     )
-}
+})

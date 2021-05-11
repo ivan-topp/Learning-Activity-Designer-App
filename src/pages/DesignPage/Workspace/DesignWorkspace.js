@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import { Avatar, Box, Button, ButtonGroup, Card, CardActionArea, Divider, Fab, Grid, makeStyles, Menu, MenuItem, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { LearningActivity } from 'pages/DesignPage/Workspace/LearningActivity';
@@ -21,6 +21,7 @@ import { exportJsonToFile } from 'utils/files';
 import { formatName, getUserInitials } from 'utils/textFormatters';
 import { Link, useHistory } from 'react-router-dom';
 import { useAuthState } from 'contexts/AuthContext';
+import { Link as LinkScroll, Element } from 'react-scroll'
 
 const useStyles = makeStyles((theme) => ({
     root:{
@@ -39,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
         background: theme.palette.background.workSpace,
         height: 'auto',
-        paddingBottom: theme.spacing(6),
+        paddingBottom: theme.spacing(2),
         [theme.breakpoints.up('md')]: {
             height: 'calc(100vh - 112px)',
         },
@@ -66,8 +67,14 @@ const useStyles = makeStyles((theme) => ({
     },
     LeftPanelMetadata: {
         marginTop: theme.spacing(1),
-        marginLeft: theme.spacing(2),
-        marginRight: theme.spacing(2)
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        height: 'auto',
+        paddingBottom: theme.spacing(1),
+        [theme.breakpoints.up('xs')]: {
+            height: 'calc(100vh - 200px)',
+            overflow: 'auto'
+        },
     },
     textLeftPanelMetadata: {
         marginTop: theme.spacing(3)
@@ -139,6 +146,14 @@ export const DesignWorkspace = () => {
     let showGraphicModality = false;
     let sumHours = 0;
     let sumMinutes = 0;
+
+    //const scrollToLastActivityRef = useRef();
+    //
+    //const handleScrollToActivity = () =>{
+    //    scrollToLastActivityRef.current && scrollToLastActivityRef.current.scrollIntoView({ behavior: 'smooth' })
+    //    
+    //    console.log(scrollToLastActivityRef.current)
+    //}
     
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
@@ -151,6 +166,7 @@ export const DesignWorkspace = () => {
         enqueueSnackbar('Su diseño se ha guardado correctamente', { variant: 'success', autoHideDuration: 2000 });
     };
 
+    
     const handleNewUA = () => {
         const id = ObjectID().toString();
         if(uiState.userSaveDesign){
@@ -160,6 +176,17 @@ export const DesignWorkspace = () => {
             })
         };
         socket.emit('new-learningActivity', { designId: design._id, id });
+        //handleScrollToActivity();
+        /*return <LinkScroll
+            activeClass="active"
+            to="secondInsideContainer"
+            spy={true}
+            smooth={true}
+            duration={250}
+            containerId="containerElement"
+            style={{ display: "inline-block", margin: "20px" }}
+        >
+        </LinkScroll>*/
     };
 
     const handleOpenModal = () => {
@@ -294,7 +321,7 @@ export const DesignWorkspace = () => {
                             {metadata && metadata.workingTime && (
                                 <>
                                     <Typography variant="body2" color='textSecondary' className={classes.textLeftPanelMetadata}> Tiempo de trabajo </Typography>
-                                    <Typography variant="body2"> {metadata.workingTime.hours} : {metadata.workingTime.minutes}</Typography>
+                                    <Typography variant="body2"> {metadata.workingTime.hours} (hrs) : {metadata.workingTime.minutes} (min)</Typography>
                                     <Divider />
                                 </>
                             )
@@ -304,17 +331,7 @@ export const DesignWorkspace = () => {
                             {metadata && metadata.workingTimeDesign && (
                                 <>
                                     <Typography variant="body2" color='textSecondary' className={classes.textLeftPanelMetadata}>Tiempo de trabajo Diseño</Typography>
-                                    <Typography variant="body2"> {metadata.workingTimeDesign.hours} : {metadata.workingTimeDesign.minutes}</Typography>
-                                    <Divider />
-                                </>
-                            )
-                            }
-                        </Grid>
-                        <Grid>
-                            {metadata && metadata.name && (
-                                <>
-                                    <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Modo de entrega </Typography>
-                                    <Typography variant='body2' > {metadata.name} </Typography>
+                                    <Typography variant="body2"> {metadata.workingTimeDesign.hours} (hrs) : {metadata.workingTimeDesign.minutes} (min)</Typography>
                                     <Divider />
                                 </>
                             )
@@ -327,7 +344,7 @@ export const DesignWorkspace = () => {
                                     <Typography variant='body2'> {metadata.classSize} </Typography>
                                     <Divider />
                                 </>
-                            )
+                                )
                             }
                         </Grid>
                         <Grid>
@@ -373,13 +390,17 @@ export const DesignWorkspace = () => {
                             }
                         </Grid>
                         <Grid>
-                            { /*metadata && metadata.results &&(
+                            { metadata && metadata.results &&(
                                     <>
-                                        <Typography color='textSecondary' className={classes.textLeftPanelMetadata}> Resultados </Typography>
-                                        <Typography>{ metadata.results }</Typography>
+                                        { metadata.results.map((result, i) => 
+                                            <div key={`learning-result-${i}`} className={classes.textLeftPanelMetadata}> 
+                                                <Typography color={'textSecondary'}>Resultado de aprendizaje {i + 1}</Typography>
+                                                <Typography>{result.description}</Typography>
+                                            </div>
+                                        )}
                                         <Divider/>
                                     </>
-                                )*/
+                                )
                             }
                         </Grid>
                         <Grid>
@@ -438,7 +459,10 @@ export const DesignWorkspace = () => {
                             <Grid className={classes.workSpaceUnits}>
                                 <Grid >
                                     {
-                                        design.data.learningActivities && design.data.learningActivities.map((learningActivity, index) => <LearningActivity key={`learningActivity-${index}`} index={index} learningActivity={learningActivity} sumHours={sumHours} sumMinutes={sumMinutes} />)
+                                        design.data.learningActivities && design.data.learningActivities.map((learningActivity, index) => 
+                                        /*<Element name="test7" className="element" id="containerElement" >*/
+                                            <LearningActivity key={`learningActivity-${index}`} /* ref = {scrollToLastActivityRef}*/ index={index} learningActivity={learningActivity} sumHours={sumHours} sumMinutes={sumMinutes}/>
+                                        /*</Element>*/)
                                     }
                                 </Grid>
                             </Grid>

@@ -54,10 +54,11 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(2),
         height: 'auto',
-        overflow: 'auto'
-       // [theme.breakpoints.up('md')]: {
-       //     height: `calc(100vh - 160px + ${theme.spacing(1)}px)`,
-       // },
+        paddingBottom: theme.spacing(1),
+        [theme.breakpoints.up('xs')]: {
+            height: 'calc(100vh - 200px)',
+            overflow: 'auto'
+        },
     },
     textLefPanelMetadata:{
         marginTop: theme.spacing(3)
@@ -241,7 +242,7 @@ export const DesignReader = ({ type }) => {
                             { metadata && metadata.workingTime &&(
                                     <>
                                         <Typography variant="body2" color='textSecondary' className={classes.textLefPanelMetadata}> Tiempo de trabajo </Typography>
-                                        <Typography variant="body2"> { metadata.workingTime.hours } : {metadata.workingTime.minutes}</Typography>
+                                        <Typography variant="body2"> { metadata.workingTime.hours } (hrs) : {metadata.workingTime.minutes} (min)</Typography>
                                         <Divider/>
                                     </>
                                 )
@@ -251,22 +252,13 @@ export const DesignReader = ({ type }) => {
                             { metadata && metadata.workingTimeDesign &&(
                                     <>
                                         <Typography variant="body2" color='textSecondary' className={classes.textLefPanelMetadata}>Tiempo de trabajo Diseño</Typography>
-                                        <Typography variant="body2"> {metadata.workingTimeDesign.hours} : {metadata.workingTimeDesign.minutes}</Typography>
+                                        <Typography variant="body2"> {metadata.workingTimeDesign.hours} (hrs) : {metadata.workingTimeDesign.minutes} (min)</Typography>
                                         <Divider/>
                                     </>
                                 )
                             }
                         </Grid>
                         <Grid>
-                            { metadata && metadata.name &&(
-                                    <>
-                                        <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}> Modo de entrega </Typography>
-                                        <Typography variant='body2' > { metadata.name } </Typography>
-                                        <Divider/>
-                                    </>
-                                )
-                            }
-                        </Grid>
                             { metadata && metadata.classSize &&(
                                     <>
                                         <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}> Tamaño de la clase </Typography>
@@ -275,6 +267,7 @@ export const DesignReader = ({ type }) => {
                                     </>
                                 )
                             }
+                        </Grid>
                         <Grid>
                             { metadata && metadata.priorKnowledge &&(
                                     <>
@@ -318,13 +311,17 @@ export const DesignReader = ({ type }) => {
                             }
                         </Grid>
                         <Grid>
-                            { /*metadata && metadata.results &&(
+                            { metadata && metadata.results &&(
                                     <>
-                                        <Typography color='textSecondary' className={classes.textLefPanelMetadata}> Resultados </Typography>
-                                        <Typography>{ metadata.results }</Typography>
+                                        { metadata.results.map((result, i) => 
+                                            <div key={`learning-result-${i}`}> 
+                                                <Typography color={'textSecondary'}>Resultado de aprendizaje {i + 1}</Typography>
+                                                <Typography>{result.description}</Typography>
+                                            </div>
+                                        )}
                                         <Divider/>
                                     </>
-                                )*/
+                                )
                             }
                         </Grid>
                         <Grid>
