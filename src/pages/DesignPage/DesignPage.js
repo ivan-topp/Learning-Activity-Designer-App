@@ -102,6 +102,7 @@ export const DesignPage = () => {
     const classes = useStyles();
     const isMounted = useRef(true);
     const metadataRef = useRef();
+    const evaluationPatternRef = useRef();
     const { id } = useParams();
     const { doc, provider, connectToDesign, clearDoc } = useSharedDocContext();
     const { authState } = useAuthState();
@@ -270,6 +271,7 @@ export const DesignPage = () => {
     }, [socket, authState.user, id, dispatch]);
 
     const handleChange = (event, newValue) => {
+        if(evaluationPatternRef.current && evaluationPatternRef?.current.editing) evaluationPatternRef.current.handleSave();
         setTabIndex(newValue);
     };
 
@@ -337,7 +339,7 @@ export const DesignPage = () => {
                 <Grid item xs={12} md={3} lg={2}></Grid>
             </Grid>
             <TabPanel value={tabIndex} index={0}>
-                <DesignMetadata ref={metadataRef} />
+                <DesignMetadata ref={metadataRef} evaluationPatternRef={evaluationPatternRef} />
             </TabPanel>
             <TabPanel value={tabIndex} index={1}>
                 <DesignWorkspace />
