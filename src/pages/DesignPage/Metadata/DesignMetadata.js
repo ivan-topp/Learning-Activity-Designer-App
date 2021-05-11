@@ -15,6 +15,7 @@ import { SharedTextFieldTipTapEditor } from 'components/SharedTextFieldTipTapEdi
 import { useSnackbar } from 'notistack';
 import { KeywordManager } from 'components/KeywordManager';
 import { Star } from '@material-ui/icons';
+import { TextEditable } from 'components/TextEditable';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -74,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const DesignMetadata = forwardRef((props, ref) => {
+export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
     const classes = useStyles();
     const { socket/*, online*/ } = useSocketState();
     const { authState } = useAuthState();
@@ -92,6 +93,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     const descriptionRef = useRef();
     const objectiveRef = useRef();
     const evaluationRef = useRef();
+    
 
     const [form, handleInputChange, , setValues] = useForm({
         name: metadata.name,
@@ -106,6 +108,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
         objective: metadata.objective,
         isPublic: metadata.isPublic,
         evaluation: metadata.evaluation,
+        evaluationPattern: metadata.evaluationPattern,
         keywords: design.keywords ?? [],
     });
 
@@ -241,7 +244,29 @@ export const DesignMetadata = forwardRef((props, ref) => {
         }
     }, [metadata.isPublic, form.isPublic, setValues, handleInputChange]);
 
-    const { name, category, classSize, workingTimeDesignHours, workingTimeDesignMinutes, workingTimeHours, workingTimeMinutes, priorKnowledge, description, objective, isPublic, keywords, evaluation } = form;
+    useEffect(() => {
+        if (isMounted.current) {
+            if (form.evaluationPattern !== metadata.evaluationPattern) {
+                handleInputChange({ target: { name: 'evaluationPattern', value: metadata.evaluationPattern } });
+            }
+        }
+    }, [metadata.evaluationPattern, form.evaluationPattern, setValues, handleInputChange]);
+
+    const { name,
+        category,
+        classSize,
+        workingTimeDesignHours,
+        workingTimeDesignMinutes,
+        workingTimeHours,
+        workingTimeMinutes,
+        priorKnowledge,
+        description,
+        objective,
+        isPublic,
+        keywords,
+        evaluation,
+        evaluationPattern
+    } = form;
     
     const { isLoading, isError, data, error } = useQuery('categories', async () => {
         return await getCategories();
@@ -305,6 +330,7 @@ export const DesignMetadata = forwardRef((props, ref) => {
     };
 
     const handleSaveDesign = (e) => {
+        if(evaluationPatternRef.current.editing) evaluationPatternRef.current.handleSave();
         socket.emit('save-design', { designId: design._id });
         if(!uiState.userSaveDesign){
             dispatch({
@@ -656,6 +682,27 @@ export const DesignMetadata = forwardRef((props, ref) => {
                                                 multiline: true,
                                             }
                                         }}
+                                    />
+                            }
+                        </Grid>
+                        <Grid item className={classes.grid} xs={12}>
+                            {
+                                isLoading ? (<Skeleton width={'100%'} height={70} />)
+                                    : <TextEditable
+                                        ref={evaluationPatternRef}
+                                        label='Pauta/Rúbrica de evaluación'
+                                        name='evaluationPattern'
+                                        InputLabelProps={{ shrink: true }}
+                                        fullWidth
+                                        margin='none'
+                                        variant='outlined'
+                                        value={evaluationPattern}
+                                        onSave={handleChangeMetadataField}
+                                        //onSave={handleChangeMetadataField}
+                                        //onChange={handleInputChange}
+                                        //value={value}
+                                        //onChange={handleChange}
+                                        color='primary'
                                     />
                             }
                         </Grid>

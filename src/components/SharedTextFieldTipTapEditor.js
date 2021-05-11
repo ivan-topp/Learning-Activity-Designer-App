@@ -189,7 +189,7 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name,
             onUpdate: (event) => {
                 const text = htmlToText(event.editor.getHTML().toString());
                 let value = (type === 'number' && !isNaN(text)) ? parseInt(text) : text;
-                if(onChange && event.transaction.docs[0].textContent.trim() !== text) onChange({
+                if(onChange && event.transaction.docs[0].textContent !== text) onChange({
                     target : {
                         name,
                         type,
