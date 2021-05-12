@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Avatar, Box, Button, ButtonGroup, Card, CardActionArea, Divider, Fab, Grid, makeStyles, Menu, MenuItem, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { LearningActivity } from 'pages/DesignPage/Workspace/LearningActivity';
@@ -21,7 +21,6 @@ import { exportJsonToFile } from 'utils/files';
 import { formatName, getUserInitials } from 'utils/textFormatters';
 import { Link, useHistory } from 'react-router-dom';
 import { useAuthState } from 'contexts/AuthContext';
-import { Link as LinkScroll, Element } from 'react-scroll'
 
 const useStyles = makeStyles((theme) => ({
     root:{
@@ -147,14 +146,6 @@ export const DesignWorkspace = () => {
     let sumHours = 0;
     let sumMinutes = 0;
 
-    //const scrollToLastActivityRef = useRef();
-    //
-    //const handleScrollToActivity = () =>{
-    //    scrollToLastActivityRef.current && scrollToLastActivityRef.current.scrollIntoView({ behavior: 'smooth' })
-    //    
-    //    console.log(scrollToLastActivityRef.current)
-    //}
-    
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
         if(!uiState.userSaveDesign){
@@ -176,17 +167,6 @@ export const DesignWorkspace = () => {
             })
         };
         socket.emit('new-learningActivity', { designId: design._id, id });
-        //handleScrollToActivity();
-        /*return <LinkScroll
-            activeClass="active"
-            to="secondInsideContainer"
-            spy={true}
-            smooth={true}
-            duration={250}
-            containerId="containerElement"
-            style={{ display: "inline-block", margin: "20px" }}
-        >
-        </LinkScroll>*/
     };
 
     const handleOpenModal = () => {

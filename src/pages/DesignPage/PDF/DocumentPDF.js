@@ -180,6 +180,24 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                     <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>{design.metadata.description}</Text>
                                 } 
                             </View>
+                            <View style = {{marginLeft: 16, marginRight: 16}}>
+                                <Text style={{fontSize: 12, color: '#979797', marginTop: 5, marginBottom: 5}} >Pauta de evaluación</Text>
+                                {
+                                    (design.metadata.evaluationPattern === '') ? 
+                                    <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>No definido.</Text>
+                                    :
+                                    <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>{design.metadata.evaluationPattern}</Text>
+                                } 
+                            </View>
+                            <View style = {{marginLeft: 16, marginRight: 16}}>
+                                <Text style={{fontSize: 12, color: '#979797', marginTop: 5, marginBottom: 5}} >Evaluación</Text>
+                                {
+                                    (design.metadata.evaluation === '') ? 
+                                    <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>No definido.</Text>
+                                    :
+                                    <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>{design.metadata.evaluation}</Text>
+                                } 
+                            </View>
                         </View>
                         {
                             (typeUserPDF === 'teacher') &&
@@ -207,7 +225,11 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                         }
                                     </View>
                                     <View style = {{marginLeft: 16, marginRight: 20, marginBottom: 10}}>
-                                        <Text style={{fontSize: 14, color: '#979797', marginTop: 5}} >Evaluación de la actividad.</Text>
+                                        {
+                                            (learningActivity.evaluation.length <= 1 ) 
+                                            ? <Text style={{fontSize: 14, color: '#979797', marginTop: 5}} >Evaluación.</Text>
+                                            : <Text style={{fontSize: 14, color: '#979797', marginTop: 5}} >Evaluaciones.</Text>
+                                        }
                                         { (learningActivity.evaluation.length === 0 )
                                             ? <Text style={{fontSize: 14}}> No se ha especificado.</Text>
                                             : learningActivity.evaluation.map((evaluation, i) => 
