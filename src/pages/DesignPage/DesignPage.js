@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Grid, makeStyles, Avatar, Tabs, Tab, Typography, Backdrop, Box } from '@material-ui/core';
+import { Grid, makeStyles, Avatar, Tabs, Tab, Typography, Backdrop, Box, useTheme, useMediaQuery, Divider } from '@material-ui/core';
 import { useSocketState } from 'contexts/SocketContext';
 import { useAuthState } from 'contexts/AuthContext';
 import { formatName, getUserInitials } from 'utils/textFormatters';
@@ -12,10 +12,11 @@ import { getBloomCategories, getBloomVerbs } from 'services/BloomService';
 import types from 'types';
 import { Alert } from '@material-ui/lab';
 import { useSharedDocContext } from 'contexts/SharedDocContext';
-import { Description } from '@material-ui/icons';
+import { Description, Group } from '@material-ui/icons';
 import { useUiState } from 'contexts/ui/UiContext';
 import { CheckSaveDesignModal } from './Workspace/CheckSaveDesignModal';
 import { DesignComments } from 'components/DesignComments';
+import { CustomMenu } from 'components/CustomMenu';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -45,10 +46,13 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(2),
         borderBottom: `2px solid ${theme.palette.divider}`
     },
-    tabBar: {
+    tabBarGrid: {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        [theme.breakpoints.down('xs')]: {
+            justifyContent: 'center'
+        }
     },
     usersConnecteds: {
         display: 'flex',
@@ -77,6 +81,11 @@ const useStyles = makeStyles((theme) => ({
         background: theme.palette.background.workSpace,
         minHeight: 'calc(100vh - 177px)',
     },
+    user: {
+        display: 'flex',
+        alignItems: 'center',
+        marginTop: 10,
+    },
     "@keyframes spinAndScale": {
         from: {
             height: 300,
@@ -100,19 +109,24 @@ const a11yProps = (index) => {
 
 export const DesignPage = () => {
     const classes = useStyles();
-    const isMounted = useRef(true);
-    const metadataRef = useRef();
-    const evaluationPatternRef = useRef();
     const { id } = useParams();
+    const theme = useTheme();
+    const isSmDevice = useMediaQuery(theme.breakpoints.down('sm'));
+    const isXsDevice = useMediaQuery(theme.breakpoints.down('xs'));
     const { doc, provider, connectToDesign, clearDoc } = useSharedDocContext();
     const { authState } = useAuthState();
     const { socket, online } = useSocketState();
+    const { designState, dispatch } = useDesignState();
+    const { uiState } = useUiState();
     const [users, setUsersList] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
-    const { designState, dispatch } = useDesignState();
-    const { design } = designState;
     const [error, setError] = useState(null);
-    const { uiState } = useUiState();
+    const { design } = designState;
+    const isMounted = useRef(true);
+    const metadataRef = useRef();
+    const evaluationPatternRef = useRef();
+    const tabsRef = useRef();
+    const gridWorkspaceRef = useRef();
 
     const prefetchBloomCategories = useCallback(async () => {
         const data = await getBloomCategories();
@@ -141,8 +155,12 @@ export const DesignPage = () => {
             metadataComponent?.clearEditors();
             clearDoc();
             isMounted.current = false;
+            dispatch({
+                type: types.design.updateDesign,
+                payload: null,
+            });
         };
-    }, [clearDoc]);
+    }, [clearDoc, dispatch]);
 
     useEffect(() => {
         if (online) {
@@ -226,7 +244,7 @@ export const DesignPage = () => {
                 });
             }
         });
-        socket?.on('update-design-rate', ({assessments, mean}) => {
+        socket?.on('update-design-rate', ({ assessments, mean }) => {
             if (isMounted.current) {
                 dispatch({
                     type: types.design.setAssessments,
@@ -246,7 +264,7 @@ export const DesignPage = () => {
                 });
             }
         });
-        
+
         socket?.on('delete-comment', (commentaryId) => {
             if (isMounted.current) {
                 dispatch({
@@ -271,19 +289,19 @@ export const DesignPage = () => {
     }, [socket, authState.user, id, dispatch]);
 
     const handleChange = (event, newValue) => {
-        if(evaluationPatternRef.current && evaluationPatternRef?.current.editing) evaluationPatternRef.current.handleSave();
+        if (evaluationPatternRef.current && evaluationPatternRef?.current.editing) evaluationPatternRef.current.handleSave();
         setTabIndex(newValue);
     };
 
-    useEffect(()=>{
-        if(!uiState.userSaveDesign){
-            window.onbeforeunload = function(e){
+    useEffect(() => {
+        if (!uiState.userSaveDesign) {
+            window.onbeforeunload = function (e) {
                 return '¿Seguro que quieres salir?'
             };
         }
-        return () => window.onbeforeunload = null;    
-    },[uiState]);
-    
+        return () => window.onbeforeunload = null;
+    }, [uiState]);
+
     if (error) {
         return (
             <div className={classes.error}>
@@ -298,22 +316,60 @@ export const DesignPage = () => {
         return (<Box className={classes.workspace}>
             <Backdrop className={classes.backdrop} open={true}>
                 <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <Box width={300} height={300} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <Box width={300} height={300} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <Description className={classes.loadingFile} />
                     </Box>
-                    
+
                     <Typography>Cargando Diseño de Aprendizaje...</Typography>
                 </Box>
             </Backdrop>
         </Box>);
     }
 
+    const renderConnectedUsersButtonMenu = () => {
+        return <div className={classes.usersConnecteds}>
+            <CustomMenu Icon={<Group />} text={users.length}>
+                <Typography style={{ paddingLeft: 10, paddingTop: 5 }} gutterBottom>Usuarios conectados</Typography>
+                <Divider />
+                <Box style={{ padding: 10 }}>
+                    {renderConnectedUserList()}
+                </Box>
+            </CustomMenu>
+        </div>;
+    };
+
+    const renderConnectedUserList = () => {
+        return users.map((user, index) => {
+            //console.log(user);
+            return <Box key={user.uid + index} className={classes.user}>
+                <Avatar
+                    style={{ border: `3px solid ${user.color}`, backgroundColor: user.color, marginRight: 10 }}
+                    alt={formatName(user.name, user.lastname)}
+                    src={user.img && user.img.length > 0 ? `${process.env.REACT_APP_URL}uploads/users/${user.img}` : ''}
+                >
+                    {getUserInitials(user.name, user.lastname)}
+                </Avatar>
+                <Box>
+                    <Typography color='textPrimary'>{user.name + ' ' + user.lastname}</Typography>
+                    <Typography color="textSecondary">{user.privilege}</Typography>
+                </Box>
+            </Box>;
+        });
+    };
     return (
-        <>  
+        <>
             <Grid container className={classes.menu} key={design._id}>
+                <Grid item xs={12} >
+                    <Box width='100%' height='100%' display='flex' justifyContent='flex-end' alignItems='center'>
+                        {
+                            isXsDevice && renderConnectedUsersButtonMenu()
+                        }
+                    </Box>
+                </Grid>
                 <Grid item xs={12} md={3} lg={2} />
-                <Grid item xs={12} md={6} lg={8} className={classes.tabBar}>
+                <Grid ref={gridWorkspaceRef} item xs={12} md={6} lg={8} className={classes.tabBarGrid}>
                     <Tabs
+                        ref={tabsRef}
                         value={tabIndex}
                         onChange={handleChange}
                         aria-label="full width tabs example"
@@ -322,21 +378,17 @@ export const DesignPage = () => {
                         <Tab label="DISEÑO" {...a11yProps(1)} />
                         <Tab label="COMENTARIOS" {...a11yProps(2)} />
                     </Tabs>
-                    <div className={classes.usersConnecteds}>
-                        {
-                            users.map((user, index) =>
-                                <Avatar
-                                    key={user.uid + index}
-                                    alt={formatName(user.name, user.lastname)}
-                                    src={user.img ?? ''}
-                                >
-                                    {getUserInitials(user.name, user.lastname)}
-                                </Avatar>
-                            )
-                        }
-                    </div>
+                    {
+                        !isXsDevice && isSmDevice && renderConnectedUsersButtonMenu()
+                    }
                 </Grid>
-                <Grid item xs={12} md={3} lg={2}></Grid>
+                <Grid item xs={12} md={3} lg={2}>
+                    <Box width='100%' height='100%' display='flex' justifyContent='flex-end' alignItems='center'>
+                        {
+                            !isXsDevice && !isSmDevice && renderConnectedUsersButtonMenu()
+                        }
+                    </Box>
+                </Grid>
             </Grid>
             <TabPanel value={tabIndex} index={0}>
                 <DesignMetadata ref={metadataRef} evaluationPatternRef={evaluationPatternRef} />
@@ -354,7 +406,7 @@ export const DesignPage = () => {
                 </Grid>
             </TabPanel>
             {
-                (uiState.isCheckSaveDesignModalOpen)  && <CheckSaveDesignModal/>
+                (uiState.isCheckSaveDesignModalOpen) && <CheckSaveDesignModal />
             }
         </>
     )

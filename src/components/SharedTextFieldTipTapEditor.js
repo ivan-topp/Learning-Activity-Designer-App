@@ -9,7 +9,6 @@ import { Box, ButtonBase, Divider, makeStyles } from '@material-ui/core'
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
-//import Placeholder from './PlaceHolder'
 import CharacterCount from '@tiptap/extension-character-count'
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons'
 

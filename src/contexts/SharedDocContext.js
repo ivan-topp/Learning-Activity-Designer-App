@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useState } from 'react';
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { useAuthState } from './AuthContext';
+import { formatName } from 'utils/textFormatters';
 
 const SharedDocContext = createContext();
 
@@ -23,26 +24,16 @@ export const SharedDocProvider = ({ children }) => {
         ( id ) => {
             if (provider) return false;
             if (!authState.user) return false;
-            const colors = [
-                '#30bced',
-                '#6eeb83',
-                '#ffbc42',
-                '#ecd444',
-                '#ee6352',
-                '#9ac2c9',
-                '#8acb88',
-                '#1be7ff'
-            ];
             const yDoc = new Y.Doc({guid: id});
             setDoc(yDoc);
             const wsProvider = new WebsocketProvider(process.env.REACT_APP_Y_WEBSOCKET_SERVER, id, yDoc);
-            const userWithColor = {
-                name: authState.user.name,
-                color: colors[Math.floor(Math.random() * colors.length)],
+            const preparedUser = {
+                name: formatName(authState.user.name, authState.user.lastname),
+                color: authState.user.color,
             };
-            wsProvider.awareness.setLocalStateField('user', userWithColor);
+            wsProvider.awareness.setLocalStateField('user', preparedUser);
             setProvider(wsProvider);
-            setUser(userWithColor);
+            setUser(preparedUser);
         },
         [provider, authState.user],
     );

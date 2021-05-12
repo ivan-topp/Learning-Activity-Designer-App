@@ -65,6 +65,9 @@ export const ConfirmationModal = () => {
         } else if (type === 'comentario') {
             socket.emit('delete-comment', args);
             enqueueSnackbar('Comentario eliminado con éxito', { variant: 'success', autoHideDuration: 2000 });
+        } else if (type === 'resultado de aprendizaje') {
+            socket.emit('delete-learning-result', args);
+            enqueueSnackbar('Resultado de aprendizaje eliminado con éxito', { variant: 'success', autoHideDuration: 2000 });
         }
         dispatch({
             type: types.ui.toggleModal,

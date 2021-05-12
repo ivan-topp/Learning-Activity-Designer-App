@@ -4,16 +4,19 @@ import { Delete, Edit } from '@material-ui/icons';
 import { useDesignState } from 'contexts/design/DesignContext';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
-import { useSocketState } from 'contexts/SocketContext';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         position: 'relative',
+        display: 'flex',
         padding: 20,
         width: '49%',
         marginBottom: 10,
         borderRadius: 5,
         border: `1px solid ${ theme.palette.divider }`,
+        [theme.breakpoints.down('xs')]: {
+            width: '100%'
+        }
     },
     description: {
         overflow: 'hidden',
@@ -21,15 +24,14 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'justify',
     },
     actions: {
-        position: 'absolute',
-        top: 8,
-        right: 8,
+        width: 96,
+        display: 'flex',
+        alignItems: 'flex-start'
     }
 }));
 
 export const LearningResult = ({ verb, description, index}) => {
     const classes = useStyles();
-    const { socket/*, online*/ } = useSocketState();
     const { uiState, dispatch: uiDispatch } = useUiState();
     const { designState, dispatch: designDispatch } = useDesignState();
     const { design } = designState;
@@ -54,9 +56,17 @@ export const LearningResult = ({ verb, description, index}) => {
     };
 
     const handleDelete = () => {
-        let index = 0;
-        design.metadata.results.forEach((result, _index) => {
-            if (result.verb === verb && result.description === description) index = _index;
+        uiDispatch({
+            type: types.ui.setConfirmData,
+            payload: {
+                type: 'resultado de aprendizaje',
+                args: { designId: design._id, index },
+                actionMutation: null,
+            }
+        });
+        uiDispatch({
+            type: types.ui.toggleModal,
+            payload: 'Confirmation',
         });
         if(uiState.userSaveDesign){
             uiDispatch({
@@ -64,20 +74,19 @@ export const LearningResult = ({ verb, description, index}) => {
                 payload: false,
             })
         };
-        socket.emit('delete-learning-result', { designId: design._id, index });
     };
 
     return (
         <div className={classes.root}>
-            <Typography color="textSecondary" gutterBottom variant='caption'>Resultado</Typography>
-            <Typography variant='body2'>{verb}</Typography>
-            <Typography color="textSecondary" gutterBottom variant='caption'>Descripción</Typography>
-            <Typography className={classes.description} variant='body2'>{description}</Typography>
+            <div style={{width: '100%'}}>
+                <Typography color="textSecondary" gutterBottom variant='caption'>Resultado</Typography>
+                <Typography variant='body2'>{verb} {description}</Typography>
+            </div>
             <div className={classes.actions}>
-                <IconButton className={classes.deleteIcon} onClick={handleEdit}>
+                <IconButton className={classes.deleteIcon} onClick={handleEdit} >
                     <Edit />
                 </IconButton>
-                <IconButton className={classes.deleteIcon} onClick={handleDelete}>
+                <IconButton className={classes.deleteIcon} onClick={handleDelete} >
                     <Delete />
                 </IconButton>
             </div>

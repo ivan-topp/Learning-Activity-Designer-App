@@ -14,6 +14,7 @@ export function useDesignState() {
 
 const initialState = {
 	design: null,
+	users: [],
 	currentLearningResult: {
 		category: null,
 		verb: null,

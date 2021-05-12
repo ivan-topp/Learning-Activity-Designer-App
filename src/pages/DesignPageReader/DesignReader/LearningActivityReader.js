@@ -1,5 +1,5 @@
 import React, {  useRef } from 'react';
-import { Divider, Grid, makeStyles, Paper, Tooltip, Typography } from '@material-ui/core'
+import { Box, Divider, Grid, makeStyles, Paper, Tooltip, Typography } from '@material-ui/core'
 import { TaskReader } from 'pages/DesignPageReader/DesignReader/TaskReader';
 import { StackedBar } from 'components/StackedBar';
 import { useDesignState } from 'contexts/design/DesignContext';
@@ -54,12 +54,22 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'nowrap',
         flexDirection: 'column',
         paddingLeft: 15,
+        paddingRight: 15,
         maxHeight: 200,
         overflow: 'auto',
         overflowX: true,
     },
     taskContainer: {
         position: 'relative',
+    },
+    learningResult: {
+        marginBottom: 10,
+        userSelect: 'none',
+    },
+    ellipsis: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
     },
 }));
 
@@ -73,6 +83,20 @@ export const LearningActivityReader = ({ index, learningActivity }) => {
         itemsLearningType.forEach((item) =>{
             item.value = 0;
         });
+    };
+
+    const renderLinkedLearningResults = () => {
+        const linkedLearningResults = [];
+        design.metadata.results.forEach((result, index) => {
+            if(!!learningActivity.learningResults.find(lr=> lr.verb === result.verb && lr.description === result.description)) linkedLearningResults.push(result);
+        });
+        return linkedLearningResults.map((result, index) => (
+            <Box className={classes.learningResult}>
+                <Tooltip title={result.verb + ' ' + result.description} arrow>
+                    <Typography className={classes.ellipsis}>{(index + 1)  + '. ' + result.verb + ' ' + result.description}</Typography>
+                </Tooltip>
+            </Box>
+        ));
     };
 
     const listLearningActivityArray = () => {
@@ -119,16 +143,7 @@ export const LearningActivityReader = ({ index, learningActivity }) => {
                                 </Grid>
                                 <Typography variant="body2" className={classes.spacingLinkedResults} color="textSecondary"> Resultados Vinculados </Typography>
                                 <div className={classes.learningResultList}>
-                                    {
-                                        design.metadata.results.map(result => {
-                                            if(!!learningActivity.learningResults.find(lr=> lr.verb === result.verb)) return (
-                                                <Tooltip key={`learning-result-${result.verb}`} title={result.description}>
-                                                    <Typography>{result.verb}</Typography>
-                                                </Tooltip>
-                                            );
-                                            else return (<div key={`learning-result-${result.verb}`}></div>);
-                                        })
-                                    }
+                                    { renderLinkedLearningResults() }
                                 </div>
 
                             </div>

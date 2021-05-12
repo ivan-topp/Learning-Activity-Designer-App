@@ -33,7 +33,8 @@ const useStyles = makeStyles((theme) => ({
         },
         //Ancho del scrollbar    
         '*::-webkit-scrollbar': {
-            width: '0.4em',
+            height: '0.6em',
+            width: '0.6em',
         },
         //Sombra del scrollbar
         '*::-webkit-scrollbar-track': {
