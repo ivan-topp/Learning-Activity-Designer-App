@@ -127,10 +127,10 @@ export const LearningResultModal = ({ design, isOpen }) => {
                 </Button>
                 {
                     (activeStep === steps.length - 1)
-                        ? <Button variant="contained" color="primary" onClick={handleFinish}>
+                        ? <Button variant="contained" color="primary" disabled = {activeStep === 2 && (description === null || description === '')} onClick={handleFinish}>
                             Finalizar
                         </Button>
-                        : <Button variant="contained" color="primary" onClick={handleNext}>
+                        : <Button variant="contained" color="primary" disabled = {activeStep === 0 ? category === null : activeStep === 1 && verb === null} onClick={handleNext}>
                             Siguiente
                         </Button>
                 }
