@@ -79,6 +79,9 @@ const useStyles = makeStyles((theme) => ({
         zIndex: theme.zIndex.drawer + 1,
         color: '#fff',
     },
+    learningResults: {
+        flexWrap: 'wrap',
+    }
 }));
 
 export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
@@ -730,7 +733,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                 <Button className={classes.sectionAction} variant='outlined' color='default' onClick={handleOpenLearningResultmodal}>Agregar</Button>
                             </div>
                             <Divider />
-                            <div className={classes.content}>
+                            <div className={`${classes.content} ${classes.learningResults}`}>
                                 {
                                     metadata.results.length === 0
                                         ? <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>

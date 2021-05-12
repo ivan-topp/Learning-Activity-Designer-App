@@ -80,6 +80,11 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative', 
         marginBottom: theme.spacing(6),
     },
+    ellipsis: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
 }));
 
 export const LearningActivity = ({ index, learningActivity, sumHours, sumMinutes }) => {
@@ -200,20 +205,24 @@ export const LearningActivity = ({ index, learningActivity, sumHours, sumMinutes
 
     const linkedLearningResult = () => {
         const learningResults = design.metadata.results.map(result => (
-            <FormControlLabel
-                style={{ width: '50%' }}
-                key={`learning-result-${result.verb}`}
-                control={
-                    <Checkbox
-                        checked={!!learningActivity.learningResults.find(lr => lr.verb === result.verb)}
-                        onChange={(e) => handleToggleLearningResult(e,
-                            !!learningActivity.learningResults.find(lr => lr.verb === result.verb),
-                            result
-                        )}
-                    />
-                }
-                label={result.verb}
-            />
+            
+                <FormControlLabel
+                    key={`learning-result-${result.verb}`}
+                    classes={{label: classes.ellipsis}}
+                    label={<Tooltip title={result.verb + ' ' + result.description} arrow>
+                        <Typography className={classes.ellipsis}>{result.verb + ' ' + result.description}</Typography>
+                    </Tooltip>}
+                    control={
+                        <Checkbox
+                            checked={!!learningActivity.learningResults.find(lr => lr.verb === result.verb)}
+                            onChange={(e) => handleToggleLearningResult(e,
+                                !!learningActivity.learningResults.find(lr => lr.verb === result.verb),
+                                result
+                            )}
+                        />
+                    }
+                />
+            
         ));
         if (learningResults.length === 0) return <Box style={{marginLeft: -15, paddingRight: 10}} fontSize='caption.fontSize' fontStyle='italic' textAlign='justify'>
             No hay resultados de aprendizaje en este diseño. Para agregar resultados de aprendeizaje, por favor ve a la pestaña de metadatos.

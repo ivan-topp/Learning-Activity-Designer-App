@@ -8,11 +8,15 @@ import types from 'types';
 const useStyles = makeStyles((theme) => ({
     root: {
         position: 'relative',
+        display: 'flex',
         padding: 20,
         width: '49%',
         marginBottom: 10,
         borderRadius: 5,
         border: `1px solid ${ theme.palette.divider }`,
+        [theme.breakpoints.down('xs')]: {
+            width: '100%'
+        }
     },
     description: {
         overflow: 'hidden',
@@ -20,9 +24,9 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'justify',
     },
     actions: {
-        position: 'absolute',
-        top: 8,
-        right: 8,
+        width: 96,
+        display: 'flex',
+        alignItems: 'flex-start'
     }
 }));
 
@@ -74,15 +78,15 @@ export const LearningResult = ({ verb, description, index}) => {
 
     return (
         <div className={classes.root}>
-            <Typography color="textSecondary" gutterBottom variant='caption'>Resultado</Typography>
-            <Typography variant='body2'>{verb}</Typography>
-            <Typography color="textSecondary" gutterBottom variant='caption'>Descripción</Typography>
-            <Typography className={classes.description} variant='body2'>{description}</Typography>
+            <div style={{width: '100%'}}>
+                <Typography color="textSecondary" gutterBottom variant='caption'>Resultado</Typography>
+                <Typography variant='body2'>{verb} {description}</Typography>
+            </div>
             <div className={classes.actions}>
-                <IconButton className={classes.deleteIcon} onClick={handleEdit}>
+                <IconButton className={classes.deleteIcon} onClick={handleEdit} >
                     <Edit />
                 </IconButton>
-                <IconButton className={classes.deleteIcon} onClick={handleDelete}>
+                <IconButton className={classes.deleteIcon} onClick={handleDelete} >
                     <Delete />
                 </IconButton>
             </div>
