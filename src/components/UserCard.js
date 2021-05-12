@@ -56,13 +56,11 @@ export const UserCard = ({ _id, name, lastname, city, country, scoreMean, img, o
         <div className={classes.root} onClick={ ( e ) => handleViewUser(e, _id) }>
             <div className={classes.card}>
                 <Avatar
-                    className={ classes.photo }
-                    alt={ formatName(name, lastname) }
-                    src={ img ?? '' }
+                    className={classes.photo}
+                    alt={formatName(name, lastname)}
+                    src={img && img.length > 0 ? `${process.env.REACT_APP_URL}uploads/users/${img}` : ''}
                 >
-                    <Typography variant='h5'>
-                        { getUserInitials(name, lastname) }
-                    </Typography>
+                    {getUserInitials(name, lastname)}
                 </Avatar>
                 <div className={classes.body} >
                     <div className={classes.name}>

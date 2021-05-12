@@ -37,8 +37,14 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         display: 'flex',
+        flexWrap: 'wrap',
         justifyContent: 'space-between',
         alignItems: 'center',
+    },
+    sectionAction: {
+        [theme.breakpoints.down('xs')]: {
+            width: '100%',
+        }
     },
     content: {
         display: 'flex',
@@ -365,7 +371,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                 </>)
                                 : (<>
                                     <Typography variant='h4'>Información Diseño</Typography>
-                                    <Button variant='outlined' color='default' onClick={handleSaveDesign}>Guardar Información</Button>
+                                    <Button className={classes.sectionAction} variant='outlined' color='default' onClick={handleSaveDesign}>Guardar Información</Button>
                                 </>)
                         }
                     </div>
@@ -721,7 +727,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                         !isLoading ? (<>
                             <div className={classes.title}>
                                 <Typography variant='h4'>Resultados de aprendizaje</Typography>
-                                <Button variant='outlined' color='default' onClick={handleOpenLearningResultmodal}>Agregar</Button>
+                                <Button className={classes.sectionAction} variant='outlined' color='default' onClick={handleOpenLearningResultmodal}>Agregar</Button>
                             </div>
                             <Divider />
                             <div className={classes.content}>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Button, IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
 import { MoreVert } from '@material-ui/icons';
 
-export const CustomMenu = ({ options, Icon, text, fullWidth = false }) => {
+export const CustomMenu = ({ options, Icon, text, fullWidth = false, children }) => {
     const [isOpen, setOpen] = useState(null);
 
     const handleOpen = (e) => {
@@ -32,6 +32,8 @@ export const CustomMenu = ({ options, Icon, text, fullWidth = false }) => {
                     <Typography>{ option.label }</Typography>
                 </MenuItem>);
             });
+        }else if(children){
+            return children;
         }else {
             return (
                 <Typography component='div'>
@@ -48,7 +50,7 @@ export const CustomMenu = ({ options, Icon, text, fullWidth = false }) => {
             {
                 text 
                     ? <Button fullWidth={fullWidth} variant='outlined' onClick={handleOpen}>
-                        {Icon ?? <MoreVert />}
+                        {Icon}
                         <Typography style={{marginLeft: 10}}>{text}</Typography> 
                     </Button>
                     : <IconButton onClick={handleOpen}>
