@@ -90,10 +90,10 @@ export const LearningActivityReader = ({ index, learningActivity }) => {
         design.metadata.results.forEach((result, index) => {
             if(!!learningActivity.learningResults.find(lr=> lr.verb === result.verb && lr.description === result.description)) linkedLearningResults.push(result);
         });
-        return linkedLearningResults.map((result, index) => (
-            <Box className={classes.learningResult}>
+        return linkedLearningResults.map((result, i) => (
+            <Box key={`learning-result-${i}-learning-activity-${index}`} className={classes.learningResult}>
                 <Tooltip title={result.verb + ' ' + result.description} arrow>
-                    <Typography className={classes.ellipsis}>{(index + 1)  + '. ' + result.verb + ' ' + result.description}</Typography>
+                    <Typography className={classes.ellipsis}>{(i + 1)  + '. ' + result.verb + ' ' + result.description}</Typography>
                 </Tooltip>
             </Box>
         ));
