@@ -209,7 +209,6 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
 
     const linkedLearningResult = () => {
         const learningResults = design.metadata.results.map(result => (
-            
                 <FormControlLabel
                     key={`learning-result-${result.verb}`}
                     classes={{label: classes.ellipsis}}
@@ -226,7 +225,6 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
                         />
                     }
                 />
-            
         ));
         if (learningResults.length === 0) return <Box style={{marginLeft: -15, paddingRight: 10}} fontSize='caption.fontSize' fontStyle='italic' textAlign='justify'>
             No hay resultados de aprendizaje en este diseño. Para agregar resultados de aprendeizaje, por favor ve a la pestaña de metadatos.

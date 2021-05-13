@@ -371,15 +371,15 @@ export const DesignWorkspace = () => {
                         </Grid>
                         <Grid>
                             { metadata && metadata.results &&(
-                                    <>
+                                <div className={classes.textLeftPanelMetadata}>
                                         { metadata.results.map((result, i) => 
-                                            <div key={`learning-result-${i}`} className={classes.textLeftPanelMetadata}> 
-                                                <Typography color={'textSecondary'}>Resultado de aprendizaje {i + 1}</Typography>
-                                                <Typography>{result.description}</Typography>
+                                            <div key={`learning-result-${i}`} > 
+                                                <Typography variant='body2' color={'textSecondary'}>Resultado de aprendizaje {i + 1}</Typography>
+                                                <Typography variant='body2' gutterBottom >{ result.verb + ' ' + result.description}</Typography>
                                             </div>
                                         )}
                                         <Divider/>
-                                    </>
+                                </div>
                                 )
                             }
                         </Grid>

@@ -199,20 +199,17 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                 } 
                             </View>
                         </View>
-                        {
-                            (typeUserPDF === 'teacher') &&
-                            <View style = {[styles.table, {marginLeft: 16, marginRight: 16, height: 650}]} wrap={false}>
-                                <Text style ={[styles.secondTitle, {borderBottom: 1, borderColor: '#979797'}]}> Resultados de aprendizaje</Text>
-                                {design.metadata.results.length === 0 
-                                ? <Text style={{fontSize: 12, marginBottom: 5, marginLeft: 16}} >No han sido proporcionados.</Text>
-                                : design.metadata.results.map((result, i) =>
-                                    <View key = {`learning-result-${i}`}>
-                                        <Text style={{fontSize: 12, color: '#979797', marginTop: 2, marginBottom: 2, marginLeft: 16}} >Resultado de aprendizaje número {i + 1}:</Text>
-                                        <Text style={{fontSize: 12, marginBottom: 2, marginLeft: 16}} >{result.verb}: {result.description}</Text>
-                                    </View>
-                                )}
-                            </View>
-                        }
+                        <View style = {[styles.table, {marginLeft: 16, marginRight: 16, height: 650}]} wrap={false}>
+                            <Text style ={[styles.secondTitle, {borderBottom: 1, borderColor: '#979797'}]}> Resultados de aprendizaje</Text>
+                            {design.metadata.results.length === 0 
+                            ? <Text style={{fontSize: 12, marginBottom: 5, marginLeft: 16}} >No han sido proporcionados.</Text>
+                            : design.metadata.results.map((result, i) =>
+                                <View key = {`learning-result-${i}`}>
+                                    <Text style={{fontSize: 12, color: '#979797', marginTop: 2, marginBottom: 2, marginLeft: 16}} >Resultado de aprendizaje número {i + 1}:</Text>
+                                    <Text style={{fontSize: 12, marginBottom: 2, marginLeft: 16}} >{result.verb + ' ' + result.description}</Text>
+                                </View>
+                            )}
+                        </View>
                         <View style={[styles.table]} wrap={false}>
                             <Text style ={[styles.secondTitle, {borderBottom: 1, borderColor: '#979797'}]}> Actividades</Text>
                             { design.data.learningActivities && design.data.learningActivities.map((learningActivity, index) =>
@@ -231,7 +228,7 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                             : <Text style={{fontSize: 14, color: '#979797', marginTop: 5}} >Evaluaciones.</Text>
                                         }
                                         { (learningActivity.evaluation.length === 0 )
-                                            ? <Text style={{fontSize: 14}}> No se ha especificado.</Text>
+                                            ? <Text style={{fontSize: 13}}> No se ha especificado.</Text>
                                             : learningActivity.evaluation.map((evaluation, i) => 
                                                 <View key = {`evaluation-${i}`}>
                                                     <Text style={{fontSize: 12, color: '#979797', marginTop: 10, marginBottom: 5}} >Tipo</Text>
@@ -248,89 +245,88 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                         }
                                     </View>
                                     { learningActivity.tasks && learningActivity.tasks.map((task, indexTask) =>
-                                            <View key = {`task-${indexTask}`} >
-                                                <View style={[styles.table, { 
-                                                        borderColor: 
-                                                            task.learningType === 'Investigación' 
-                                                            ? '#57A8E7' 
-                                                            : task.learningType === 'Adquisición'
-                                                            ? '#E95D5D' 
-                                                            : task.learningType === 'Producción'
-                                                            ? '#C8951F'
-                                                            : task.learningType === 'Discusión'
-                                                            ? '#087A4C'
-                                                            : task.learningType === 'Colaboración'
-                                                            ? '#DFDF3F'
-                                                            : task.learningType === 'Práctica'
-                                                            && '#A75BCD', 
-                                                        borderLeftWidth: 40}]}>
-                                                    <View style={[styles.row, {marginTop: 5}]}>
-                                                        {(typeUserPDF === 'teacher') 
-                                                            && <Text style={[styles.cell, {color: '#979797'}]}>Aprendizaje</Text>
-                                                        }
-                                                        <Text style={[styles.cell, {color: '#979797'}]}>Tiempo</Text>
-                                                        <Text style={[styles.cell, {color: '#979797'}]}>Modalidad</Text>
-                                                    </View>
-                                                    <View style={[styles.row]}>
-                                                        {(typeUserPDF === 'teacher') 
-                                                            && (task.learningType === 'Seleccionar' || task.learningType.trim().length === 0) 
-                                                            ? <Text style={[styles.cell]}>No especificado.</Text>
-                                                            : <Text style={[styles.cell]}>{task.learningType}</Text>
-                                                        }
-                                                        <Text style={[styles.cell]}>{task.duration.hours} hrs : {task.duration.minutes} min.</Text>
-                                                        {(task.modality === 'Seleccionar' || task.modality.trim().length === 0) 
-                                                            ? <Text style={[styles.cell]}> No especificado. </Text> 
-                                                            : <Text style={[styles.cell]}> {task.modality} </Text>
-                                                        }
-                                                    </View>
-                                                    <View style={[styles.row]}>
-                                                        <Text style={[styles.cell, {color: '#979797'}]}>Formato</Text>
-                                                        {  (task.format === 'Grupal') 
-                                                            && <>
-                                                                <Text style={[styles.cell, {color: '#979797'}]}>Número de integrantes</Text>
-                                                                <Text style={[styles.cell, {color: '#979797'}]}></Text>
-                                                            </>
-                                                        }
-                                                    </View>
-                                                    <View style={[styles.row]}>
-                                                        {(task.format === 'Seleccionar' || task.format.trim().length === 0) 
-                                                            ? <Text style={[styles.cell]}>No especificado.</Text>
-                                                            : <Text style={[styles.cell]}>{task.format}</Text>
-                                                        }
-                                                        {  (task.format === 'Grupal') 
-                                                            && <>
-                                                                <Text style={styles.cell}> {task.groupSize}</Text> 
-                                                                <Text style={[styles.cell, {color: '#979797'}]}></Text>
-                                                            </> 
-                                                        }
-                                                    </View>
-                                                    <View style={{marginLeft: 16, marginRight: 16}}>
-                                                        <Text style={{fontSize: 12, color: '#979797', marginTop: 20, marginBottom: 5}} >Descripción</Text>
-                                                        {(task.description === '') 
-                                                            ? <Text wrap style={{fontSize: 12, justifyContent: 'center'}}> No especificado. </Text> 
-                                                            : <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>{task.description}</Text>
-                                                        }
-                                                        <Text style={{fontSize: 12, color: '#979797', marginTop: 20, marginBottom: 5}} >Enlace de recursos</Text>
-                                                        { (task.resourceLinks.length === 0) 
-                                                            ? <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>No se han proporcionado recursos</Text>
-                                                            : (task.resourceLinks.map((resource, i) =>
-                                                                <div key = {`resource-${i}-task-${indexTask}-learningnActivity${index}`}>
-                                                                    <Text style={{fontSize: 10, color: '#979797', marginBottom: 5}} >Título</Text>
-                                                                    {(resource.title === '') 
-                                                                        ? <Text wrap style={{fontSize: 10, justifyContent: 'center'}}>No definido.</Text>
-                                                                        : <Text wrap style={{fontSize: 10, justifyContent: 'center'}}>{resource.title}</Text>
-                                                                    }
-                                                                    <Text style={{fontSize: 10, color: '#979797', marginTop: 10, marginBottom: 5}} >Enlace</Text>
-                                                                    {(resource.link === '') 
-                                                                        ? <Text wrap style={{fontSize: 10, justifyContent: 'center'}}>No definido.</Text>
-                                                                        : <Link wrap style={{fontSize: 10, justifyContent: 'center'}}>{resource.link}</Link>
-                                                                    }
-                                                                </div> 
-                                                            ))
-                                                        }
-                                                    </View>
+                                        <View key = {`task-${indexTask}`} >
+                                            <View style={[styles.table, { 
+                                                    borderColor: 
+                                                        task.learningType === 'Investigación' 
+                                                        ? '#57A8E7' 
+                                                        : task.learningType === 'Adquisición'
+                                                        ? '#E95D5D' 
+                                                        : task.learningType === 'Producción'
+                                                        ? '#C8951F'
+                                                        : task.learningType === 'Discusión'
+                                                        ? '#087A4C'
+                                                        : task.learningType === 'Colaboración'
+                                                        ? '#DFDF3F'
+                                                        : task.learningType === 'Práctica'
+                                                        ? '#A75BCD'
+                                                        : task.learningType === 'Seleccionar'
+                                                        && '#979797',
+                                                    borderLeftWidth: 40}]}>
+                                                <View style={[styles.row, {marginTop: 5}]}>
+                                                    <Text style={[styles.cell, {color: '#979797'}]}>Aprendizaje</Text>
+                                                    <Text style={[styles.cell, {color: '#979797'}]}>Tiempo</Text>
+                                                    <Text style={[styles.cell, {color: '#979797'}]}>Modalidad</Text>
+                                                </View>
+                                                <View style={[styles.row]}>
+                                                    {task.learningType === 'Seleccionar' 
+                                                        ? <Text style={[styles.cell]}>No especificado.</Text>
+                                                        : <Text style={[styles.cell]}>{task.learningType}</Text>
+                                                    }
+                                                    <Text style={[styles.cell]}>{task.duration.hours} hrs : {task.duration.minutes} min.</Text>
+                                                    {(task.modality === 'Seleccionar' || task.modality.trim().length === 0) 
+                                                        ? <Text style={[styles.cell]}> No especificado. </Text> 
+                                                        : <Text style={[styles.cell]}> {task.modality} </Text>
+                                                    }
+                                                </View>
+                                                <View style={[styles.row]}>
+                                                    <Text style={[styles.cell, {color: '#979797'}]}>Formato</Text>
+                                                    {  (task.format === 'Grupal') 
+                                                        && <>
+                                                            <Text style={[styles.cell, {color: '#979797'}]}>Número de integrantes</Text>
+                                                            <Text style={[styles.cell, {color: '#979797'}]}></Text>
+                                                        </>
+                                                    }
+                                                </View>
+                                                <View style={[styles.row]}>
+                                                    {(task.format === 'Seleccionar' || task.format.trim().length === 0) 
+                                                        ? <Text style={[styles.cell]}>No especificado.</Text>
+                                                        : <Text style={[styles.cell]}>{task.format}</Text>
+                                                    }
+                                                    {  (task.format === 'Grupal') 
+                                                        && <>
+                                                            <Text style={styles.cell}> {task.groupSize}</Text> 
+                                                            <Text style={[styles.cell, {color: '#979797'}]}></Text>
+                                                        </> 
+                                                    }
+                                                </View>
+                                                <View style={{marginLeft: 16, marginRight: 16}}>
+                                                    <Text style={{fontSize: 12, color: '#979797', marginTop: 20, marginBottom: 5}} >Descripción</Text>
+                                                    {(task.description === '') 
+                                                        ? <Text wrap style={{fontSize: 12, justifyContent: 'center'}}> No especificado. </Text> 
+                                                        : <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>{task.description}</Text>
+                                                    }
+                                                    <Text style={{fontSize: 12, color: '#979797', marginTop: 20, marginBottom: 5}} >Enlace de recursos</Text>
+                                                    { (task.resourceLinks.length === 0) 
+                                                        ? <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>No se han proporcionado recursos</Text>
+                                                        : (task.resourceLinks.map((resource, i) =>
+                                                            <div key = {`resource-${i}-task-${indexTask}-learningnActivity${index}`}>
+                                                                <Text style={{fontSize: 10, color: '#979797', marginBottom: 5}} >Título</Text>
+                                                                {(resource.title === '') 
+                                                                    ? <Text wrap style={{fontSize: 10, justifyContent: 'center'}}>No definido.</Text>
+                                                                    : <Text wrap style={{fontSize: 10, justifyContent: 'center'}}>{resource.title}</Text>
+                                                                }
+                                                                <Text style={{fontSize: 10, color: '#979797', marginTop: 10, marginBottom: 5}} >Enlace</Text>
+                                                                {(resource.link === '') 
+                                                                    ? <Text wrap style={{fontSize: 10, justifyContent: 'center'}}>No definido.</Text>
+                                                                    : <Link wrap style={{fontSize: 10, justifyContent: 'center'}}>{resource.link}</Link>
+                                                                }
+                                                            </div> 
+                                                        ))
+                                                    }
                                                 </View>
                                             </View>
+                                        </View>
                                     )}
                                 </View>
                             )}

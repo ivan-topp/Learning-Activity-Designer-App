@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
             overflow: 'auto'
         },
     },
-    textLefPanelMetadata:{
+    textLeftPanelMetadata:{
         marginTop: theme.spacing(3)
     },
     graphicsSpacing:{
@@ -231,7 +231,7 @@ export const DesignReader = ({ type }) => {
                         <Grid>
                             { metadata && metadata.category &&(
                                 <>
-                                        <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}>Tema</Typography>
+                                        <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}>Tema</Typography>
                                         <Typography variant='body2'> { metadata.category.name } </Typography>
                                         <Divider/>
                                     </>
@@ -241,7 +241,7 @@ export const DesignReader = ({ type }) => {
                         <Grid>
                             { metadata && metadata.workingTime &&(
                                     <>
-                                        <Typography variant="body2" color='textSecondary' className={classes.textLefPanelMetadata}> Tiempo de trabajo </Typography>
+                                        <Typography variant="body2" color='textSecondary' className={classes.textLeftPanelMetadata}> Tiempo de trabajo </Typography>
                                         <Typography variant="body2"> { metadata.workingTime.hours } (hrs) : {metadata.workingTime.minutes} (min)</Typography>
                                         <Divider/>
                                     </>
@@ -251,7 +251,7 @@ export const DesignReader = ({ type }) => {
                         <Grid>
                             { metadata && metadata.workingTimeDesign &&(
                                     <>
-                                        <Typography variant="body2" color='textSecondary' className={classes.textLefPanelMetadata}>Tiempo de trabajo Diseño</Typography>
+                                        <Typography variant="body2" color='textSecondary' className={classes.textLeftPanelMetadata}>Tiempo de trabajo Diseño</Typography>
                                         <Typography variant="body2"> {metadata.workingTimeDesign.hours} (hrs) : {metadata.workingTimeDesign.minutes} (min)</Typography>
                                         <Divider/>
                                     </>
@@ -261,7 +261,7 @@ export const DesignReader = ({ type }) => {
                         <Grid>
                             { metadata && metadata.classSize &&(
                                     <>
-                                        <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}> Tamaño de la clase </Typography>
+                                        <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Tamaño de la clase </Typography>
                                         <Typography variant='body2'> { metadata.classSize } </Typography>
                                         <Divider/>
                                     </>
@@ -271,7 +271,7 @@ export const DesignReader = ({ type }) => {
                         <Grid>
                             { metadata && metadata.priorKnowledge &&(
                                     <>
-                                        <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}> Conocimiento Previo </Typography>
+                                        <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Conocimiento Previo </Typography>
                                         <Typography variant='body2' > { metadata.priorKnowledge } </Typography>
                                         <Divider/>
                                     </>
@@ -281,7 +281,7 @@ export const DesignReader = ({ type }) => {
                         <Grid>
                             { metadata && metadata.description &&(
                                     <>
-                                        <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}> Descripción </Typography>
+                                        <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Descripción </Typography>
                                         <Typography variant='body2'> { metadata.description } </Typography>
                                         <Divider/>
                                     </>
@@ -291,8 +291,8 @@ export const DesignReader = ({ type }) => {
                         <Grid>
                             { metadata && metadata.objective &&(
                                     <>
-                                        <Typography color='textSecondary' className={classes.textLefPanelMetadata}> Objetivos </Typography>
-                                        <Typography> { metadata.objective } </Typography>
+                                        <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Objetivos </Typography>
+                                        <Typography variant='body2' > { metadata.objective } </Typography>
                                         <Divider/>
                                     </>
                                 )
@@ -301,7 +301,7 @@ export const DesignReader = ({ type }) => {
                         <Grid>
                             {metadata && metadata.scoreMean !== null && (
                                 <>
-                                    <Typography variant='body2' color='textSecondary' className={classes.textLefPanelMetadata}> Valoración media (0 - 5) </Typography>
+                                    <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Valoración media (0 - 5) </Typography>
                                     <Box display='flex' justifyContent='flex-start' alignItems='center'>
                                         { metadata.scoreMean }
                                     </Box>
@@ -312,15 +312,15 @@ export const DesignReader = ({ type }) => {
                         </Grid>
                         <Grid>
                             { metadata && metadata.results &&(
-                                    <>
+                                <div className={classes.textLeftPanelMetadata}>
                                         { metadata.results.map((result, i) => 
-                                            <div key={`learning-result-${i}`}> 
-                                                <Typography color={'textSecondary'}>Resultado de aprendizaje {i + 1}</Typography>
-                                                <Typography>{result.description}</Typography>
+                                            <div key={`learning-result-${i}`} > 
+                                                <Typography variant='body2' color={'textSecondary'}>Resultado de aprendizaje {i + 1}</Typography>
+                                                <Typography variant='body2' gutterBottom >{ result.verb + ' ' + result.description}</Typography>
                                             </div>
                                         )}
                                         <Divider/>
-                                    </>
+                                </div>
                                 )
                             }
                         </Grid>
