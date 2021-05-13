@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useRef, useState } from 'react';
+import React, { createRef, forwardRef, useEffect, useRef, useState } from 'react';
 import { Box, Checkbox, Divider, Fab, FormControlLabel, Grid, IconButton, makeStyles, Menu, MenuItem, Paper, TextField, Tooltip, Typography, useMediaQuery, useTheme } from '@material-ui/core'
 import { Task } from 'pages/DesignPage/Workspace/Task';
 import { useSocketState } from 'contexts/SocketContext';
@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const LearningActivity = forwardRef(({ index, learningActivity, sumHours, sumMinutes, toLastActivity}, ref) => {
+export const LearningActivity = forwardRef(({ index, learningActivity, sumHours, sumMinutes, refActivity, }, ref) => {
     const classes = useStyles();
     const { designState } = useDesignState();
     const { design } = designState;
@@ -101,11 +101,26 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
     const titleRef = useRef();
     const descriptionRef = useRef();
     const taskRefs = useRef([]);
+
+    const refs = learningActivity.tasks.reduce((task, value) => {
+        task[value.id] = createRef();
+        return task;
+    }, {});
     
     const [form, handleInputChange, , setValues] = useForm({
         title: learningActivity.title,
         description: learningActivity.description,
     });
+
+    useEffect(() => {
+        if(uiState.newActivity && refActivity.current !== null){
+            refActivity.current.scrollIntoView(false);
+            dispatch({
+                type: types.ui.setScrollToNewActivity,
+                payload: false
+            })
+        }
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         setValues({
@@ -151,8 +166,6 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
         });
     };
     
-    
-
     const handleAddTask = () => {
         const id = ObjectID().toString();
         if(uiState.userSaveDesign){
@@ -162,9 +175,11 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
             })
         };
         socket.emit('new-task', { designId: design._id, learningActivityID: learningActivity.id, id });
+        dispatch({
+            type: types.ui.setScrollToNewTask,
+            payload: true
+        });
     };
-
-    
 
     const handleToggleLearningResult = (e, isSelected, result) => {
         if (isSelected) {
@@ -253,7 +268,7 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
 
     const listlearningActivityArray = () => {
         return (
-            <Grid key={index} /*ref = {ref}*/>
+            <Grid key={index} ref = {refActivity}>
                 <Paper className={classes.unitSpacing}>
                     <Grid container>
                         <Grid item xs={12} sm={5} className={classes.titleUnitSpacing}>
@@ -357,7 +372,7 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
                         <Grid item xs={12} sm={8} className={classes.taskContainer}>
                             <Grid id='tasks' className={classes.gridTask}>
                                 {
-                                    design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i) => <Task ref={(ref) => taskRefs.current.push(ref)} key={`task-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index} learningActivityID={learningActivity.id} sumHours={sumHours} sumMinutes={sumMinutes}/>)
+                                    design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i) => <Task ref={(ref) => taskRefs.current.push(ref)} refTask = {refs[task.id]} key={`task-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index} learningActivityID={learningActivity.id} sumHours={sumHours} sumMinutes={sumMinutes}/>)
                                 }
                             </Grid>
                             <Tooltip title='Agregar tarea' arrow>

@@ -71,6 +71,16 @@ export const uiReducer = ( state, action ) => {
                 ...state,
                 historyData: action.payload,
             };
+        case types.ui.setScrollToNewActivity:
+            return{
+                ...state,
+                newActivity: action.payload,
+            };
+        case types.ui.setScrollToNewTask:
+            return{
+                ...state,
+                newTask: action.payload,
+            };
         default:
             return state;
     }

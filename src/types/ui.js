@@ -12,7 +12,9 @@ const ui = {
     setEvaluation: '[UI] set evaluation',
     setPDFConfig: '[UI] set pdf config',
     setUserSaveDesign: '[UI] set user save design',
-    setHistoryInCheckSaveDesign: '[UI] set history check save design'
+    setHistoryInCheckSaveDesign: '[UI] set history check save design',
+    setScrollToNewActivity: '[UI] set scroll to new activity',
+    setScrollToNewTask: '[UI] set scroll to new task',
 };
 
 export default ui;

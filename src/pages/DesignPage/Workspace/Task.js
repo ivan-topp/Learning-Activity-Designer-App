@@ -125,7 +125,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const Task = forwardRef(({ learningActivityIndex, index, task, learningActivityID, sumHours, sumMinutes, ...rest }, ref) => {
+export const Task = forwardRef(({ learningActivityIndex, index, task, learningActivityID, sumHours, sumMinutes, refTask, ...rest }, ref) => {
     const classes = useStyles();
     const { socket } = useSocketState();
     const isMounted = useRef(true);
@@ -151,6 +151,16 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
         timeDesignMinutes: metadata.workingTimeDesign.minutes ?? 0,
         groupSize: task.groupSize && task.groupSize !== 2 ? task.groupSize : 2,
     });
+
+    useEffect(() => {
+        if(uiState.newTask && refTask.current !== null){
+            refTask.current.scrollIntoView(false);
+            dispatch({
+                type: types.ui.setScrollToNewTask,
+                payload: false
+            })
+        }
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     useImperativeHandle(
         ref,
@@ -322,7 +332,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
 
     const listTasksArray = () => {
         return (
-            <Box key={index} style={{ height: '100%' }}>
+            <Box key={index} style={{ height: '100%' }} ref = {refTask}>
                 <Paper square className={classes.tasksSpacing}>
                     <Box style={{ display: 'flex', position: 'relative', height: '100%', width: '100%' }}>
                         {(() => {

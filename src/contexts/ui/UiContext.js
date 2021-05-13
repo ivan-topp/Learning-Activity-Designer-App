@@ -51,7 +51,9 @@ const initialState = {
 	},
 	historyData:{
 		url: null,
-	}
+	},
+	newActivity: false,
+	newTask: false,
 };
 
 export const UiProvider = ({ children }) => {

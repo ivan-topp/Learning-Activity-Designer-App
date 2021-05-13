@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { createRef, useRef, useState } from 'react';
 import { Avatar, Box, Button, ButtonGroup, Card, CardActionArea, Divider, Fab, Grid, makeStyles, Menu, MenuItem, Tooltip, Typography, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { LearningActivity } from 'pages/DesignPage/Workspace/LearningActivity';
@@ -25,7 +25,7 @@ import { useAuthState } from 'contexts/AuthContext';
 const useStyles = makeStyles((theme) => ({
     root:{
         background: theme.palette.background.workSpace,
-        minHeight: 'calc(100vh - 112px)',
+        minHeight: 'calc(100vh - 412px)',
     },
     leftPanel: {
         display: 'flex',
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
         height: 'auto',
         paddingBottom: theme.spacing(2),
         [theme.breakpoints.up('md')]: {
-            height: 'calc(100vh - 112px)',
+            height: 'calc(100vh - 212px)',
         },
     },
     rightPanel: {
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
         height: 'auto',
         paddingBottom: theme.spacing(1),
         [theme.breakpoints.up('xs')]: {
-            height: 'calc(100vh - 200px)',
+            height: 'calc(100vh - 235px)',
             overflow: 'auto'
         },
     },
@@ -146,6 +146,11 @@ export const DesignWorkspace = () => {
     let sumHours = 0;
     let sumMinutes = 0;
 
+    const refs = design.data.learningActivities.reduce((activity, value) => {
+        activity[value.id] = createRef();
+        return activity;
+    }, {});
+    
     const handleSaveDesign = (e) => {
         socket.emit('save-design', { designId: design._id });
         if(!uiState.userSaveDesign){
@@ -157,7 +162,6 @@ export const DesignWorkspace = () => {
         enqueueSnackbar('Su diseño se ha guardado correctamente', { variant: 'success', autoHideDuration: 2000 });
     };
 
-    
     const handleNewUA = () => {
         const id = ObjectID().toString();
         if(uiState.userSaveDesign){
@@ -167,6 +171,10 @@ export const DesignWorkspace = () => {
             })
         };
         socket.emit('new-learningActivity', { designId: design._id, id });
+        dispatch({
+            type: types.ui.setScrollToNewActivity,
+            payload: true
+        });
     };
 
     const handleOpenModal = () => {
@@ -440,10 +448,8 @@ export const DesignWorkspace = () => {
                                 <Grid >
                                     {
                                         design.data.learningActivities && design.data.learningActivities.map((learningActivity, index) => 
-                                        /*<Element name="test7" className="element" id="containerElement" >*/
-                                            <LearningActivity key={`learningActivity-${index}`} /* ref = {scrollToLastActivityRef}*/ index={index} learningActivity={learningActivity} sumHours={sumHours} sumMinutes={sumMinutes}/>
-                                        /*</Element>*/)
-                                    }
+                                            <LearningActivity key={`learningActivity-${index}`} refActivity = {refs[learningActivity.id]} index={index} learningActivity={learningActivity} sumHours={sumHours} sumMinutes={sumMinutes} />
+                                    )}
                                 </Grid>
                             </Grid>
                         </Box>
