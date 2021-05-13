@@ -127,7 +127,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const Task = forwardRef(({ learningActivityIndex, index, task, learningActivityID, sumHours, sumMinutes, ...rest }, ref) => {
     const classes = useStyles();
-    const { socket } = useSocketState();
+    const { socket, emitWithTimeout } = useSocketState();
     const isMounted = useRef(true);
     const hoursRef = useRef();
     const minutesRef = useRef();
@@ -250,14 +250,22 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
             subfield = 'minutes';
             value = isNaN(value) ? 0 : value;
         }
-        if(uiState.userSaveDesign){
-            dispatch({
-                type: types.ui.setUserSaveDesign,
-                payload: false,
-            })
-        };
         handleInputChange({ target });
-        socket.emit('edit-task-field', { designId: design._id, learningActivityID, taskID: task.id, field, value, subfield, sumHours, sumMinutes});
+        socket?.emit('edit-task-field', { designId: design._id, learningActivityID, taskID: task.id, field, value, subfield, sumHours, sumMinutes}, emitWithTimeout(
+            (resp) => {
+                if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                if(uiState.userSaveDesign){
+                    dispatch({
+                        type: types.ui.setUserSaveDesign,
+                        payload: false,
+                    });
+                }
+            },
+            () => enqueueSnackbar(
+                subfield ? `Error al editar el campo "${subfield}" del campo "${field}". Por favor revise su conexión. Tiempo de espera excedido.` : `Error al editar el campo "${field}". Por favor revise su conexión. Tiempo de espera excedido.`, 
+                { variant: 'error', autoHideDuration: 2000 }
+            ),
+        ));
     };
 
     const handleOpenResourceModal = () => {
@@ -279,8 +287,18 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
             hoursRef?.current?.clearText();
             minutesRef?.current?.clearText();
             descriptionRef?.current?.clearText();
-            socket.emit('delete-task', { designId: design._id, learningActivityID, taskID: task.id });
-            enqueueSnackbar('Su tarea se ha eliminado', { variant: 'success', autoHideDuration: 2000 });
+            socket?.emit('delete-task', { designId: design._id, learningActivityID, taskID: task.id }, emitWithTimeout(
+                (resp) => {
+                    if(resp.ok && uiState.userSaveDesign){
+                        dispatch({
+                            type: types.ui.setUserSaveDesign,
+                            payload: false,
+                        });
+                    }
+                    return enqueueSnackbar(resp.message, { variant: resp.ok ? 'success': 'error', autoHideDuration: 2000 });
+                },
+                () => enqueueSnackbar('Error al eliminar la tarea. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+            ));
         } else {
             dispatch({
                 type: types.ui.setConfirmData,
@@ -295,17 +313,25 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                 payload: 'Confirmation',
             });
         }
-        if(uiState.userSaveDesign){
-            dispatch({
-                type: types.ui.setUserSaveDesign,
-                payload: false,
-            })
-        };
     };
 
     const handleChangeDropdown = (e) => {
         handleInputChange(e);
-        socket.emit('edit-task-field', { designId: design._id, learningActivityID, taskID: task.id, field: e.target.name, value: e.target.value, subfield: null });
+        socket?.emit('edit-task-field', { designId: design._id, learningActivityID, taskID: task.id, field: e.target.name, value: e.target.value, subfield: null }, emitWithTimeout(
+            (resp) => {
+                if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                if(uiState.userSaveDesign){
+                    dispatch({
+                        type: types.ui.setUserSaveDesign,
+                        payload: false,
+                    });
+                }
+            },
+            () => enqueueSnackbar(
+                `Error al editar el campo "${e.target.name}". Por favor revise su conexión. Tiempo de espera excedido.`, 
+                { variant: 'error', autoHideDuration: 2000 }
+            ),
+        ));
     };
 
     useEffect(() => {

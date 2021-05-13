@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
     const classes = useStyles();
-    const { socket/*, online*/ } = useSocketState();
+    const { socket/*, online*/, emitWithTimeout } = useSocketState();
     const { authState } = useAuthState();
     const isMounted = useRef(true);
     const { uiState, dispatch } = useUiState();
@@ -312,7 +312,18 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
             default:
                 break;
         }
-        socket.emit('edit-metadata-field', { designId: design._id, field, value, subfield });
+        socket?.emit('edit-metadata-field', { designId: design._id, field, value, subfield }, emitWithTimeout(
+            (resp) => {
+                if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                if(uiState.userSaveDesign){
+                    dispatch({
+                        type: types.ui.setUserSaveDesign,
+                        payload: false,
+                    });
+                }
+            },
+            () => enqueueSnackbar('Error al editar el diseño. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+        ));
         if (subfield) {
             if (
                 (metadata[field] === undefined || metadata[field] === null) ||
@@ -329,25 +340,22 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                 handleInputChange(e);
             }
         }
-        
-        if(uiState.userSaveDesign){
-            dispatch({
-                type: types.ui.setUserSaveDesign,
-                payload: false,
-            })
-        }
     };
 
     const handleSaveDesign = (e) => {
         if(evaluationPatternRef.current.editing) evaluationPatternRef.current.handleSave();
-        socket.emit('save-design', { designId: design._id });
-        if(!uiState.userSaveDesign){
-            dispatch({
-                type: types.ui.setUserSaveDesign,
-                payload: true,
-            })
-        };
-        enqueueSnackbar('Su diseño se ha guardado correctamente', { variant: 'success', autoHideDuration: 2000 });
+        socket?.emit('save-design', { designId: design._id }, emitWithTimeout(
+            (resp) => {
+                if(resp.ok && !uiState.userSaveDesign){
+                    dispatch({
+                        type: types.ui.setUserSaveDesign,
+                        payload: true,
+                    })
+                }
+                enqueueSnackbar(resp.message, { variant: resp.ok ? 'success' : 'error', autoHideDuration: 2000 });
+            },
+            () => enqueueSnackbar('Error al intentar guardar el diseño. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+        ));
     };
 
     const handleOpenLearningResultmodal = () => dispatch({
@@ -356,8 +364,18 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
     });
 
     const handleChangeKeywords = (keywords, type, targetKeyword) => {
-        if (type === 'add') socket.emit('add-design-keyword', { designId: design._id, keyword: targetKeyword });
-        else if (type === 'remove') socket.emit('remove-design-keyword', { designId: design._id, keyword: targetKeyword });
+        if (type === 'add') socket?.emit('add-design-keyword', { designId: design._id, keyword: targetKeyword }, emitWithTimeout(
+            (resp) => {
+                if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+            },
+            () => enqueueSnackbar('Error al agregar la palabra clave. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+        ));
+        else if (type === 'remove') socket?.emit('remove-design-keyword', { designId: design._id, keyword: targetKeyword }, emitWithTimeout(
+            (resp) => {
+                if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+            },
+            () => enqueueSnackbar('Error al eliminar la palabra clave. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+        ));
     };
 
     return (

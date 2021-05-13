@@ -27,7 +27,7 @@ export const ConfirmationModal = () => {
     const { uiState, dispatch } = useUiState();
     const { type, args, actionMutation } = uiState.confirmModalData;
     const { enqueueSnackbar } = useSnackbar();
-    const { socket } = useSocketState();
+    const { socket, emitWithTimeout } = useSocketState();
     const [message, setMessage] = useState('');
 
     useEffect(() => {
@@ -51,28 +51,38 @@ export const ConfirmationModal = () => {
     };
 
     const confirmResult = async () => {
+        let socketEvent = null;
+        let errorMessage = null;
         if (type === 'diseño' || type === 'carpeta') {
             await actionMutation.mutate(args);
         } else if (type === 'actividad') {
-            socket.emit('delete-learningActivity', args);
-            enqueueSnackbar('Su actividad se ha eliminado', { variant: 'success', autoHideDuration: 2000 });
+            socketEvent = 'delete-learningActivity';
+            errorMessage = 'Error al eliminar la actividad.';
         } else if (type === 'tarea') {
-            socket.emit('delete-task', args);
-            enqueueSnackbar('Su tarea se ha eliminado', { variant: 'success', autoHideDuration: 2000 });
-        } else if (type === 'recurso'){
-            socket.emit('delete-resource-link', args);
-            enqueueSnackbar('Su recurso se ha eliminado', { variant: 'success', autoHideDuration: 2000 });
+            socketEvent = 'delete-task';
+            errorMessage = 'Error al eliminar la tarea.';
         } else if (type === 'comentario') {
-            socket.emit('delete-comment', args);
-            enqueueSnackbar('Comentario eliminado con éxito', { variant: 'success', autoHideDuration: 2000 });
+            socketEvent = 'delete-comment';
+            errorMessage = 'Error al eliminar el comentario.';
         } else if (type === 'resultado de aprendizaje') {
-            socket.emit('delete-learning-result', args);
-            enqueueSnackbar('Resultado de aprendizaje eliminado con éxito', { variant: 'success', autoHideDuration: 2000 });
+            socketEvent = 'delete-learning-result';
+            errorMessage = 'Error al eliminar el resultado de aprendizaje.';
         }
-        dispatch({
-            type: types.ui.toggleModal,
-            payload: 'Confirmation',
-        });
+        if(socketEvent){
+            socket?.emit(socketEvent, args, emitWithTimeout(
+                (resp) => {
+                    if(resp.ok && uiState.userSaveDesign){
+                        dispatch({
+                            type: types.ui.setUserSaveDesign,
+                            payload: false,
+                        });
+                    }
+                    return enqueueSnackbar(resp.message, { variant: resp.ok ? 'success': 'error', autoHideDuration: 2000 });
+                },
+                () => enqueueSnackbar(errorMessage + ' Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+            ));
+        }
+        handleClose();
     };
 
     const renderConfirmationModal = () => {

@@ -81,29 +81,34 @@ export const DesignPageReader = () => {
     const classes = useStyles();
     const { id } = useParams();
     const isMounted = useRef(true);
-    const { socket, online } = useSocketState();
+    const { socket, online, emitWithTimeout } = useSocketState();
     const { authState } = useAuthState();
     const { designState, dispatch } = useDesignState();
     const { dispatch: uiDispatch } = useUiState();
     const [ tabIndex, setTabIndex ] = useState(0);
     const { design } = designState;
     const [error, setError] = useState(null);
-    
+
     useEffect(() => {
-        if(online){
-            socket?.emit('join-to-design', { user: authState.user, designId: id, public: true }, (res) => {
-                if (res.ok){
-                    if(isMounted.current) {
-                        dispatch({
-                            type: types.design.updateDesign,
-                            payload: res.data.design
-                        });
-                    }
-                } 
-                else setError(res.message);
-            });
+        if (online) {
+            socket?.emit('join-to-design', { user: authState.user, designId: id, public: true }, emitWithTimeout(
+                (res) => {
+                    if (res.ok){
+                        if(isMounted.current) {
+                            dispatch({
+                                type: types.design.updateDesign,
+                                payload: res.data.design
+                            });
+                        }
+                    } 
+                    else setError(res.message);
+                },
+                () => {
+                    setError('Error al intentar ingresar al diseño. Por favor revise su conexión. Tiempo de espera excedido.');
+                },
+            ));
         }
-    }, [socket, authState.user, online, id, dispatch]);
+    }, [socket, authState.user, online, id, dispatch, emitWithTimeout]);
 
     useEffect(() => {
         socket?.on('update-design-rate', ({assessments, mean}) => {
@@ -145,7 +150,7 @@ export const DesignPageReader = () => {
         return () => {
             socket?.emit('leave-from-design', { user: authState.user, designId: id });
         }
-    }, [socket, authState.user, id])
+    }, [socket, authState.user, id]);
 
     const handleChange = (event, newValue) => {
         setTabIndex(newValue);

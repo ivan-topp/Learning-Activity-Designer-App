@@ -6,6 +6,7 @@ import { useSocketState } from 'contexts/SocketContext';
 import { useDesignState } from 'contexts/design/DesignContext';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles({
     clickHere: {
@@ -19,32 +20,42 @@ const useStyles = makeStyles({
 
 export const CommentaryInput = () => {
     const classes = useStyles();
+    const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const isXSDevice = useMediaQuery(theme.breakpoints.down('xs'));
     const { dispatch } = useUiState();
     const { authState } = useAuthState();
     const { designState } = useDesignState();
-    const { socket } = useSocketState();
+    const { socket, online, emitWithTimeout } = useSocketState();
     const [commentary, setCommentary] = useState('');
     const { design } = designState;
     const { user } = authState;
 
     const handleComment = (e) => {
         e.preventDefault();
-        socket.emit('comment-design', {
-            designId: design._id,
-            commentary: {
-                user: {
-                    _id: user.uid,
-                    name: user.name,
-                    lastname: user.lastname,
-                    img: user.img,
+        if(online){
+            socket?.emit('comment-design', {
+                designId: design._id,
+                commentary: {
+                    user: {
+                        _id: user.uid,
+                        name: user.name,
+                        lastname: user.lastname,
+                        img: user.img,
+                    },
+                    date: new Date().toJSON(),
+                    commentary: commentary.trim(),
+                }
+            }, emitWithTimeout(
+                (resp) => {
+                    if(!resp.ok){
+                        enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                    }
                 },
-                date: new Date().toJSON(),
-                commentary: commentary.trim(),
-            }
-        });
-        reset();
+                () => enqueueSnackbar('Error al agregar el comentario. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+            ));
+            reset();
+        }
     };
 
     const reset = () => {

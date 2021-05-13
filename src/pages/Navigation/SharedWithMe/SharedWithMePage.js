@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const SharedWithMePage = () => {
     const classes = useStyles();
+    
 
     const sharedDesignsQuery = useInfiniteQuery(['shared-designs'], async ({ pageParam = 0 }) => {
         return await getDesignsSharedWithMe(pageParam);

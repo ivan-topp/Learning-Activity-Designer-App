@@ -39,7 +39,7 @@ export const ShareModal = () => {
     const [user] = useState('');
     const [inputUser, setInputUser] = useState('');
     const { enqueueSnackbar } = useSnackbar();
-    const { socket } = useSocketState();
+    const { socket, emitWithTimeout } = useSocketState();
     const [newPrivileges, setNewPrivileges] = useState([...design.privileges]);
     const { data, error, isError, isLoading } = useQuery(['user-profile', design.owner], async () => {
         return await getUser(design.owner);
@@ -67,12 +67,20 @@ export const ShareModal = () => {
     };
 
     const handleAddContactInDesign = () => {
-        socket.emit('change-design-privileges', { designId: design._id, privileges: [...newPrivileges] });
+        socket?.emit('change-design-privileges', { designId: design._id, privileges: [...newPrivileges] }, emitWithTimeout(
+            (resp) => {
+                if(!resp.ok) setNewPrivileges([...design.privileges]);
+                enqueueSnackbar(resp.message, { variant: resp.ok ? 'success' : 'error', autoHideDuration: 2000 });
+            },
+            () => {
+                setNewPrivileges([...design.privileges]);
+                enqueueSnackbar('Error al compartir el diseño. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 });
+            },
+        ));
         dispatch({
             type: types.ui.toggleModal,
             payload: 'Share'
         });
-        enqueueSnackbar('Se ha compartido su diseño correctamente', { variant: 'success', autoHideDuration: 2000 });
     };
 
     const handleCopyLinkToClipboard = () => {
@@ -81,7 +89,10 @@ export const ShareModal = () => {
     };
 
     const handleGenerateLink = () => {
-        socket.emit('generate-new-share-link', { designId: design._id });
+        socket?.emit('generate-new-share-link', { designId: design._id }, emitWithTimeout(
+            (resp) => enqueueSnackbar(resp.message, { variant: resp.ok ? 'success' : 'error', autoHideDuration: 2000 }),
+            () => enqueueSnackbar('Error al generar el nuevo enlace. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+        ));
     };
 
     const handleChange = (e, type, index) => {

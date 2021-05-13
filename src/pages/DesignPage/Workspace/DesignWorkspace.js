@@ -131,7 +131,7 @@ export const DesignWorkspace = () => {
     const history = useHistory();
     const { design } = designState;
     const { metadata } = design;
-    const { socket } = useSocketState();
+    const { socket, emitWithTimeout } = useSocketState();
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const isMediumDevice = useMediaQuery(theme.breakpoints.down('md'));
@@ -147,26 +147,35 @@ export const DesignWorkspace = () => {
     let sumMinutes = 0;
 
     const handleSaveDesign = (e) => {
-        socket.emit('save-design', { designId: design._id });
-        if(!uiState.userSaveDesign){
-            dispatch({
-                type: types.ui.setUserSaveDesign,
-                payload: true,
-            })
-        };
-        enqueueSnackbar('Su diseño se ha guardado correctamente', { variant: 'success', autoHideDuration: 2000 });
+        socket?.emit('save-design', { designId: design._id }, emitWithTimeout(
+            (resp) => {
+                if(resp.ok && !uiState.userSaveDesign){
+                    dispatch({
+                        type: types.ui.setUserSaveDesign,
+                        payload: true,
+                    })
+                }
+                enqueueSnackbar(resp.message, { variant: 'success', autoHideDuration: 2000 });
+            },
+            () => enqueueSnackbar('Error al intentar guardar el diseño. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+        ));
     };
 
     
     const handleNewUA = () => {
         const id = ObjectID().toString();
-        if(uiState.userSaveDesign){
-            dispatch({
-                type: types.ui.setUserSaveDesign,
-                payload: false,
-            })
-        };
-        socket.emit('new-learningActivity', { designId: design._id, id });
+        socket?.emit('new-learningActivity', { designId: design._id, id }, emitWithTimeout(
+            (resp) => {
+                if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                if(uiState.userSaveDesign){
+                    dispatch({
+                        type: types.ui.setUserSaveDesign,
+                        payload: false,
+                    });
+                }
+            },
+            () => enqueueSnackbar('Error al agregar la nueva actividad de aprendizaje. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+        ));
     };
 
     const handleOpenModal = () => {

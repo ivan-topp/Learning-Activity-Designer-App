@@ -49,7 +49,7 @@ export const ResourceLinksModal = () => {
     const { designState } = useDesignState();
     const { design } = designState;
     const [newResource, setNewResource] = useState([...design.data.learningActivities[learningActivityIndex].tasks[taskIndex].resourceLinks]);
-    const { socket } = useSocketState();
+    const { socket, emitWithTimeout } = useSocketState();
     const { enqueueSnackbar } = useSnackbar();
 
     const handleClose = () => {
@@ -82,12 +82,16 @@ export const ResourceLinksModal = () => {
     };
 
     const handleAddResourceInDesign = () =>{
-        socket.emit('change-resource-in-task', { designId: design._id, learningActivityIndex, taskIndex, resources: [...newResource] });
+        socket?.emit('change-resource-in-task', { designId: design._id, learningActivityIndex, taskIndex, resources: [...newResource] }, emitWithTimeout(
+            (resp) => {
+                enqueueSnackbar(resp.message, { variant: resp.ok ? 'success' : 'error', autoHideDuration: 2000 });
+            },
+            () => enqueueSnackbar('Error al modificar los recursos en la tarea. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+        ));
         dispatch({
             type: types.ui.toggleModal,
             payload: 'Resource'
         });
-        enqueueSnackbar('Se ha agregado su recurso correctamente', { variant: 'success', autoHideDuration: 2000 });
     }
     
     return (

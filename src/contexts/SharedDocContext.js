@@ -18,6 +18,7 @@ export const SharedDocProvider = ({ children }) => {
     const [doc, setDoc] = useState(null);
     const [provider, setProvider] = useState(null);
     const [user, setUser] = useState(null);
+    const [connected, setConnected] = useState(false);
     const { authState } = useAuthState();
 
     const connectToDesign = useCallback(
@@ -32,6 +33,13 @@ export const SharedDocProvider = ({ children }) => {
                 color: authState.user.color,
             };
             wsProvider.awareness.setLocalStateField('user', preparedUser);
+            wsProvider.on('status', event => {
+                if(event.status === 'connected'){
+                    setConnected(true);
+                } else {
+                    setConnected(false);
+                }
+            });
             setProvider(wsProvider);
             setUser(preparedUser);
         },
@@ -54,6 +62,7 @@ export const SharedDocProvider = ({ children }) => {
             connectToDesign,
             clearDoc,
             user,
+            connected,
         }}>
             {children}
         </SharedDocContext.Provider>

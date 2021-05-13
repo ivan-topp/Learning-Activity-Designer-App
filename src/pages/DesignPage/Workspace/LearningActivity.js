@@ -91,7 +91,7 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
     const classes = useStyles();
     const { designState } = useDesignState();
     const { design } = designState;
-    const { socket } = useSocketState();
+    const { socket, emitWithTimeout } = useSocketState();
     const { uiState, dispatch } = useUiState();
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
@@ -121,8 +121,18 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
             taskRefs?.current?.forEach(task => task?.clearTexts());
             titleRef?.current?.clearText();
             descriptionRef?.current?.clearText();
-            socket.emit('delete-learningActivity', { designId: design._id, learningActivityID: learningActivity.id });
-            enqueueSnackbar('Su actividad se ha eliminado', { variant: 'success', autoHideDuration: 2000 });
+            socket?.emit('delete-learningActivity', { designId: design._id, learningActivityID: learningActivity.id }, emitWithTimeout(
+                (resp) => {
+                    if(resp.ok && uiState.userSaveDesign){
+                        dispatch({
+                            type: types.ui.setUserSaveDesign,
+                            payload: false,
+                        });
+                    }
+                    return enqueueSnackbar(resp.message, { variant: resp.ok ? 'success': 'error', autoHideDuration: 2000 });
+                },
+                () => enqueueSnackbar('Error al eliminar la actividad. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+            ));
         } else {
             dispatch({
                 type: types.ui.setConfirmData,
@@ -151,20 +161,21 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
         });
     };
     
-    
-
     const handleAddTask = () => {
         const id = ObjectID().toString();
-        if(uiState.userSaveDesign){
-            dispatch({
-                type: types.ui.setUserSaveDesign,
-                payload: false,
-            })
-        };
-        socket.emit('new-task', { designId: design._id, learningActivityID: learningActivity.id, id });
+        socket?.emit('new-task', { designId: design._id, learningActivityID: learningActivity.id, id }, emitWithTimeout(
+            (resp) => {
+                if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                if(uiState.userSaveDesign){
+                    dispatch({
+                        type: types.ui.setUserSaveDesign,
+                        payload: false,
+                    });
+                }
+            },
+            () => enqueueSnackbar('Error al agregar la tarea. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+        ));
     };
-
-    
 
     const handleToggleLearningResult = (e, isSelected, result) => {
         if (isSelected) {
@@ -172,37 +183,58 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
             learningActivity.learningResults.forEach((r, _indexLearningResults) => {
                 if (r.verb === result.verb && r.description === result.description) indexLearningResults = _indexLearningResults;
             });
-            socket.emit('delete-learning-result-from-learningActivity', {
+            socket?.emit('delete-learning-result-from-learningActivity', {
                 designId: design._id,
                 learningActivityID: learningActivity.id,
                 indexLearningResults
-            });
+            }, emitWithTimeout(
+                (resp) => {
+                    if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                    if(uiState.userSaveDesign){
+                        dispatch({
+                            type: types.ui.setUserSaveDesign,
+                            payload: false,
+                        });
+                    }
+                },
+                () => enqueueSnackbar('Error al desvincular el resultado de aprendizaje de la actividad. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+            ));
         } else {
-            socket.emit('add-learning-result-to-learningActivity', {
+            socket?.emit('add-learning-result-to-learningActivity', {
                 designId: design._id,
                 learningActivityID: learningActivity.id,
                 result
-            });
+            }, emitWithTimeout(
+                (resp) => {
+                    if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                    if(uiState.userSaveDesign){
+                        dispatch({
+                            type: types.ui.setUserSaveDesign,
+                            payload: false,
+                        });
+                    }
+                },
+                () => enqueueSnackbar('Error al vincular el resultado de aprendizaje a la actividad. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+            ));
         }
-        if(uiState.userSaveDesign){
-            dispatch({
-                type: types.ui.setUserSaveDesign,
-                payload: false,
-            })
-        };
     };
 
     const handleEditLearningActivityField = ({ target }) => {
         let field = target.name;
         if (target.name.includes('title')) field = 'title';
         else if (target.name.includes('description')) field = 'description';
-        if(uiState.userSaveDesign){
-            dispatch({
-                type: types.ui.setUserSaveDesign,
-                payload: false,
-            })
-        };
-        socket.emit('edit-unit-field', { designId: design._id, learningActivityID: learningActivity.id, field, value: target.value });
+        socket?.emit('edit-unit-field', { designId: design._id, learningActivityID: learningActivity.id, field, value: target.value }, emitWithTimeout(
+            (resp) => {
+                if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                if(uiState.userSaveDesign){
+                    dispatch({
+                        type: types.ui.setUserSaveDesign,
+                        payload: false,
+                    });
+                }
+            },
+            () => enqueueSnackbar(`Error al editar el campo ${field} de la actividad. Por favor revise su conexión. Tiempo de espera excedido.`, { variant: 'error', autoHideDuration: 2000 }),
+        ));
         handleInputChange({ target: { ...target, name: field } });
         
     };

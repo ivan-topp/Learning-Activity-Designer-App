@@ -85,7 +85,7 @@ export const SharedLinkPage = () => {
     const classes = useStyles();
     const urlparams = useParams();
     const isMounted = useRef(true);
-    const { socket, online } = useSocketState();
+    const { socket, online, emitWithTimeout } = useSocketState();
     const { authState } = useAuthState();
     const { designState, dispatch } = useDesignState();
     const { dispatch: uiDispatch } = useUiState();
@@ -97,21 +97,34 @@ export const SharedLinkPage = () => {
     useEffect(() => {
         if(authState.user){
             if(online && id){
-                socket?.emit('join-to-design', { user: authState.user, designId: id, public: true }, (res) => {
-                    if (res.ok){
-                        if(isMounted.current) {
-                            dispatch({
-                                type: types.design.updateDesign,
-                                payload: res.data.design
-                            });
-                        }
-                    } 
-                    else setErrorSocket(res.message);
-                });
+                socket?.emit('join-to-design', { user: authState.user, designId: id, public: true }, emitWithTimeout(
+                    (res) => {
+                        if (res.ok){
+                            if(isMounted.current) {
+                                dispatch({
+                                    type: types.design.updateDesign,
+                                    payload: res.data.design
+                                });
+                            }
+                        } 
+                        else setErrorSocket(res.message);
+                    },
+                    () => {
+                        setErrorSocket('Error al intentar ingresar al diseño. Por favor revise su conexión. Tiempo de espera excedido.');
+                    },
+                ));
             }
         }
-    }, [socket, authState.user, online, dispatch, id]);
+    }, [socket, authState.user, online, dispatch, id, emitWithTimeout]);
 
+    useEffect(() => {
+        return () => {
+            if(authState.user){
+                socket?.emit('leave-from-design', { user: authState.user, designId: id });
+            }
+        }
+    }, [socket, authState.user, id]);
+    
     useEffect(() => {
         if(authState.user){
             socket?.on('update-design-rate', ({assessments, mean}) => {

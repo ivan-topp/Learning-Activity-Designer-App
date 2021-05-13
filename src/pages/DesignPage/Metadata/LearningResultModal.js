@@ -7,6 +7,7 @@ import { useSocketState } from 'contexts/SocketContext';
 import { useDesignState } from 'contexts/design/DesignContext';
 import types from 'types';
 import { useUiState } from 'contexts/ui/UiContext';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     closeButton: {
@@ -37,7 +38,8 @@ const useStyles = makeStyles((theme) => ({
 
 export const LearningResultModal = ({ design, isOpen }) => {
     const classes = useStyles();
-    const { socket/*, online*/ } = useSocketState();
+    const { enqueueSnackbar } = useSnackbar();
+    const { socket/*, online*/, emitWithTimeout } = useSocketState();
     const { designState, dispatch: designDispatch } = useDesignState();
     const { uiState, dispatch: uiDispatch } = useUiState();
     const { category, verb, editing, index } = designState.currentLearningResult;
@@ -82,17 +84,35 @@ export const LearningResultModal = ({ design, isOpen }) => {
                 value: description,
             }
         });
-        if(!editing) socket.emit('add-learning-result', { designId: design._id, learningResult: { verb, description } });
+        if(!editing) socket?.emit('add-learning-result', { designId: design._id, learningResult: { verb, description } }, emitWithTimeout(
+            (resp) => {
+                if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                if(uiState.userSaveDesign){
+                    uiDispatch({
+                        type: types.ui.setUserSaveDesign,
+                        payload: false,
+                    });
+                };
+                handleCloseModal();
+            },
+            () => enqueueSnackbar('Error al agregar el resultado de aprendizaje. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+        ));
         else if (editing){
-            socket.emit('edit-learning-result', { designId: design._id, index, learningResult: { verb, description } });
+            socket?.emit('edit-learning-result', { designId: design._id, index, learningResult: { verb, description } }, emitWithTimeout(
+                (resp) => {
+                    if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                    if(uiState.userSaveDesign){
+                        uiDispatch({
+                            type: types.ui.setUserSaveDesign,
+                            payload: false,
+                        });
+                    };
+                    handleCloseModal();
+                },
+                () => enqueueSnackbar('Error al editar el resultado de aprendizaje. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+            ));
         };
-        if(uiState.userSaveDesign){
-            uiDispatch({
-                type: types.ui.setUserSaveDesign,
-                payload: false,
-            });
-        };
-        handleCloseModal();
+        
     };
 
     return (
