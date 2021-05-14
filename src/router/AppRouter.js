@@ -14,12 +14,11 @@ import { useAuthState } from 'contexts/AuthContext';
 import { NavBar } from 'components/NavBar';
 import { UserConfigProvider } from 'contexts/UserConfigContext';
 import { Footer } from 'components/Footer';
-import { CssBaseline, Grow, makeStyles } from '@material-ui/core';
+import { CssBaseline, makeStyles } from '@material-ui/core';
 import { SharedWithMePage } from 'pages/Navigation/SharedWithMe/SharedWithMePage';
 import { PublicRepositoryPage } from 'pages/Navigation/PublicRepository/PublicRepositoryPage';
 import { SearchUsersPage } from 'pages/User/SearchUsersPage/SearchUsersPage';
 import { DesignPage } from 'pages/DesignPage/DesignPage';
-import { SnackbarProvider } from 'notistack';
 import { ConfirmationModal } from 'components/ConfirmationModal';
 import { DesignPageReader } from 'pages/DesignPageReader/DesignPageReader'
 import { SharedLinkPage } from 'pages/SharedLink/SharedLinkPage';
@@ -69,7 +68,6 @@ export const AppRouter = () => {
                 <UserConfigProvider>
                     <CssBaseline />
                     <NavBar />
-                    <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }} TransitionComponent={Grow}>
                         <Switch>
                             <PublicRoute exact path="/" component={LandingPage} isAuthenticated={!checking && !!token} />
                             <PublicRoute exact path="/reset-password" component={ResetPasswordPage} isAuthenticated={!checking && !!token} />
@@ -85,7 +83,6 @@ export const AppRouter = () => {
                             <Redirect to="/" />
                         </Switch>
                         <ConfirmationModal />
-                    </SnackbarProvider>
                     <Footer />
                 </UserConfigProvider>
             </div>

@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
         minHeight: 'calc(100vh - 128px)',
     },
     backdrop: {
-        zIndex: theme.zIndex.drawer + 1,
+        zIndex: 1000,
         color: '#fff',
     },
     loadingFile: {
@@ -113,9 +113,9 @@ export const DesignPage = () => {
     const theme = useTheme();
     const isSmDevice = useMediaQuery(theme.breakpoints.down('sm'));
     const isXsDevice = useMediaQuery(theme.breakpoints.down('xs'));
-    const { doc, provider, connectToDesign, clearDoc } = useSharedDocContext();
+    const { doc, provider, connectToDesign, clearDoc, connected } = useSharedDocContext();
     const { authState } = useAuthState();
-    const { socket, online } = useSocketState();
+    const { socket, online, emitWithTimeout } = useSocketState();
     const { designState, dispatch } = useDesignState();
     const { uiState } = useUiState();
     const [users, setUsersList] = useState([]);
@@ -164,27 +164,32 @@ export const DesignPage = () => {
 
     useEffect(() => {
         if (online) {
-            socket?.emit('join-to-design', { user: authState.user, designId: id, public: false }, (res) => {
-                if (res.data) {
-                    const userInPrivileges = res.data.design.privileges.find(privilege => privilege.user._id === authState.user.uid);
-                    if (res.ok && userInPrivileges && userInPrivileges.type === 0) {
-                        if (isMounted.current) {
-                            dispatch({
-                                type: types.design.updateDesign,
-                                payload: res.data.design
-                            });
-                            connectToDesign(id);
-                        }
+            socket?.emit('join-to-design', { user: authState.user, designId: id, public: false }, emitWithTimeout(
+                (res) => {
+                    if (res.ok) {
+                        const userInPrivileges = res.data.design.privileges.find(privilege => privilege.user._id === authState.user.uid);
+                        if (userInPrivileges && userInPrivileges.type === 0) {
+                            if (isMounted.current) {
+                                dispatch({
+                                    type: types.design.updateDesign,
+                                    payload: res.data.design,
+                                });
+                                connectToDesign(id);
+                            }
+                        } else {
+                            setError('Ha ocurrido un error, el diseño no existe o usted no tiene privilegios para editar este diseño.');
+                        };
+    
                     } else {
-                        setError(res.message)
+                        setError(res.message);
                     };
-
-                } else {
-                    setError(res.message)
-                };
-            });
+                },
+                () => {
+                    setError('Error al intentar ingresar al diseño. Por favor revise su conexión. Tiempo de espera excedido.');
+                },
+            ));
         }
-    }, [socket, authState.user, authState._id, online, id, dispatch, connectToDesign]);
+    }, [socket, authState.user, online, id, dispatch, connectToDesign, emitWithTimeout]);
 
     useEffect(() => {
         socket?.on('update-design', (newDesign) => {
@@ -340,7 +345,6 @@ export const DesignPage = () => {
 
     const renderConnectedUserList = () => {
         return users.map((user, index) => {
-            //console.log(user);
             return <Box key={user.uid + index} className={classes.user}>
                 <Avatar
                     style={{ border: `3px solid ${user.color}`, backgroundColor: user.color, marginRight: 10 }}
@@ -356,6 +360,7 @@ export const DesignPage = () => {
             </Box>;
         });
     };
+
     return (
         <>
             <Grid container className={classes.menu} key={design._id}>
@@ -408,6 +413,15 @@ export const DesignPage = () => {
             {
                 (uiState.isCheckSaveDesignModalOpen) && <CheckSaveDesignModal />
             }
+            <Backdrop className={classes.backdrop} open={!online || !connected}>
+                <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Box width={300} height={300} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <Description className={classes.loadingFile} />
+                    </Box>
+
+                    <Typography align='center'>Se ha perdido la conexión con el servidor. Intentando reconectar...</Typography>
+                </Box>
+            </Backdrop>
         </>
     )
 }

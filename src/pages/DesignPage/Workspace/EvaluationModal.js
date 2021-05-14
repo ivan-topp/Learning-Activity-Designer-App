@@ -47,7 +47,7 @@ export const EvaluationModal = () => {
     const { uiState, dispatch } = useUiState();
     const { designState } = useDesignState();
     const { design } = designState;
-    const { socket } = useSocketState();
+    const { socket, emitWithTimeout } = useSocketState();
     const { learningActivityIndex } = uiState.evaluationData;
     const [ newEvaluation, setNewEvaluation ] = useState([...design.data.learningActivities[learningActivityIndex].evaluation]);
     const { enqueueSnackbar } = useSnackbar();
@@ -81,12 +81,22 @@ export const EvaluationModal = () => {
     };
 
     const handleAddEvaluationInDesign = () =>{
-        socket.emit('add-evaluation-in-activity', { designId: design._id, learningActivityID: design.data.learningActivities[learningActivityIndex].id, evaluation: [...newEvaluation]});
-        dispatch({
-            type: types.ui.toggleModal,
-            payload: 'Evaluation',
-        });
-        enqueueSnackbar('Se han modificado sus evaluaciones correctamente', { variant: 'success', autoHideDuration: 2000 });
+        socket?.emit('add-evaluation-in-activity', 
+            { designId: design._id, learningActivityID: design.data.learningActivities[learningActivityIndex].id, evaluation: [...newEvaluation]}, 
+            emitWithTimeout(
+                (resp) => {
+                    if(resp.ok && uiState.userSaveDesign){
+                        dispatch({
+                            type: types.ui.setUserSaveDesign,
+                            payload: false,
+                        });
+                    }
+                    enqueueSnackbar(resp.message, { variant: resp.ok ? 'success' : 'error', autoHideDuration: 2000 });
+                },
+                () => enqueueSnackbar('Error al modificar las evaluaciones de la actividad de aprendizaje. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+            )
+        );
+        handleClose();
     };
 
     return (

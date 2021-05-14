@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useQueryClient } from 'react-query';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Search } from '@material-ui/icons';
@@ -69,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
 export const NavBar = () => {
     const queryClient = useQueryClient();
     const history = useHistory();
+    const location = useLocation();
     const [isMenuOpen, setMenuOpen] = useState(null);
     const theme = useTheme();
     const isXSDevice = useMediaQuery(theme.breakpoints.down('xs'));
@@ -114,7 +115,7 @@ export const NavBar = () => {
     const handleSearchUsers = async (e) => {
         e.preventDefault();
         if (filter.trim().length > 0) {
-            if(design !== null && !uiState.userSaveDesign){
+            if(design !== null && !location.pathname.includes('reader') && !location.pathname.includes('shared-link') && !uiState.userSaveDesign){
                 dispatch({
                     type: types.ui.toggleModal,
                     payload: 'CheckSaveDesign'
@@ -134,7 +135,7 @@ export const NavBar = () => {
 
     const handleGoUserProfile = async (e) =>{
         e.preventDefault();
-        if(design !== null && !uiState.userSaveDesign){
+        if(design !== null && !location.pathname.includes('reader') && !location.pathname.includes('shared-link') && !uiState.userSaveDesign){
             dispatch({
                 type: types.ui.toggleModal,
                 payload: 'CheckSaveDesign'
@@ -152,7 +153,7 @@ export const NavBar = () => {
 
     const handleGoHomePage = async (e) =>{
         e.preventDefault();
-        if(design !== null && !uiState.userSaveDesign){
+        if(design !== null && !location.pathname.includes('reader') && !location.pathname.includes('shared-link') && !uiState.userSaveDesign){
             dispatch({
                 type: types.ui.toggleModal,
                 payload: 'CheckSaveDesign'

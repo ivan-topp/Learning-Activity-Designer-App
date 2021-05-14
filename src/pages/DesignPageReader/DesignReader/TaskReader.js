@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useRef } from 'react';
+import React from 'react';
 import { makeStyles, Typography, Paper, Box, } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
@@ -96,22 +96,8 @@ const useStyles = makeStyles((theme) => ({
     
 }));
 
-export const TaskReader = forwardRef(({ index, task }, ref) => {
+export const TaskReader = ({ index, task }) => {
     const classes = useStyles();
-    const hoursRef = useRef();
-    const minutesRef = useRef();
-    const descriptionRef = useRef();
-
-    useImperativeHandle(
-        ref,
-        () => ({
-            clearTexts: () => {
-                hoursRef?.current.clearText();
-                minutesRef?.current.clearText();
-                descriptionRef?.current.clearText();
-            }
-        }),
-    );
 
     const listTasksArray = () => {
         return (
@@ -192,4 +178,4 @@ export const TaskReader = forwardRef(({ index, task }, ref) => {
             }
         </>
     )
-})
+};

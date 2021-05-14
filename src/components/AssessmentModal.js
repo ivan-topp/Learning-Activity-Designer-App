@@ -7,6 +7,7 @@ import { useDesignState } from 'contexts/design/DesignContext';
 import { useSocketState } from 'contexts/SocketContext';
 import { Rating } from '@material-ui/lab';
 import { useAuthState } from 'contexts/AuthContext';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     closeButton: {
@@ -56,7 +57,8 @@ const getInitialScore = (assessments, uid) => {
 
 export const AssessmentModal = () => {
     const classes = useStyles();
-    const { socket } = useSocketState();
+    const { enqueueSnackbar } = useSnackbar();
+    const { socket, online, emitWithTimeout } = useSocketState();
     const { authState } = useAuthState();
     const { uiState, dispatch } = useUiState();
     const { designState } = useDesignState();
@@ -81,14 +83,19 @@ export const AssessmentModal = () => {
     const handleRate = () => {
         if(assessment){
             if (assessment === initialScore) return handleClose();
-            socket.emit('rate-design', {
-                designId: design._id,
-                rate: {
-                    user: authState.user.uid,
-                    score: assessment,
-                },
-            });
-            handleClose();
+            if(online){
+                socket?.emit('rate-design', {
+                    designId: design._id,
+                    rate: {
+                        user: authState.user.uid,
+                        score: assessment,
+                    },
+                }, emitWithTimeout(
+                    (resp) => enqueueSnackbar(resp.message, { variant: resp.ok ? 'success' : 'error', autoHideDuration: 2000 }),
+                    () => enqueueSnackbar('Error al valorar el diseño. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+                ));
+                handleClose();
+            }
         }
     };
     

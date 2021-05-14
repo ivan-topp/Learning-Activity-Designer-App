@@ -5,6 +5,7 @@ import { useAuthState } from 'contexts/AuthContext';
 import { useDesignState } from 'contexts/design/DesignContext';
 import { useSocketState } from 'contexts/SocketContext';
 import { useUiState } from 'contexts/ui/UiContext';
+import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import types from 'types';
 import { formatDate, formatTime } from 'utils/dateTimeFormatter';
@@ -21,10 +22,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const Commentary = ({ data }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const { authState } = useAuthState();
     const { dispatch } = useUiState();
     const { designState } = useDesignState();
-    const { socket } = useSocketState();
+    const { socket, online, emitWithTimeout } = useSocketState();
     const { design } = designState;
     const { user, date, commentary } = data;
     const [ editing, setEditing] = useState(false);
@@ -35,15 +37,28 @@ export const Commentary = ({ data }) => {
         e.preventDefault();
         console.log();
         if(commentary.trim() !== commentaryInput.trim()){
-            socket.emit('comment-design', { 
-                designId: design._id, 
-                commentary: {
-                    ...data,
-                    commentary: commentaryInput.trim()
-                }
-            });
+            if(online){
+                socket?.emit('comment-design', { 
+                    designId: design._id, 
+                    commentary: {
+                        ...data,
+                        commentary: commentaryInput.trim()
+                    }
+                }, emitWithTimeout(
+                    (resp) => {
+                        if(!resp.ok){
+                            enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                        }
+                    },
+                    () => {
+                        setCommentaryInput(commentary);
+                        enqueueSnackbar('Error al editar el comentario. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 });
+                    },
+                ));
+            }
         }
         setEditing(false);
+        
     };
 
     const handleDeleteCommentary = () => {

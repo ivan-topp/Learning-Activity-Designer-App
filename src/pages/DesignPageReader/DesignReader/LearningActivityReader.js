@@ -1,4 +1,4 @@
-import React, {  useRef } from 'react';
+import React from 'react';
 import { Box, Divider, Grid, makeStyles, Paper, Tooltip, Typography } from '@material-ui/core'
 import { TaskReader } from 'pages/DesignPageReader/DesignReader/TaskReader';
 import { StackedBar } from 'components/StackedBar';
@@ -77,7 +77,6 @@ export const LearningActivityReader = ({ index, learningActivity }) => {
     const classes = useStyles();
     const { designState } = useDesignState();
     const { design } = designState;
-    const taskRefs = useRef([]);
 
     const resetItems = () =>{
         itemsLearningType.forEach((item) =>{
@@ -128,7 +127,7 @@ export const LearningActivityReader = ({ index, learningActivity }) => {
                         <Grid item xs={12} sm={8} className={classes.taskContainer}>
                             <Grid className={classes.gridTask}>
                                 {
-                                    design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i)=> <TaskReader ref={(ref) => taskRefs.current.push(ref)} key={`task-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index}/> ) 
+                                    design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i)=> <TaskReader key={`task-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index}/> ) 
                                 }
                             </Grid>
                             <Grid container>
