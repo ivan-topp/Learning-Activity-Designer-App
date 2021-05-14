@@ -186,7 +186,7 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                     (design.metadata.evaluationPattern === '') ? 
                                     <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>No definido.</Text>
                                     :
-                                    <Text wrap style={{fontSize: 12, justifyContent: 'center'}}>{design.metadata.evaluationPattern}</Text>
+                                    <Text wrap style={{fontSize: 12, justifyContent: 'center', color:'#5564eb'}} >{design.metadata.evaluationPattern}</Text>
                                 } 
                             </View>
                             <View style = {{marginLeft: 16, marginRight: 16}}>
@@ -319,7 +319,7 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                                                 <Text style={{fontSize: 10, color: '#979797', marginTop: 10, marginBottom: 5}} >Enlace</Text>
                                                                 {(resource.link === '') 
                                                                     ? <Text wrap style={{fontSize: 10, justifyContent: 'center'}}>No definido.</Text>
-                                                                    : <Link wrap style={{fontSize: 10, justifyContent: 'center'}}>{resource.link}</Link>
+                                                                    : <Link wrap style={{fontSize: 10, justifyContent: 'center', color:'#5564eb'}}>{resource.link}</Link>
                                                                 }
                                                             </div> 
                                                         ))
