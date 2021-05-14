@@ -113,7 +113,7 @@ export const DesignPage = () => {
     const theme = useTheme();
     const isSmDevice = useMediaQuery(theme.breakpoints.down('sm'));
     const isXsDevice = useMediaQuery(theme.breakpoints.down('xs'));
-    const { doc, provider, connectToDesign, clearDoc, connected } = useSharedDocContext();
+    const { doc, provider, connectToDesign, clearDoc, connected, user } = useSharedDocContext();
     const { authState } = useAuthState();
     const { socket, online, emitWithTimeout } = useSocketState();
     const { designState, dispatch } = useDesignState();
@@ -317,7 +317,7 @@ export const DesignPage = () => {
         );
     }
 
-    if (!design || !doc || !provider) {
+    if (!design || !doc || !provider || !user) {
         return (<Box className={classes.workspace}>
             <Backdrop className={classes.backdrop} open={true}>
                 <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
