@@ -72,7 +72,10 @@ export const designReducer = ( state, action ) => {
             return {
                 ...state,
                 currentLearningResult: {
-                    category: null,
+                    category: {
+                        _id: null,
+                        name: null,
+                    },
                     verb: null,
                     description: null,
                     editing: false,

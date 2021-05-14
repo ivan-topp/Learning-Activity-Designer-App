@@ -16,7 +16,10 @@ const initialState = {
 	design: null,
 	users: [],
 	currentLearningResult: {
-		category: null,
+		category: {
+			_id: null,
+			name: null,
+		},
 		verb: null,
 		description: null,
 		editing: false,

@@ -59,7 +59,7 @@ export const LearningResultModal = ({ design, isOpen }) => {
     }, [setDescription, designState.currentLearningResult.description]);
 
     const handleNext = () => {
-        if(activeStep === 0 && category === null) return console.log('No ha seleccionado una categoría de bloom.');
+        if(activeStep === 0 && category._id === null && category.name === null) return console.log('No ha seleccionado una categoría de bloom.');
         else if (activeStep === 1 && (verb === '' || !verb)) return console.log('No ha seleccionado un verbo de bloom.');
         if (isMounted.current) setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
@@ -81,7 +81,7 @@ export const LearningResultModal = ({ design, isOpen }) => {
         setDescription('');
         designDispatch({ type: types.design.clearCurrentLearningResult });
     };
-
+    
     const handleFinish = () => {
         if(!description || (description && description.trim() === '')) return console.log('No se ha ingresado una descripción.');
         designDispatch({
@@ -91,7 +91,7 @@ export const LearningResultModal = ({ design, isOpen }) => {
                 value: description,
             }
         });
-        if(!editing) socket?.emit('add-learning-result', { designId: design._id, learningResult: { verb, description } }, emitWithTimeout(
+        if(!editing) socket?.emit('add-learning-result', { designId: design._id, learningResult: { category: category, verb, description } }, emitWithTimeout(
             (resp) => {
                 if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
                 if(uiState.userSaveDesign){
@@ -105,7 +105,7 @@ export const LearningResultModal = ({ design, isOpen }) => {
             () => enqueueSnackbar('Error al agregar el resultado de aprendizaje. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
         ));
         else if (editing){
-            socket?.emit('edit-learning-result', { designId: design._id, index, learningResult: { verb, description } }, emitWithTimeout(
+            socket?.emit('edit-learning-result', { designId: design._id, index, learningResult: { category: category, verb, description } }, emitWithTimeout(
                 (resp) => {
                     if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
                     if(uiState.userSaveDesign){
@@ -162,7 +162,7 @@ export const LearningResultModal = ({ design, isOpen }) => {
                         : (activeStep === 1)
                             ? <Box className={classes.stepContent}>
                                 <Typography style={{marginLeft: 10, marginRight: 10, marginBottom:10}} align='justify'>
-                                    En la siguiente lista se encuentran los distintos verbos descritos por la taxonomía de Bloom disponibles para la categoría "{designState.bloomCategories.find(bc => bc._id === category).name }". 
+                                    En la siguiente lista se encuentran los distintos verbos descritos por la taxonomía de Bloom disponibles para la categoría "{designState.bloomCategories.find(bc => bc._id === category._id).name }". 
                                 </Typography>
                                 <Typography style={{marginLeft: 10, marginRight: 10, marginBottom:10}} align='justify'>
                                     Por favor seleccione el verbo que más sentido tenga con el resultado de aprendizaje que desea crear.
@@ -171,7 +171,7 @@ export const LearningResultModal = ({ design, isOpen }) => {
                             </Box>
                             : <Box className={classes.stepContent}>
                                 <Typography style={{marginLeft: 10, marginRight: 10, marginBottom:10}} align='justify'>
-                                    Usted ha seleccionado el verbo "{verb}" correspondiente a la categoría "{designState.bloomCategories.find(bc => bc._id === category).name }".
+                                    Usted ha seleccionado el verbo "{verb}" correspondiente a la categoría "{designState.bloomCategories.find(bc => bc._id === category._id).name }".
                                 </Typography>
                                 <Typography style={{marginLeft: 10, marginRight: 10, marginBottom:10}} align='justify'>
                                     Por favor complete la descripción del resultado de aprendizaje.
@@ -215,7 +215,7 @@ export const LearningResultModal = ({ design, isOpen }) => {
                         ? <Button variant="contained" color="primary" disabled = {activeStep === 2 && (description === null || description === '')} onClick={handleFinish}>
                             Finalizar
                         </Button>
-                        : <Button variant="contained" color="primary" disabled = {activeStep === 0 ? category === null : activeStep === 1 && verb === null} onClick={handleNext}>
+                        : <Button variant="contained" color="primary" disabled = {activeStep === 0 ? category._id === null : activeStep === 1 && verb === null} onClick={handleNext}>
                             Siguiente
                         </Button>
                 }

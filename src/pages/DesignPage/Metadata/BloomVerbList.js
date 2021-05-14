@@ -33,7 +33,7 @@ export const BloomVerbList = () => {
     };
 
     const createOptionList = () => {
-        return bloomVerbs.filter((verb) => verb.category === category).map(option => {
+        return bloomVerbs.filter((verb) => verb.category === category._id).map(option => {
             const isActive = active === option.name;
             return (
             <FormControlLabel 

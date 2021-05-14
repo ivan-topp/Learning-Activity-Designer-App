@@ -30,15 +30,13 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const LearningResult = ({ verb, description, index}) => {
+export const LearningResult = ({ category, verb, description, index}) => {
     const classes = useStyles();
     const { uiState, dispatch: uiDispatch } = useUiState();
     const { designState, dispatch: designDispatch } = useDesignState();
     const { design } = designState;
 
     const handleEdit = () => {
-        const { bloomVerbs, bloomCategories } = designState;
-        const category = bloomCategories.find((category) => category._id === bloomVerbs.find((v) => v.name === verb).category)._id;
         designDispatch({
             type: types.design.setCurrentLearningResult,
             payload: {

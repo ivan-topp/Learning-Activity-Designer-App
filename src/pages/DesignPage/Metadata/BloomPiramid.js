@@ -70,11 +70,11 @@ export const BloomPiramid = () => {
 
     const createOptionList = () => {
         return bloomCategories.map( option => {
-            const isActive = active === option._id;
+            const isActive = active._id === option._id;
             return (
                 <div 
                     key={option._id}
-                    onClick={()=> handleSelectOption(isActive ? null : option._id)}
+                    onClick={()=> handleSelectOption(isActive ? null : option)}
                     className={`${classes.option} ${classes[option.name.toLowerCase()]} ${isActive && classes.active}`}
                 >
                     { option.name }
