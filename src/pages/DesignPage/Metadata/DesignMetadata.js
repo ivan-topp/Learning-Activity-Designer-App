@@ -144,7 +144,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
 
     const setKeywords = useCallback(
         (keywords) => {
-            handleInputChange({ target: { name: 'keywords', value: keywords } });
+            if (isMounted.current) handleInputChange({ target: { name: 'keywords', value: keywords } });
         },
         [handleInputChange],
     );
@@ -330,14 +330,14 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                 (metadata[field][subfield] === undefined || metadata[field][subfield] === null)
                 || metadata[field][subfield].toString() !== value.toString()
             ) {
-                handleInputChange(e);
+                if (isMounted.current) handleInputChange(e);
             }
         } else {
             if (
                 (metadata[field] === undefined || metadata[field] === null) ||
                 metadata[field].toString() !== value.toString()
             ) {
-                handleInputChange(e);
+                if (isMounted.current) handleInputChange(e);
             }
         }
     };
@@ -377,7 +377,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
             () => enqueueSnackbar('Error al eliminar la palabra clave. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
         ));
     };
-
+    
     return (
         <>  
             <Grid container key={design._id}>

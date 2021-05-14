@@ -1,5 +1,5 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, makeStyles } from '@material-ui/core';
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import types from 'types';
 import { useUiState } from 'contexts/ui/UiContext';
 import CloseIcon from '@material-ui/icons/Close';
@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ResourceLinksModal = () => {
     const classes = useStyles();
+    const isMounted = useRef(true);
     const { uiState, dispatch } = useUiState();
     const { learningActivityIndex, taskIndex } = uiState.resourceLink;
     const { designState } = useDesignState();
@@ -52,8 +53,14 @@ export const ResourceLinksModal = () => {
     const { socket, emitWithTimeout } = useSocketState();
     const { enqueueSnackbar } = useSnackbar();
 
+    useEffect(() => {
+        return () => {
+            isMounted.current = false;
+        }
+    }, []);
+
     const handleClose = () => {
-        setNewResource([...design.data.learningActivities[learningActivityIndex].tasks[taskIndex].resourceLinks]);
+        if (isMounted.current) setNewResource([...design.data.learningActivities[learningActivityIndex].tasks[taskIndex].resourceLinks]);
         dispatch({
             type: types.ui.setResourceLink,
             payload: {
@@ -72,7 +79,7 @@ export const ResourceLinksModal = () => {
             title: '',
             link: '',
         }
-        setNewResource([...newResource, newLinks]);
+        if (isMounted.current) setNewResource([...newResource, newLinks]);
         if(uiState.userSaveDesign){
             dispatch({
                 type: types.ui.setUserSaveDesign,

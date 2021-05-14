@@ -260,7 +260,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
             subfield = 'minutes';
             value = isNaN(value) ? 0 : value;
         }
-        handleInputChange({ target });
+        if(isMounted.current) handleInputChange({ target });
         socket?.emit('edit-task-field', { designId: design._id, learningActivityID, taskID: task.id, field, value, subfield, sumHours, sumMinutes}, emitWithTimeout(
             (resp) => {
                 if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
@@ -326,7 +326,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
     };
 
     const handleChangeDropdown = (e) => {
-        handleInputChange(e);
+        if (isMounted.current) handleInputChange(e);
         socket?.emit('edit-task-field', { designId: design._id, learningActivityID, taskID: task.id, field: e.target.name, value: e.target.value, subfield: null }, emitWithTimeout(
             (resp) => {
                 if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });

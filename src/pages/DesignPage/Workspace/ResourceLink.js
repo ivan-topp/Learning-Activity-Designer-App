@@ -1,5 +1,5 @@
 import { Box, Divider, Grid, IconButton, makeStyles, TextField, Tooltip } from '@material-ui/core'
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Delete } from '@material-ui/icons';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
@@ -36,10 +36,17 @@ export const ResourceLink = ({index, resource, newResource, setNewResource}) => 
     const classes = useStyles();
     
     const { uiState, dispatch } = useUiState();
+    
+    const isMounted = useRef(true);
+    useEffect(() => {
+        return () => {
+            isMounted.current = false;
+        }
+    }, []);
 
     const changeTitle = (event) => {
         const newTitle = event.target.value;
-        setNewResource( newResource => newResource.map((resource, i) => {
+        if (isMounted.current) setNewResource( newResource => newResource.map((resource, i) => {
             if ( i === index ) {
                 resource.title = newTitle;
             }
@@ -55,7 +62,7 @@ export const ResourceLink = ({index, resource, newResource, setNewResource}) => 
 
     const changeLink = (event) => {
         const newLink = event.target.value;
-        setNewResource( newResource => newResource.map((resource, i) => {
+        if (isMounted.current) setNewResource( newResource => newResource.map((resource, i) => {
             if ( i === index ) {
                 resource.link = newLink;
             }
@@ -71,11 +78,11 @@ export const ResourceLink = ({index, resource, newResource, setNewResource}) => 
     
     const handleDeleteResourceLink = (index) =>{
         if (index === newResource.length - 1) {
-            setNewResource([
+            if (isMounted.current) setNewResource([
                 ...newResource.slice(0, index),
             ])
         } else {
-            setNewResource([
+            if (isMounted.current) setNewResource([
                 ...newResource.slice(0, index),
                 ...newResource.slice(index + 1, newResource.length)
             ])

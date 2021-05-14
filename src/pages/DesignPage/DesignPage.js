@@ -161,7 +161,7 @@ export const DesignPage = () => {
             });
         };
     }, [clearDoc, dispatch]);
-
+    
     useEffect(() => {
         if (online) {
             socket?.emit('join-to-design', { user: authState.user, designId: id, public: false }, emitWithTimeout(

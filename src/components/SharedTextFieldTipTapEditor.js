@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, forwardRef, useImperativeHandle } from 'react'
+import { useEffect, useState, useCallback, forwardRef, useImperativeHandle, useRef } from 'react'
 import { Editor } from '@tiptap/core'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
@@ -94,6 +94,7 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name,
     deleteOnRemove = false,
     onSynced,
 }, ref) => {
+    const isMounted = useRef(true);
     const [focused, setFocused] = useState(false);
     const classes = useStyles({
         multiline,
@@ -104,6 +105,12 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name,
     const [synced, setSynced] = useState(false);
     const { doc, provider, user } = useSharedDocContext();
     const [editor, setEditor] = useState(null);
+
+    useEffect(() => {
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
 
     const getText = useCallback(
         () => {
@@ -138,79 +145,84 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name,
         }
     }, [doc, editor, setText, deleteOnRemove]);
 
-    if(!editor){
-        setEditor(new Editor({
-            editorProps: type === 'number' ? {
-                handleTextInput: (view, from, to, text) => {
-                    if (isNaN(text) && text !== '-') return true;
-                    if (text === '0' && view.dom.firstChild.textContent === '00') return true;
-                    if (
-                        (text === '-' && view.dom.firstChild.textContent.match(/-/g).length > 1) || 
-                        (text === '-' && min !== null && min >= 0) ||
-                        (text === '-' && view.dom.firstChild.textContent.indexOf('-') !== 0) 
-                    ) return true;
-                    if (max !== null && parseInt(view.dom.firstChild.textContent) > max) return true;
-                    if (min !== null && parseInt(view.dom.firstChild.textContent) < min) return true;
-                    return false;
-                },
-                handlePaste: (view, event, slice) => {
-                    if (slice.content.childCount !== 1) return true;
-                    if (isNaN(slice.content.firstChild.textContent)) return true;
-                    const prevValue = view.dom.firstChild.textContent;
-                    const newValue = prevValue + slice.content.firstChild.textContent;
-                    if (
-                        (newValue.includes('-') && newValue.match(/-/g)?.length > 1) ||
-                        (newValue.includes('-') && newValue.indexOf('-') !== 0)
-                    ) return true;                    
-                    if (max !== null && parseInt(newValue) > max) return true;
-                    if (min !== null && parseInt(newValue) < min) return true;
-                    return false;
-                },
-            } : {},
-            extensions: [
-                Document.extend({
-                    content: multiline ? 'block+' : 'block',
-                }),
-                Paragraph,
-                Text,
-                CollaborationCursor.configure({
-                    provider: provider,
-                    user,
-                }),
-                Collaboration.configure({
-                    document: doc,
-                    field: name,
-                }),
-                CharacterCount.configure({
-                    limit: maxLength,
-                }),
-            ],
-            onUpdate: (event) => {
-                const text = htmlToText(event.editor.getHTML().toString());
-                let value = (type === 'number' && !isNaN(text)) ? parseInt(text) : text;
-                if(onChange && event.transaction.docs[0].textContent !== text) onChange({
-                    target : {
-                        name,
-                        type,
-                        value: (type === 'number' && isNaN(value)) ? 0 : value,
-                    }
-                });
-            },
-            onFocus: ({editor, event}) => {
-                setFocused(true);
-            },
-            onBlur: ({editor, event}) => {
-                setFocused(false);
-            },
-        }));
-    }
+    useEffect(() => {
+        if(!editor){
+            if(isMounted.current){
+                setEditor(new Editor({
+                    editorProps: type === 'number' ? {
+                        handleTextInput: (view, from, to, text) => {
+                            if (isNaN(text) && text !== '-') return true;
+                            if (text === '0' && view.dom.firstChild.textContent === '00') return true;
+                            if (
+                                (text === '-' && view.dom.firstChild.textContent.match(/-/g).length > 1) || 
+                                (text === '-' && min !== null && min >= 0) ||
+                                (text === '-' && view.dom.firstChild.textContent.indexOf('-') !== 0) 
+                            ) return true;
+                            if (max !== null && parseInt(view.dom.firstChild.textContent) > max) return true;
+                            if (min !== null && parseInt(view.dom.firstChild.textContent) < min) return true;
+                            return false;
+                        },
+                        handlePaste: (view, event, slice) => {
+                            if (slice.content.childCount !== 1) return true;
+                            if (isNaN(slice.content.firstChild.textContent)) return true;
+                            const prevValue = view.dom.firstChild.textContent;
+                            const newValue = prevValue + slice.content.firstChild.textContent;
+                            if (
+                                (newValue.includes('-') && newValue.match(/-/g)?.length > 1) ||
+                                (newValue.includes('-') && newValue.indexOf('-') !== 0)
+                            ) return true;                    
+                            if (max !== null && parseInt(newValue) > max) return true;
+                            if (min !== null && parseInt(newValue) < min) return true;
+                            return false;
+                        },
+                    } : {},
+                    extensions: [
+                        Document.extend({
+                            content: multiline ? 'block+' : 'block',
+                        }),
+                        Paragraph,
+                        Text,
+                        CollaborationCursor.configure({
+                            provider: provider,
+                            user,
+                        }),
+                        Collaboration.configure({
+                            document: doc,
+                            field: name,
+                        }),
+                        CharacterCount.configure({
+                            limit: maxLength,
+                        }),
+                    ],
+                    onUpdate: (event) => {
+                        const text = htmlToText(event.editor.getHTML().toString());
+                        let value = (type === 'number' && !isNaN(text)) ? parseInt(text) : text;
+                        if(onChange && event.transaction.docs[0].textContent !== text) onChange({
+                            target : {
+                                name,
+                                type,
+                                value: (type === 'number' && isNaN(value)) ? 0 : value,
+                            }
+                        });
+                    },
+                    onFocus: ({editor, event}) => {
+                        if(isMounted.current) setFocused(true);
+                    },
+                    onBlur: ({editor, event}) => {
+                        if(isMounted.current) setFocused(false);
+                    },
+                }));
+            }
+        }
+    }, [editor, doc, max, maxLength, min, multiline, name, onChange, provider, type, user]);
+
     useEffect(() => {
         if (provider.synced) {
             if(!synced){
                 if (getText() === '') {
                     setText(initialvalue);
                     if(onSynced) onSynced();
-                    setSynced(true);
+                    if(isMounted.current) setSynced(true);
                 }
             }
         } else {
@@ -219,7 +231,7 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name,
                     if (getText() === '') {
                         setText(initialvalue);
                         if(onSynced) onSynced();
-                        setSynced(true);
+                        if(isMounted.current) setSynced(true);
                     }
                 }
             })

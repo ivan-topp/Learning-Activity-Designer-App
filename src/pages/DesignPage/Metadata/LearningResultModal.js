@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment, makeStyles, Step, StepLabel, Stepper, TextField, Typography } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import { BloomPiramid } from 'pages/DesignPage/Metadata/BloomPiramid';
@@ -47,18 +47,25 @@ export const LearningResultModal = ({ design, isOpen }) => {
     const [activeStep, setActiveStep] = useState(0);
     const steps = ['Selecciona una categoría de bloom', 'Selecciona un verbo', 'Proporciona una descripción'];
 
+    const isMounted = useRef(true);
     useEffect(() => {
-        setDescription(designState.currentLearningResult.description);
+        return () => {
+            isMounted.current = false;
+        }
+    }, []);
+
+    useEffect(() => {
+        if(isMounted.current) setDescription(designState.currentLearningResult.description);
     }, [setDescription, designState.currentLearningResult.description]);
 
     const handleNext = () => {
         if(activeStep === 0 && category === null) return console.log('No ha seleccionado una categoría de bloom.');
         else if (activeStep === 1 && (verb === '' || !verb)) return console.log('No ha seleccionado un verbo de bloom.');
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        if (isMounted.current) setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
 
     const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+        if (isMounted.current) setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
     const handleClose = (e) => {
@@ -70,7 +77,7 @@ export const LearningResultModal = ({ design, isOpen }) => {
 
     const handleCloseModal = () => {
         handleClose();
-        setActiveStep(0);
+        if (isMounted.current) setActiveStep(0);
         setDescription('');
         designDispatch({ type: types.design.clearCurrentLearningResult });
     };

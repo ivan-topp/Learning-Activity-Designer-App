@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControl, Grid, IconButton, Link as MaterialLink, makeStyles, MenuItem, Select, TextField, Typography } from '@material-ui/core';
 import { useUiState } from 'contexts/ui/UiContext';
 import CloseIcon from '@material-ui/icons/Close';
@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ShareModal = () => {
     const classes = useStyles();
+    const isMounted = useRef(true);
     const { uiState, dispatch } = useUiState();
     const { designState } = useDesignState();
     const { design } = designState;
@@ -41,6 +42,13 @@ export const ShareModal = () => {
     const { enqueueSnackbar } = useSnackbar();
     const { socket, emitWithTimeout } = useSocketState();
     const [newPrivileges, setNewPrivileges] = useState([...design.privileges]);
+
+    useEffect(() => {
+        return () => {
+            isMounted.current = false;
+        }
+    }, []);
+
     const { data, error, isError, isLoading } = useQuery(['user-profile', design.owner], async () => {
         return await getUser(design.owner);
     }, { refetchOnWindowFocus: false });
@@ -51,15 +59,15 @@ export const ShareModal = () => {
         if (!user) return;
         const isInDesignContacts = design.privileges.map(privilege => privilege.user._id === user._id).reduce((a, b) => a || b);
         if (!isInDesignContacts) {
-            setNewPrivileges([...newPrivileges, { user, type: 1 }]);
+            if (isMounted.current)setNewPrivileges([...newPrivileges, { user, type: 1 }]);
         } else {
             enqueueSnackbar('El usuario ya se encuentra agregado', { variant: 'error', anchorOrigin: { vertical: 'bottom', horizontal: 'center' }, autoHideDuration: 2000 });
         };
-        setInputUser('');
+        if(isMounted.current) setInputUser('');
     };
 
     const handleClose = () => {
-        setNewPrivileges([...design.privileges]);
+        if(isMounted.current) setNewPrivileges([...design.privileges]);
         dispatch({
             type: types.ui.toggleModal,
             payload: 'Share'
@@ -69,11 +77,11 @@ export const ShareModal = () => {
     const handleAddContactInDesign = () => {
         socket?.emit('change-design-privileges', { designId: design._id, privileges: [...newPrivileges] }, emitWithTimeout(
             (resp) => {
-                if(!resp.ok) setNewPrivileges([...design.privileges]);
+                if(!resp.ok) if(isMounted.current) setNewPrivileges([...design.privileges]);
                 enqueueSnackbar(resp.message, { variant: resp.ok ? 'success' : 'error', autoHideDuration: 2000 });
             },
             () => {
-                setNewPrivileges([...design.privileges]);
+                if(isMounted.current) setNewPrivileges([...design.privileges]);
                 enqueueSnackbar('Error al compartir el diseño. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 });
             },
         ));
@@ -100,29 +108,29 @@ export const ShareModal = () => {
         if (v === type) return;
         if (v === 'Quitar') {
             if (index === newPrivileges.length - 1) {
-                setNewPrivileges([
+                if (isMounted.current) setNewPrivileges([
                     ...newPrivileges.slice(0, index),
-                ])
+                ]);
             } else {
-                setNewPrivileges([
+                if (isMounted.current) setNewPrivileges([
                     ...newPrivileges.slice(0, index),
                     ...newPrivileges.slice(index + 1, newPrivileges.length)
-                ])
+                ]);
             }
         } else {
             const p = { ...newPrivileges[index] };
             p.type = v;
             if (index === newPrivileges.length - 1) {
-                setNewPrivileges([
+                if(isMounted.current) setNewPrivileges([
                     ...newPrivileges.slice(0, index),
                     p,
-                ])
+                ]);
             } else {
-                setNewPrivileges([
+                if(isMounted.current) setNewPrivileges([
                     ...newPrivileges.slice(0, index),
                     p,
                     ...newPrivileges.slice(index + 1, newPrivileges.length)
-                ])
+                ]);
             }
         };
     };
@@ -192,7 +200,7 @@ export const ShareModal = () => {
                                 }}
                                 inputValue={inputUser}
                                 onInputChange={(event, newInputUser) => {
-                                    setInputUser(newInputUser);
+                                    if(isMounted.current) setInputUser(newInputUser);
                                 }}
                                 options={data.contacts.map(contact => {
                                     return contact.name

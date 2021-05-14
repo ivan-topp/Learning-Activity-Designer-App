@@ -97,6 +97,7 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
     const theme = useTheme();
     const isXSDevice = useMediaQuery(theme.breakpoints.down('xs'));
     const [isMenuOpen, setMenuOpen] = useState(null);
+    const isMounted = useRef(true);
     
     const titleRef = useRef();
     const descriptionRef = useRef();
@@ -120,6 +121,9 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
                 payload: false
             })
         }
+        return () => {
+            isMounted.current = false;
+        };
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
@@ -254,7 +258,7 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
             },
             () => enqueueSnackbar(`Error al editar el campo ${field} de la actividad. Por favor revise su conexión. Tiempo de espera excedido.`, { variant: 'error', autoHideDuration: 2000 }),
         ));
-        handleInputChange({ target: { ...target, name: field } });
+        if (isMounted.current) handleInputChange({ target: { ...target, name: field } });
         
     };
 
