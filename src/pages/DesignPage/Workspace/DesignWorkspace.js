@@ -444,7 +444,7 @@ export const DesignWorkspace = () => {
                         >
                             <MenuItem onClick={() => handleOpenModalPDF('teacher')}>PDF Docente</MenuItem>
                             <MenuItem onClick={() => handleOpenModalPDF('student')}>PDF Estudiante</MenuItem>
-                            <MenuItem onClick={handleExportToFile}>Exportar a JSON</MenuItem>
+                            <MenuItem onClick={handleExportToFile}>Respaldar Diseño</MenuItem>
                         </Menu>
                         <ButtonGroup size='small' fullWidth={isMediumDevice} className={classes.buttonGroupWorkSpace}>
                             <Button onClick={handleOpenMenu}>Exportar</Button>
