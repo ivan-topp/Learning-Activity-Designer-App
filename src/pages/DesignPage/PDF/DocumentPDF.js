@@ -246,7 +246,7 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                     </View>
                                     { learningActivity.tasks && learningActivity.tasks.map((task, indexTask) =>
                                         <View key = {`task-${indexTask}`} >
-                                            <View style={[styles.table, { 
+                                            <View style={(typeUserPDF === 'teacher')&& [styles.table,{
                                                     borderColor: 
                                                         task.learningType === 'Investigación' 
                                                         ? '#57A8E7' 
@@ -264,14 +264,22 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                                         && '#979797',
                                                     borderLeftWidth: 40}]}>
                                                 <View style={[styles.row, {marginTop: 5}]}>
-                                                    <Text style={[styles.cell, {color: '#979797'}]}>Aprendizaje</Text>
+                                                    {
+                                                        (typeUserPDF === 'teacher') &&
+                                                        <Text style={[styles.cell, {color: '#979797'}]}>Aprendizaje</Text>
+                                                    }
                                                     <Text style={[styles.cell, {color: '#979797'}]}>Tiempo</Text>
                                                     <Text style={[styles.cell, {color: '#979797'}]}>Modalidad</Text>
                                                 </View>
                                                 <View style={[styles.row]}>
-                                                    {task.learningType === 'Seleccionar' 
-                                                        ? <Text style={[styles.cell]}>No especificado.</Text>
-                                                        : <Text style={[styles.cell]}>{task.learningType}</Text>
+                                                    {
+                                                        (typeUserPDF === 'teacher') &&
+                                                        <>
+                                                            {(task.learningType === 'Seleccionar')
+                                                                ? <Text style={[styles.cell]}>No especificado.</Text>
+                                                                : <Text style={[styles.cell]}>{task.learningType}</Text>
+                                                            }
+                                                        </>   
                                                     }
                                                     <Text style={[styles.cell]}>{task.duration.hours} hrs : {task.duration.minutes} min.</Text>
                                                     {(task.modality === 'Seleccionar' || task.modality.trim().length === 0) 
@@ -284,7 +292,9 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                                     {  (task.format === 'Grupal') 
                                                         && <>
                                                             <Text style={[styles.cell, {color: '#979797'}]}>Número de integrantes</Text>
-                                                            <Text style={[styles.cell, {color: '#979797'}]}></Text>
+                                                            { typeUserPDF === 'teacher' &&
+                                                                <Text style={[styles.cell, {color: '#979797'}]}></Text>
+                                                            }
                                                         </>
                                                     }
                                                 </View>
@@ -296,7 +306,9 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
                                                     {  (task.format === 'Grupal') 
                                                         && <>
                                                             <Text style={styles.cell}> {task.groupSize}</Text> 
-                                                            <Text style={[styles.cell, {color: '#979797'}]}></Text>
+                                                            { typeUserPDF === 'teacher' &&
+                                                                <Text style={[styles.cell, {color: '#979797'}]}></Text>
+                                                            }
                                                         </> 
                                                     }
                                                 </View>
