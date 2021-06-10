@@ -365,7 +365,7 @@ export const DesignWorkspace = () => {
                             )
                             }
                         </Grid>
-                        <Grid>
+                        {/*<Grid>
                             {metadata && metadata.objective && (
                                 <>
                                     <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Objetivos </Typography>
@@ -375,6 +375,7 @@ export const DesignWorkspace = () => {
                             )
                             }
                         </Grid>
+                        */}
                         <Grid>
                             {metadata && metadata.scoreMean !== null && (
                                 <>

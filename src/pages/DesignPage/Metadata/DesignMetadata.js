@@ -270,7 +270,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
         workingTimeMinutes,
         priorKnowledge,
         description,
-        objective,
+        //objective,
         isPublic,
         keywords,
         evaluation,
@@ -637,7 +637,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                     />
                             }
                         </Grid>
-                        <Grid item className={classes.grid} xs={12} md={12} lg={6}>
+                        <Grid item className={classes.grid} xs={12} /*md={12} lg={6}*/>
                             {
                                 isLoading ? (<Skeleton width={'100%'} height={70} />)
                                     : <TextField
@@ -662,6 +662,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                     />
                             }
                         </Grid>
+                        {/*
                         <Grid item className={classes.grid} xs={12} md={12} lg={6}>
                             {
                                 isLoading ? (<Skeleton width={'100%'} height={70} />)
@@ -687,6 +688,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                     />
                             }
                         </Grid>
+                        */}
                         <Grid item className={classes.grid} xs={12}>
                             {
                                 isLoading ? (<Skeleton width={'100%'} height={70} />)
@@ -747,7 +749,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                     {
                         !isLoading ? (<>
                             <div className={classes.title}>
-                                <Typography variant='h4'>Resultados de aprendizaje</Typography>
+                                <Typography variant='h4'>Aprendizajes esperados</Typography>
                                 <Button className={classes.sectionAction} variant='outlined' color='default' onClick={handleOpenLearningResultmodal}>Agregar</Button>
                             </div>
                             <Divider />
@@ -755,7 +757,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                 {
                                     metadata.results.length === 0
                                         ? <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                                            Este diseño aún no tiene resultados de aprendizaje. Agrega el primer resultado de aprendizaje haciendo click {' '}
+                                            Este diseño aún no tiene aprendizajes esperados. Agrega el primer aprendizaje esperado haciendo click {' '}
                                             {<Link className={classes.clickHere} onClick={handleOpenLearningResultmodal}>aquí</Link>}
                                     !
                                 </Alert>

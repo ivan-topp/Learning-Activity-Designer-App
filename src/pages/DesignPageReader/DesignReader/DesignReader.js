@@ -288,7 +288,7 @@ export const DesignReader = ({ type }) => {
                                 )
                             }
                         </Grid>
-                        <Grid>
+                        {/*<Grid>
                             { metadata && metadata.objective &&(
                                     <>
                                         <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Objetivos </Typography>
@@ -298,6 +298,7 @@ export const DesignReader = ({ type }) => {
                                 )
                             }
                         </Grid>
+                        */}
                         <Grid>
                             {metadata && metadata.scoreMean !== null && (
                                 <>
