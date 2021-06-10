@@ -102,7 +102,7 @@ export const LearningResultModal = ({ design, isOpen }) => {
                 };
                 handleCloseModal();
             },
-            () => enqueueSnackbar('Error al agregar el resultado de aprendizaje. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+            () => enqueueSnackbar('Error al agregar el aprendizaje esperado. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
         ));
         else if (editing){
             socket?.emit('edit-learning-result', { designId: design._id, index, learningResult: { category: category, verb, description } }, emitWithTimeout(
@@ -116,7 +116,7 @@ export const LearningResultModal = ({ design, isOpen }) => {
                     };
                     handleCloseModal();
                 },
-                () => enqueueSnackbar('Error al editar el resultado de aprendizaje. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+                () => enqueueSnackbar('Error al editar el aprendizaje esperado. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
             ));
         };
         
@@ -128,7 +128,7 @@ export const LearningResultModal = ({ design, isOpen }) => {
                 <Box className={classes.title}>
                     <Box className={classes.ellipsis}>
                         {
-                            !editing ? 'Nuevo resultado de aprendizaje' : 'Editar resultado de aprendizaje'
+                            !editing ? 'Nuevo aprendizaje esperado' : 'Editar aprendizaje esperado'
                         }
                     </Box>
                     <IconButton aria-label='close' className={classes.closeButton} onClick={handleCloseModal}>
@@ -155,7 +155,7 @@ export const LearningResultModal = ({ design, isOpen }) => {
                                 En la siguiente pirámide se encuentran las distintas categorías o habilidades de pensamiento descritas según la taxonomía de Benjamín Bloom.
                             </Typography>
                             <Typography style={{marginLeft: 10, marginRight: 10, marginBottom:10}} align='justify'>
-                                Por favor seleccione la categoría que más sentido tenga con el resultado de aprendizaje que desea crear.
+                                Por favor seleccione la categoría que más sentido tenga con el aprendizaje esperado que desea crear.
                             </Typography>
                             <BloomPiramid />
                         </Box>
@@ -165,7 +165,7 @@ export const LearningResultModal = ({ design, isOpen }) => {
                                     En la siguiente lista se encuentran los distintos verbos descritos por la taxonomía de Bloom disponibles para la categoría "{designState.bloomCategories.find(bc => bc._id === category._id).name }". 
                                 </Typography>
                                 <Typography style={{marginLeft: 10, marginRight: 10, marginBottom:10}} align='justify'>
-                                    Por favor seleccione el verbo que más sentido tenga con el resultado de aprendizaje que desea crear.
+                                    Por favor seleccione el verbo que más sentido tenga con el aprendizaje esperado que desea crear.
                                 </Typography>
                                 <BloomVerbList />
                             </Box>

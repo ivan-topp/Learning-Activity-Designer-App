@@ -393,7 +393,7 @@ export const DesignWorkspace = () => {
                                 <div className={classes.textLeftPanelMetadata}>
                                         { metadata.results.map((result, i) => 
                                             <div key={`learning-result-${i}`} > 
-                                                <Typography variant='body2' color={'textSecondary'}>Resultado de aprendizaje {i + 1}</Typography>
+                                                <Typography variant='body2' color={'textSecondary'}>Aprendizaje esperado {i + 1}</Typography>
                                                 <Typography variant='body2' gutterBottom >{ result.verb + ' ' + result.description}</Typography>
                                             </div>
                                         )}

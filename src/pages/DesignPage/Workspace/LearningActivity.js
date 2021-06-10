@@ -220,7 +220,7 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
                         });
                     }
                 },
-                () => enqueueSnackbar('Error al desvincular el resultado de aprendizaje de la actividad. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+                () => enqueueSnackbar('Error al desvincular el aprendizaje esperado de la actividad. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
             ));
         } else {
             socket?.emit('add-learning-result-to-learningActivity', {
@@ -237,7 +237,7 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
                         });
                     }
                 },
-                () => enqueueSnackbar('Error al vincular el resultado de aprendizaje a la actividad. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+                () => enqueueSnackbar('Error al vincular el aprendizaje esperado a la actividad. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
             ));
         }
     };
@@ -282,7 +282,7 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
                 />
         ));
         if (learningResults.length === 0) return <Box style={{marginLeft: -15, paddingRight: 10}} fontSize='caption.fontSize' fontStyle='italic' textAlign='justify'>
-            No hay resultados de aprendizaje en este diseño. Para agregar resultados de aprendeizaje, por favor ve a la pestaña de metadatos.
+            No hay aprendizajes esperados en este diseño. Para agregar aprendizajes esperados, por favor ve a la pestaña de metadatos.
         </Box>;
         return learningResults;
     };
