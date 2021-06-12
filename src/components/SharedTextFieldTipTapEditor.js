@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, forwardRef, useImperativeHandle, useRef } from 'react'
+import React, { useEffect, useState, useCallback, forwardRef, useImperativeHandle, useRef } from 'react'
 import { Editor } from '@tiptap/core'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
@@ -121,11 +121,19 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name,
 
     const setText = useCallback(
         (value) => {
+            let htmlString = '';
+            if(multiline){
+                value.toString().split('\n').forEach((line)=>{
+                    if(!!line) {
+                        htmlString += `<p>${line}</p>`;
+                    }
+                });
+            }
             editor?.commands.first(({ commands }) => [
-                () => commands.setContent(value.toString()),
+                () => commands.setContent(multiline ? htmlString : value.toString()),
             ]);
         },
-        [editor],
+        [editor, multiline],
     );
 
     useImperativeHandle(
@@ -144,6 +152,24 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name,
             setText('');
         }
     }, [doc, editor, setText, deleteOnRemove]);
+
+    const getMultilineText = useCallback(
+        ({ content }) => {
+            let result = ``;
+            if(content.length === 1) return content[0].content ? content[0].content[0].text.trim() : '';
+            content.forEach((p, i) => {
+                if(p.content){
+                    if(i === content.length - 1) result+= `${p.content[0].text.trim()}`;
+                    else result+= `${p.content[0].text.trim()}\n`;
+                } else {
+                    if(i === content.length - 1) result+= ``;
+                    else result += `\n`;
+                }
+            });
+            return result;
+        },
+        [],
+    )
 
     useEffect(() => {
         if(!editor){
@@ -194,27 +220,42 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name,
                             limit: maxLength,
                         }),
                     ],
-                    onUpdate: (event) => {
-                        const text = htmlToText(event.editor.getHTML().toString());
-                        let value = (type === 'number' && !isNaN(text)) ? parseInt(text) : text;
-                        if(onChange && event.transaction.docs[0].textContent !== text) onChange({
-                            target : {
-                                name,
-                                type,
-                                value: (type === 'number' && isNaN(value)) ? 0 : value,
-                            }
-                        });
-                    },
+                    // onUpdate: (event) => {
+                    //     const text = htmlToText(event.editor.getHTML().toString());
+                    //     let value = (type === 'number' && !isNaN(text)) ? parseInt(text) : text;
+                    //     if(onChange && event.transaction.docs[0].textContent !== text) onChange({
+                    //         target : {
+                    //             name,
+                    //             type,
+                    //             value: (type === 'number' && isNaN(value)) ? 0 : value,
+                    //             shared: true,
+                    //         }
+                    //     });
+                    // },
                     onFocus: ({editor, event}) => {
                         if(isMounted.current) setFocused(true);
                     },
                     onBlur: ({editor, event}) => {
-                        if(isMounted.current) setFocused(false);
+                        if(isMounted.current) {
+                            setFocused(false);
+                            const text = multiline ? getMultilineText(editor.getJSON()) : htmlToText(editor.getHTML().toString()).trim().toString();
+                            let value = (type === 'number' && !isNaN(text)) ? parseInt(text) : text;
+                            console.log(text);
+                            if(onChange) onChange({
+                                target : {
+                                    name,
+                                    type,
+                                    value: (type === 'number' && isNaN(value)) ? 0 : value,
+                                    // shared: true,
+                                }
+                            });
+                        }
+                        
                     },
                 }));
             }
         }
-    }, [editor, doc, max, maxLength, min, multiline, name, onChange, provider, type, user]);
+    }, [editor, doc, max, maxLength, min, multiline, name, onChange, provider, type, user, getMultilineText]);
 
     useEffect(() => {
         if (provider.synced) {
@@ -238,62 +279,72 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name,
         }
     }, [provider.synced, getText, initialvalue, onSynced, provider, setText, synced]);
 
+    const handleIncrement = useCallback(
+        () => {
+            let val = getText();
+            if (!editor || type !== 'number') return;
+            if (!val.length || val === '-') return setText(min ?? 0);
+            val = parseInt(val);
+            if (max !== null && (val + 1 > max)) return;
+            if(onChange) onChange({
+                target : {
+                    name,
+                    type,
+                    value: (type === 'number' && isNaN(val)) ? 0 : val + 1,
+                }
+            });
+            return setText(val + 1);
+        },
+        [editor, type, setText, onChange, max, getText, min, name],
+    );
+
+    const handleDecrement = useCallback(
+        () => {
+            let val = getText();
+            if (!editor || type !== 'number') return;
+            if (!val.length || val === '-') return setText(min ?? 0);
+            val = parseInt(val);
+            if (min !== null && (val - 1 < min)) return;
+            if(onChange) onChange({
+                target : {
+                    name,
+                    type,
+                    value: (type === 'number' && isNaN(val)) ? 0 : val - 1,
+                }
+            });
+            return setText(val - 1);
+        },
+        [editor, type, setText, onChange, min, getText, name],
+    );
+
     if(!editor){
         return (<div>Conectando...</div>);
     }
 
-    const handleIncrement = () => {
-        let val = getText();
-        if (!editor || type !== 'number') return;
-        if (!val.length || val === '-') return setText(min ?? 0);
-        val = parseInt(val);
-        if (max !== null && (val + 1 > max)) return;
-        if(onChange) onChange({
-            target : {
-                name,
-                type,
-                value: (type === 'number' && isNaN(val)) ? 0 : val + 1,
-            }
-        });
-        return setText(val + 1);
-    };
-
-    const handleDecrement = () => {
-        let val = getText();
-        if (!editor || type !== 'number') return;
-        if (!val.length || val === '-') return setText(min ?? 0);
-        val = parseInt(val);
-        if (min !== null && (val - 1 < min)) return;
-        if(onChange) onChange({
-            target : {
-                name,
-                type,
-                value: (type === 'number' && isNaN(val)) ? 0 : val - 1,
-            }
-        });
-        return setText(val - 1);
-    };
-
-    return (
-        <div className={classes.root}>
-            <div className={classes.inputContainer} onClick={() => {
-                if (!focused) editor.chain().focus('end').run()
-            }}>
-                <EditorContent editor={editor} className={`${classes.editorx}`} />
-            </div>
-            {
-                type === 'number' && (
-                    <div className={classes.actions}>
-                        <Box className={classes.action} component={ButtonBase} onClick={handleIncrement}>
-                            <ArrowDropUp />
-                        </Box>
-                        <Divider />
-                        <Box className={classes.action} component={ButtonBase} onClick={handleDecrement}>
-                            <ArrowDropDown />
-                        </Box>
-                    </div>
-                )
-            }
+    return <div className={classes.root}>
+        <div className={classes.inputContainer} onClick={() => {
+            if (!focused) editor.chain().focus('end').run()
+        }}>
+            <EditorContent editor={editor} className={`${classes.editorx}`} />
         </div>
-    )
-})
+        {
+            type === 'number' && (
+                <div className={classes.actions}>
+                    <Box className={classes.action} component={ButtonBase} onClick={handleIncrement}>
+                        <ArrowDropUp />
+                    </Box>
+                    <Divider />
+                    <Box className={classes.action} component={ButtonBase} onClick={handleDecrement}>
+                        <ArrowDropDown />
+                    </Box>
+                </div>
+            )
+        }
+    </div>;
+});
+
+const initialValuePropsAreEqual = (prevProps, nextProps) => {
+    return prevProps.initialvalue === nextProps.initialvalue;
+}
+
+export const MemorizedSharedTextfieldTipTapEditor = React.memo(SharedTextFieldTipTapEditor, initialValuePropsAreEqual);

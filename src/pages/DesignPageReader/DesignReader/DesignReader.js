@@ -269,30 +269,48 @@ export const DesignReader = ({ type }) => {
                             }
                         </Grid>
                         <Grid>
-                            { metadata && metadata.priorKnowledge &&(
-                                    <>
-                                        <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Conocimiento Previo </Typography>
-                                        <Typography variant='body2' > { metadata.priorKnowledge } </Typography>
-                                        <Divider/>
-                                    </>
-                                )
+                            {metadata && metadata.priorKnowledge && (
+                                <>
+                                    <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Conocimiento Previo </Typography>
+                                    <Typography variant='body2' component={Box}> <pre style={{ fontFamily: 'inherit', margin: 0, wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+                                        {metadata.priorKnowledge}
+                                    </pre></Typography>
+                                    <Divider />
+                                </>
+                            )
                             }
                         </Grid>
                         <Grid>
-                            { metadata && metadata.description &&(
-                                    <>
-                                        <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Descripción </Typography>
-                                        <Typography variant='body2'> { metadata.description } </Typography>
-                                        <Divider/>
-                                    </>
-                                )
+                            {metadata && metadata.description && (
+                                <>
+                                    <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Descripción </Typography>
+                                    <Typography variant='body2' component={Box}> <pre style={{ fontFamily: 'inherit', margin: 0, wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+                                        {metadata.description}
+                                    </pre> </Typography>
+                                    <Divider />
+                                </>
+                            )
+                            }
+                        </Grid>
+                        <Grid>
+                            {metadata && metadata.evaluation && (
+                                <>
+                                    <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Evaluación </Typography>
+                                    <Typography variant='body2' component={Box}> <pre style={{ fontFamily: 'inherit', margin: 0, wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+                                        {metadata.evaluation}
+                                    </pre> </Typography>
+                                    <Divider />
+                                </>
+                            )
                             }
                         </Grid>
                         {/*<Grid>
                             { metadata && metadata.objective &&(
                                     <>
                                         <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Objetivos </Typography>
-                                        <Typography variant='body2' > { metadata.objective } </Typography>
+                                        <Typography variant='body2' component={Box}> <pre style={{ fontFamily: 'inherit', margin: 0, wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+                                            {metadata.objective}
+                                        </pre></Typography>
                                         <Divider/>
                                     </>
                                 )

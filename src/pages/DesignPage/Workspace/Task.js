@@ -8,6 +8,7 @@ import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 import { useSnackbar } from 'notistack';
 import { Delete } from '@material-ui/icons';
+import { useSharedDocContext } from 'contexts/SharedDocContext';
 
 const useStyles = makeStyles((theme) => ({
     trashIcon: {
@@ -127,7 +128,8 @@ const useStyles = makeStyles((theme) => ({
 
 export const Task = forwardRef(({ learningActivityIndex, index, task, learningActivityID, sumHours, sumMinutes, refTask, ...rest }, ref) => {
     const classes = useStyles();
-    const { socket, emitWithTimeout } = useSocketState();
+    const { socket, online, emitWithTimeout } = useSocketState();
+    const { connected } = useSharedDocContext();
     const isMounted = useRef(true);
     const hoursRef = useRef();
     const minutesRef = useRef();
@@ -271,10 +273,10 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                     });
                 }
             },
-            () => enqueueSnackbar(
+            () => {if(!online || !connected) enqueueSnackbar(
                 subfield ? `Error al editar el campo "${subfield}" del campo "${field}". Por favor revise su conexión. Tiempo de espera excedido.` : `Error al editar el campo "${field}". Por favor revise su conexión. Tiempo de espera excedido.`, 
                 { variant: 'error', autoHideDuration: 2000 }
-            ),
+            );},
         ));
     };
 

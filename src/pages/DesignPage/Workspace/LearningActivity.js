@@ -12,6 +12,7 @@ import { useSnackbar } from 'notistack';
 import { itemsLearningType } from 'assets/resource/items'
 import { Add, Delete, ListAlt, MoreVert } from '@material-ui/icons';
 import ObjectID from 'bson-objectid';
+import { useSharedDocContext } from 'contexts/SharedDocContext';
 
 const useStyles = makeStyles((theme) => ({
     unitSpacing: {
@@ -91,7 +92,8 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
     const classes = useStyles();
     const { designState } = useDesignState();
     const { design } = designState;
-    const { socket, emitWithTimeout } = useSocketState();
+    const { socket, online, emitWithTimeout } = useSocketState();
+    const { connected } = useSharedDocContext();
     const { uiState, dispatch } = useUiState();
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
@@ -256,7 +258,7 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
                     });
                 }
             },
-            () => enqueueSnackbar(`Error al editar el campo ${field} de la actividad. Por favor revise su conexión. Tiempo de espera excedido.`, { variant: 'error', autoHideDuration: 2000 }),
+            () => {if(!online || !connected) enqueueSnackbar(`Error al editar el campo ${field} de la actividad. Por favor revise su conexión. Tiempo de espera excedido.`, { variant: 'error', autoHideDuration: 2000 });},
         ));
         if (isMounted.current) handleInputChange({ target: { ...target, name: field } });
         

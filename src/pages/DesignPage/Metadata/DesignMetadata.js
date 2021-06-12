@@ -11,11 +11,12 @@ import { useDesignState } from 'contexts/design/DesignContext';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 import { useAuthState } from 'contexts/AuthContext';
-import { SharedTextFieldTipTapEditor } from 'components/SharedTextFieldTipTapEditor';
+import { MemorizedSharedTextfieldTipTapEditor } from 'components/SharedTextFieldTipTapEditor';
 import { useSnackbar } from 'notistack';
 import { KeywordManager } from 'components/KeywordManager';
 import { Star } from '@material-ui/icons';
 import { TextEditable } from 'components/TextEditable';
+import { useSharedDocContext } from 'contexts/SharedDocContext';
 
 const useStyles = makeStyles((theme) => ({
     leftPanel: {
@@ -86,7 +87,8 @@ const useStyles = makeStyles((theme) => ({
 
 export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
     const classes = useStyles();
-    const { socket/*, online*/, emitWithTimeout } = useSocketState();
+    const { socket, online, emitWithTimeout } = useSocketState();
+    const { connected } = useSharedDocContext();
     const { authState } = useAuthState();
     const isMounted = useRef(true);
     const { uiState, dispatch } = useUiState();
@@ -322,7 +324,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                     });
                 }
             },
-            () => enqueueSnackbar('Error al editar el diseño. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
+            () => {if(!online || !connected) enqueueSnackbar('Error al editar el diseño. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 });},
         ));
         if (subfield) {
             if (
@@ -409,7 +411,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                         variant='outlined'
                                         color='primary'
                                         InputProps={{
-                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputComponent: MemorizedSharedTextfieldTipTapEditor,
                                             inputProps: {
                                                 ref: nameRef,
                                                 name: 'name',
@@ -500,7 +502,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                         variant='outlined'
                                         color='primary'
                                         InputProps={{
-                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputComponent: MemorizedSharedTextfieldTipTapEditor,
                                             inputProps: {
                                                 ref: classSizeRef,
                                                 name: 'classSize',
@@ -532,7 +534,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                                 variant='outlined'
                                                 color='primary'
                                                 InputProps={{
-                                                    inputComponent: SharedTextFieldTipTapEditor,
+                                                    inputComponent: MemorizedSharedTextfieldTipTapEditor,
                                                     inputProps: {
                                                         ref: hoursRef,
                                                         name: 'workingTimeHours',
@@ -556,7 +558,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                                 variant='outlined'
                                                 color='primary'
                                                 InputProps={{
-                                                    inputComponent: SharedTextFieldTipTapEditor,
+                                                    inputComponent: MemorizedSharedTextfieldTipTapEditor,
                                                     inputProps: {
                                                         ref: minutesRef,
                                                         name: 'workingTimeMinutes',
@@ -623,7 +625,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                         variant='outlined'
                                         color='primary'
                                         InputProps={{
-                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputComponent: MemorizedSharedTextfieldTipTapEditor,
                                             inputProps: {
                                                 ref: descriptionRef,
                                                 name: 'description',
@@ -648,7 +650,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                         variant='outlined'
                                         color='primary'
                                         InputProps={{
-                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputComponent: MemorizedSharedTextfieldTipTapEditor,
                                             inputProps: {
                                                 ref: priorKnowledgeRef,
                                                 name: 'priorKnowledge',
@@ -674,7 +676,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                         variant='outlined'
                                         color='primary'
                                         InputProps={{
-                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputComponent: MemorizedSharedTextfieldTipTapEditor,
                                             inputProps: {
                                                 ref: objectiveRef,
                                                 name: 'objective',
@@ -700,7 +702,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                         variant='outlined'
                                         color='primary'
                                         InputProps={{
-                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputComponent: MemorizedSharedTextfieldTipTapEditor,
                                             inputProps: {
                                                 ref: evaluationRef,
                                                 name: 'evaluation',

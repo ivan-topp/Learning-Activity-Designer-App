@@ -23,7 +23,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { useAuthState } from 'contexts/AuthContext';
 
 const useStyles = makeStyles((theme) => ({
-    root:{
+    root: {
         background: theme.palette.background.workSpace,
         minHeight: 'calc(100vh - 412px)',
     },
@@ -150,11 +150,11 @@ export const DesignWorkspace = () => {
         activity[value.id] = createRef();
         return activity;
     }, {});
-    
+
     const handleSaveDesign = (e) => {
         socket?.emit('save-design', { designId: design._id }, emitWithTimeout(
             (resp) => {
-                if(resp.ok && !uiState.userSaveDesign){
+                if (resp.ok && !uiState.userSaveDesign) {
                     dispatch({
                         type: types.ui.setUserSaveDesign,
                         payload: true,
@@ -167,17 +167,17 @@ export const DesignWorkspace = () => {
     };
 
     const handleNewUA = () => {
-        const id = ObjectID().toString();        
+        const id = ObjectID().toString();
         socket?.emit('new-learningActivity', { designId: design._id, id }, emitWithTimeout(
             (resp) => {
-                if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
-                if(uiState.userSaveDesign){
+                if (!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                if (uiState.userSaveDesign) {
                     dispatch({
                         type: types.ui.setUserSaveDesign,
                         payload: false,
                     });
                 }
-                
+
             },
             () => enqueueSnackbar('Error al agregar la nueva actividad de aprendizaje. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
         ));
@@ -254,7 +254,7 @@ export const DesignWorkspace = () => {
         handleCloseMenu();
     };
 
-    const handleOpenDesign = (design) =>{
+    const handleOpenDesign = (design) => {
         const inDesign = design.privileges.find(privilege => authState.user.uid === privilege.user._id);
         if (inDesign) {
             const typePrivilegeEditor = design.privileges.find(privilege => authState.user.uid === privilege.user && privilege.type === 0);
@@ -263,7 +263,7 @@ export const DesignWorkspace = () => {
             } else {
                 history.push(`/designs/reader/${design._id}`);
             }
-        } else if(design.metadata.isPublic){
+        } else if (design.metadata.isPublic) {
             history.push(`/designs/reader/${design._id}`);
         } else {
             enqueueSnackbar('Usted no tiene acceso a este diseño.', { variant: 'error', autoHideDuration: 2000 });
@@ -336,20 +336,22 @@ export const DesignWorkspace = () => {
                             }
                         </Grid>
                         <Grid>
-                            {metadata && (
+                            {metadata && metadata.classSize !== null && (
                                 <>
                                     <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Tamaño de la clase </Typography>
                                     <Typography variant='body2'> {metadata.classSize} </Typography>
                                     <Divider />
                                 </>
-                                )
+                            )
                             }
                         </Grid>
                         <Grid>
                             {metadata && metadata.priorKnowledge && (
                                 <>
                                     <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Conocimiento Previo </Typography>
-                                    <Typography variant='body2' > {metadata.priorKnowledge} </Typography>
+                                    <Typography variant='body2' component={Box}> <pre style={{ fontFamily: 'inherit', margin: 0, wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+                                        {metadata.priorKnowledge}
+                                    </pre></Typography>
                                     <Divider />
                                 </>
                             )
@@ -359,7 +361,21 @@ export const DesignWorkspace = () => {
                             {metadata && metadata.description && (
                                 <>
                                     <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Descripción </Typography>
-                                    <Typography variant='body2'> {metadata.description} </Typography>
+                                    <Typography variant='body2' component={Box}> <pre style={{ fontFamily: 'inherit', margin: 0, wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+                                        {metadata.description}
+                                    </pre> </Typography>
+                                    <Divider />
+                                </>
+                            )
+                            }
+                        </Grid>
+                        <Grid>
+                            {metadata && metadata.evaluation && (
+                                <>
+                                    <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Evaluación </Typography>
+                                    <Typography variant='body2' component={Box}> <pre style={{ fontFamily: 'inherit', margin: 0, wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+                                        {metadata.evaluation}
+                                    </pre> </Typography>
                                     <Divider />
                                 </>
                             )
@@ -369,7 +385,9 @@ export const DesignWorkspace = () => {
                             {metadata && metadata.objective && (
                                 <>
                                     <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Objetivos </Typography>
-                                    <Typography variant='body2'> {metadata.objective} </Typography>
+                                    <Typography variant='body2' component={Box}> <pre style={{ fontFamily: 'inherit', margin: 0, wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+                                        {metadata.objective}
+                                    </pre> </Typography>
                                     <Divider />
                                 </>
                             )
@@ -381,7 +399,7 @@ export const DesignWorkspace = () => {
                                 <>
                                     <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Valoración media (0 - 5) </Typography>
                                     <Box display='flex' justifyContent='flex-start' alignItems='center'>
-                                        { metadata.scoreMean }
+                                        {metadata.scoreMean}
                                     </Box>
                                     <Divider />
                                 </>
@@ -389,17 +407,17 @@ export const DesignWorkspace = () => {
                             }
                         </Grid>
                         <Grid>
-                            { metadata && metadata.results &&(
+                            {metadata && metadata.results && (
                                 <div className={classes.textLeftPanelMetadata}>
-                                        { metadata.results.map((result, i) => 
-                                            <div key={`learning-result-${i}`} > 
-                                                <Typography variant='body2' color={'textSecondary'}>Aprendizaje esperado {i + 1}</Typography>
-                                                <Typography variant='body2' gutterBottom >{ result.verb + ' ' + result.description}</Typography>
-                                            </div>
-                                        )}
-                                        <Divider/>
+                                    { metadata.results.map((result, i) =>
+                                        <div key={`learning-result-${i}`} >
+                                            <Typography variant='body2' color={'textSecondary'}>Aprendizaje esperado {i + 1}</Typography>
+                                            <Typography variant='body2' gutterBottom >{result.verb + ' ' + result.description}</Typography>
+                                        </div>
+                                    )}
+                                    <Divider />
                                 </div>
-                                )
+                            )
                             }
                         </Grid>
                         <Grid>
@@ -407,7 +425,7 @@ export const DesignWorkspace = () => {
                                 <>
                                     <Typography variant='body2' color='textSecondary' className={classes.textLeftPanelMetadata}> Derivado del diseño: </Typography>
                                     <Card className={classes.origin} elevation={0}>
-                                        <CardActionArea onClick={()=>handleOpenDesign(design.origin)}>
+                                        <CardActionArea onClick={() => handleOpenDesign(design.origin)}>
                                             <Box style={{ display: 'flex', alignItems: 'center', padding: 5 }}>
                                                 <Description style={{ marginBottom: 5 }} />
                                                 <Typography style={{ marginLeft: 10 }} variant='body2'>{design.origin.metadata.name}</Typography>
@@ -458,9 +476,9 @@ export const DesignWorkspace = () => {
                             <Grid className={classes.workSpaceUnits}>
                                 <Grid >
                                     {
-                                        design.data.learningActivities && design.data.learningActivities.map((learningActivity, index) => 
-                                            <LearningActivity key={`learningActivity-${index}`} refActivity = {refs[learningActivity.id]} index={index} learningActivity={learningActivity} sumHours={sumHours} sumMinutes={sumMinutes} />
-                                    )}
+                                        design.data.learningActivities && design.data.learningActivities.map((learningActivity, index) =>
+                                            <LearningActivity key={`learningActivity-${index}`} refActivity={refs[learningActivity.id]} index={index} learningActivity={learningActivity} sumHours={sumHours} sumMinutes={sumMinutes} />
+                                        )}
                                 </Grid>
                             </Grid>
                         </Box>

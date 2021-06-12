@@ -41,7 +41,7 @@ export const SocketProvider = ({ children }) => {
     }, [ authState.token, disconnectSocket ]);
 
     const emitWithTimeout = useCallback(
-        (onSuccess, onTimeout, timeout=3000) => {
+        (onSuccess, onTimeout, timeout=20000) => {
             let called = false;
 
             const timer = setTimeout(() => {
