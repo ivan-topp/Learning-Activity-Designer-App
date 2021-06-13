@@ -5,7 +5,7 @@ import { useSocketState } from 'contexts/SocketContext';
 import { StackedBar } from 'components/StackedBar';
 import { useForm } from 'hooks/useForm';
 import { useDesignState } from 'contexts/design/DesignContext';
-import { SharedTextFieldTipTapEditor } from 'components/SharedTextFieldTipTapEditor';
+import { MemorizedSharedTextfieldTipTapEditor } from 'components/SharedTextFieldTipTapEditor';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 import { useSnackbar } from 'notistack';
@@ -322,7 +322,7 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
                                 variant='outlined'
                                 color='primary'
                                 InputProps={{
-                                    inputComponent: SharedTextFieldTipTapEditor,
+                                    inputComponent: MemorizedSharedTextfieldTipTapEditor,
                                     inputProps: {
                                         ref: titleRef,
                                         name: `title-learning-activity-${learningActivity.id}`,
@@ -434,7 +434,7 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
                                         variant='outlined'
                                         color='primary'
                                         InputProps={{
-                                            inputComponent: SharedTextFieldTipTapEditor,
+                                            inputComponent: MemorizedSharedTextfieldTipTapEditor,
                                             inputProps: {
                                                 ref: descriptionRef,
                                                 name: `description-learning-activity-${learningActivity.id}`,

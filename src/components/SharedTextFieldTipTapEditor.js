@@ -112,11 +112,29 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name,
         };
     }, []);
 
+    const getMultilineText = useCallback(
+        ({ content }) => {
+            let result = ``;
+            if(content.length === 1) return content[0].content ? content[0].content[0].text : '';
+            content.forEach((p, i) => {
+                if(p.content){
+                    if(i === content.length - 1) result+= `${p.content[0].text}`;
+                    else result+= `${p.content[0].text}\n`;
+                } else {
+                    if(i === content.length - 1) result+= ``;
+                    else result += `\n`;
+                }
+            });
+            return result;
+        },
+        [],
+    )
+
     const getText = useCallback(
         () => {
-            return htmlToText(editor?.getHTML().toString()).trim().toString();
+            if(editor) return multiline ? getMultilineText(editor.getJSON()) : htmlToText(editor.getHTML().toString()).trim().toString();
         },
-        [editor],
+        [editor, multiline, getMultilineText],
     );
 
     const setText = useCallback(
@@ -124,9 +142,7 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name,
             let htmlString = '';
             if(multiline){
                 value.toString().split('\n').forEach((line)=>{
-                    if(!!line) {
-                        htmlString += `<p>${line}</p>`;
-                    }
+                    htmlString += `<p>${line}</p>`;
                 });
             }
             editor?.commands.first(({ commands }) => [
@@ -152,24 +168,6 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name,
             setText('');
         }
     }, [doc, editor, setText, deleteOnRemove]);
-
-    const getMultilineText = useCallback(
-        ({ content }) => {
-            let result = ``;
-            if(content.length === 1) return content[0].content ? content[0].content[0].text.trim() : '';
-            content.forEach((p, i) => {
-                if(p.content){
-                    if(i === content.length - 1) result+= `${p.content[0].text.trim()}`;
-                    else result+= `${p.content[0].text.trim()}\n`;
-                } else {
-                    if(i === content.length - 1) result+= ``;
-                    else result += `\n`;
-                }
-            });
-            return result;
-        },
-        [],
-    )
 
     useEffect(() => {
         if(!editor){
@@ -220,37 +218,26 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name,
                             limit: maxLength,
                         }),
                     ],
-                    // onUpdate: (event) => {
-                    //     const text = htmlToText(event.editor.getHTML().toString());
-                    //     let value = (type === 'number' && !isNaN(text)) ? parseInt(text) : text;
-                    //     if(onChange && event.transaction.docs[0].textContent !== text) onChange({
-                    //         target : {
-                    //             name,
-                    //             type,
-                    //             value: (type === 'number' && isNaN(value)) ? 0 : value,
-                    //             shared: true,
-                    //         }
-                    //     });
-                    // },
+                    onUpdate: (event) => {
+                        if(isMounted.current) {
+                            const text = multiline ? getMultilineText(event.editor.getJSON()) : htmlToText(event.editor.getHTML().toString()).toString();
+                            let value = (type === 'number' && !isNaN(text)) ? parseInt(text) : text;
+                            if(onChange && getMultilineText(event.transaction.docs[0].toJSON()) !== text) onChange({
+                                target : {
+                                    name,
+                                    type,
+                                    value: (type === 'number' && isNaN(value)) ? 0 : value,
+                                }
+                            });
+                        }
+                    },
                     onFocus: ({editor, event}) => {
                         if(isMounted.current) setFocused(true);
                     },
                     onBlur: ({editor, event}) => {
                         if(isMounted.current) {
                             setFocused(false);
-                            const text = multiline ? getMultilineText(editor.getJSON()) : htmlToText(editor.getHTML().toString()).trim().toString();
-                            let value = (type === 'number' && !isNaN(text)) ? parseInt(text) : text;
-                            console.log(text);
-                            if(onChange) onChange({
-                                target : {
-                                    name,
-                                    type,
-                                    value: (type === 'number' && isNaN(value)) ? 0 : value,
-                                    // shared: true,
-                                }
-                            });
                         }
-                        
                     },
                 }));
             }
@@ -258,26 +245,34 @@ export const SharedTextFieldTipTapEditor = forwardRef(({name,
     }, [editor, doc, max, maxLength, min, multiline, name, onChange, provider, type, user, getMultilineText]);
 
     useEffect(() => {
-        if (provider.synced) {
-            if(!synced){
-                if (getText() === '') {
-                    setText(initialvalue);
-                    if(onSynced) onSynced();
-                    if(isMounted.current) setSynced(true);
-                }
-            }
-        } else {
-            provider.once('synced', () => {
+        if(editor){
+            if (provider.synced) {
                 if(!synced){
-                    if (getText() === '') {
-                        setText(initialvalue);
-                        if(onSynced) onSynced();
-                        if(isMounted.current) setSynced(true);
+                    const text = getText();
+                    if (text === '') {
+                        if(isMounted.current) {
+                            setText(initialvalue);
+                            if(onSynced) onSynced(text, setText);
+                            setSynced(true);
+                        }
                     }
                 }
-            })
-        }
-    }, [provider.synced, getText, initialvalue, onSynced, provider, setText, synced]);
+            } else {
+                provider.once('synced', () => {
+                    if(!synced){
+                        const text = getText();
+                        if (text === '') {
+                            if(isMounted.current) {
+                                setText(initialvalue);
+                                if(onSynced) onSynced(text, setText);
+                                setSynced(true);
+                            }
+                        }
+                    }
+                })
+            }
+        } 
+    }, [editor, provider.synced, getText, initialvalue, onSynced, provider, setText, synced]);
 
     const handleIncrement = useCallback(
         () => {

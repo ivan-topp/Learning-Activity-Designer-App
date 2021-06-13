@@ -326,6 +326,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
             },
             () => {if(!online || !connected) enqueueSnackbar('Error al editar el diseño. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 });},
         ));
+        // handleInputChange(e);
         if (subfield) {
             if (
                 (metadata[field] === undefined || metadata[field] === null) ||
@@ -418,6 +419,12 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                                 placeholder: 'Nombre',
                                                 initialvalue: name,
                                                 onChange: handleChangeMetadataField,
+                                                // onSynced: (text, setText) => {
+                                                //     console.log(text);
+                                                //     if(text === ''){
+                                                //         setText(name);
+                                                //     }   
+                                                // }
                                             }
                                         }}
                                     />)

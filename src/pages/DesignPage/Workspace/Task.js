@@ -3,7 +3,7 @@ import { IconButton, makeStyles, Typography, Tooltip, Paper, MenuItem, FormContr
 import { useSocketState } from 'contexts/SocketContext';
 import { useForm } from 'hooks/useForm';
 import { useDesignState } from 'contexts/design/DesignContext';
-import { SharedTextFieldTipTapEditor } from 'components/SharedTextFieldTipTapEditor';
+import { MemorizedSharedTextfieldTipTapEditor } from 'components/SharedTextFieldTipTapEditor';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 import { useSnackbar } from 'notistack';
@@ -452,7 +452,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                                             variant='outlined'
                                             color='primary'
                                             InputProps={{
-                                                inputComponent: SharedTextFieldTipTapEditor,
+                                                inputComponent: MemorizedSharedTextfieldTipTapEditor,
                                                 inputProps: {
                                                     ref: hoursRef,
                                                     name: `timeHours-task-${task.id}-learning-activity-${learningActivityID}`, // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
@@ -473,7 +473,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                                             variant='outlined'
                                             color='primary'
                                             InputProps={{
-                                                inputComponent: SharedTextFieldTipTapEditor,
+                                                inputComponent: MemorizedSharedTextfieldTipTapEditor,
                                                 inputProps: {
                                                     ref: minutesRef,
                                                     name: `timeMinutes-task-${task.id}-learning-activity-${learningActivityID}`, // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
@@ -542,7 +542,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                                     variant='outlined'
                                     color='primary'
                                     InputProps={{
-                                        inputComponent: SharedTextFieldTipTapEditor,
+                                        inputComponent: MemorizedSharedTextfieldTipTapEditor,
                                         inputProps: {
                                             ref: descriptionRef,
                                             name: `description-task-${task.id}-learning-activity-${learningActivityID}`, // TODO: Cambiar y utilizar id generada en mongo como nombre de dato compartido.
