@@ -66,7 +66,7 @@ export const ImportDesignsModal = () => {
 
     const handleClose = ( e ) => {
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'ImportDesigns',
         });
     };

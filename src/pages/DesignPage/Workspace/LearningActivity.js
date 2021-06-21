@@ -164,7 +164,7 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
                 }
             });
             dispatch({
-                type: types.ui.toggleModal,
+                type: types.ui.openModal,
                 payload: 'Confirmation',
             });
         }
@@ -303,7 +303,7 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
             },
         });
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Evaluation',
         });
     };

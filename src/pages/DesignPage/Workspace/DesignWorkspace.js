@@ -189,7 +189,7 @@ export const DesignWorkspace = () => {
 
     const handleOpenModal = () => {
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Share'
         })
     };
@@ -202,7 +202,7 @@ export const DesignWorkspace = () => {
             payload: type,
         });
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'PDF'
         });
     };

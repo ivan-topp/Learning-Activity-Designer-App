@@ -96,7 +96,7 @@ export const DesignsFolder = ({ _id, name, path, ...rest }) => {
             },
         });
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Folder',
         });
     };
@@ -112,7 +112,7 @@ export const DesignsFolder = ({ _id, name, path, ...rest }) => {
             }
         });
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Confirmation',
         });
         //await deleteFolderMutation.mutate({ id: _id });

@@ -29,7 +29,7 @@ export const CheckSaveDesignModal = () => {
 
     const handleClose = () => {
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'CheckSaveDesign',
         });
     };
@@ -40,7 +40,7 @@ export const CheckSaveDesignModal = () => {
             payload: true,
         });
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'CheckSaveDesign',
         });
         history.push(`${url}`);

@@ -74,7 +74,7 @@ export const Commentary = ({ data }) => {
             }
         });
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Confirmation',
         });
     };

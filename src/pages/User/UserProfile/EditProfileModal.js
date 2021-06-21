@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react'
-import { Avatar, Backdrop, Button, ButtonBase, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, makeStyles, TextField, Typography, } from '@material-ui/core';
+import { Avatar, Backdrop, Button, ButtonBase, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, makeStyles, TextField, Typography, useTheme, } from '@material-ui/core';
 import { useUiState } from 'contexts/ui/UiContext';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useAuthState } from 'contexts/AuthContext';
@@ -67,6 +67,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const EditProfileModal = React.memo(() => {
     const [isHovered, setHovered] = useState(false);
+    const theme = useTheme();
     const classes = useStyles({ isHovered });
     const queryClient = useQueryClient();
     const { uiState, dispatch } = useUiState();
@@ -123,12 +124,14 @@ export const EditProfileModal = React.memo(() => {
             queryClient.setQueryData(['user-profile', uid], context.previousUserProfile);
             setLoading(false);
             dispatch({
-                type: types.ui.toggleModal,
+                type: types.ui.closeModal,
                 payload: 'EditProfile',
             });
-            setImgSource(null);
-            setFile(null);
-            enqueueSnackbar(error.message, { variant: 'error', autoHideDuration: 2000 });
+            setTimeout(() => {
+                setImgSource(null);
+                setFile(null);
+                enqueueSnackbar(error.message, { variant: 'error', autoHideDuration: 2000 });
+            }, theme.transitions.duration.enteringScreen);
         },
         onSettled: () => {
             queryClient.invalidateQueries(['user-profile', uid]);
@@ -139,19 +142,21 @@ export const EditProfileModal = React.memo(() => {
         onSuccess: (data, args) => {
             setLoading(false);
             dispatch({
-                type: types.ui.toggleModal,
+                type: types.ui.closeModal,
                 payload: 'EditProfile',
             });
-            setImgSource(null);
-            setFile(null);
-            enqueueSnackbar('Usuario actualizado correctamente', { variant: 'success', autoHideDuration: 2000 });
-            setAuthState((prevState) => ({
-                ...prevState,
-                user: {
-                    ...prevState.user,
-                    img: data.value.img
-                }
-            }));
+            setTimeout(() => {
+                setImgSource(null);
+                setFile(null);
+                enqueueSnackbar('Usuario actualizado correctamente', { variant: 'success', autoHideDuration: 2000 });
+                setAuthState((prevState) => ({
+                    ...prevState,
+                    user: {
+                        ...prevState.user,
+                        img: data.value.img
+                    }
+                }));
+            }, theme.transitions.duration.enteringScreen);
         }
     });
 
@@ -170,12 +175,14 @@ export const EditProfileModal = React.memo(() => {
 
     const handleClose = () => {
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'EditProfile',
         });
-        reset();
-        setImgSource(null);
-        setFile(null);
+        setTimeout(() => {
+            reset();
+            setImgSource(null);
+            setFile(null);
+        }, theme.transitions.duration.enteringScreen);
     };
 
     const handleSaveInformation = async (e) => {

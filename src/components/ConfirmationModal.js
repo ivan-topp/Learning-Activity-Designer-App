@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import CloseIcon from '@material-ui/icons/Close';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, makeStyles, Typography, } from '@material-ui/core';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, makeStyles, Typography, useTheme, } from '@material-ui/core';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 import { useSnackbar } from 'notistack';
@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ConfirmationModal = () => {
     const classes = useStyles();
+    const theme = useTheme();
     const { uiState, dispatch } = useUiState();
     const { type, args, actionMutation } = uiState.confirmModalData;
     const { enqueueSnackbar } = useSnackbar();
@@ -37,17 +38,17 @@ export const ConfirmationModal = () => {
     
     const handleClose = () => {
         dispatch({
+            type: types.ui.closeModal,
+            payload: 'Confirmation',
+        });
+        setTimeout(() => dispatch({
             type: types.ui.setConfirmData,
             payload: {
                 type: null,
                 args: null,
                 actionMutation: null,
             }
-        });
-        dispatch({
-            type: types.ui.toggleModal,
-            payload: 'Confirmation',
-        });
+        }), theme.transitions.duration.enteringScreen);
     };
 
     const confirmResult = async () => {

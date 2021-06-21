@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, makeStyles, Typography } from '@material-ui/core'
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, makeStyles, Typography, useTheme } from '@material-ui/core'
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 import React, { useState } from 'react'
@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const EvaluationModal = () => {
     const classes = useStyles();
+    const theme = useTheme();
     const { uiState, dispatch } = useUiState();
     const { designState } = useDesignState();
     const { design } = designState;
@@ -53,17 +54,19 @@ export const EvaluationModal = () => {
     const { enqueueSnackbar } = useSnackbar();
 
     const handleClose = () => {
-        setNewEvaluation(design.data.learningActivities[learningActivityIndex].evaluation);
         dispatch({
-            type: types.ui.setEvaluation,
-            payload: {
-                learningActivityIndex: null,
-            }
-        });
-        dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'Evaluation',
         });
+        setTimeout(() => {
+            setNewEvaluation(design.data.learningActivities[learningActivityIndex].evaluation);
+            dispatch({
+                type: types.ui.setEvaluation,
+                payload: {
+                    learningActivityIndex: null,
+                }
+            });
+        }, theme.transitions.duration.enteringScreen);
     };
 
     const handleAddEvaluation = () =>{

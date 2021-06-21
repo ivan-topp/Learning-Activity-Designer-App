@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, makeStyles, Typography } from '@material-ui/core';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, makeStyles, Typography, useTheme } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
@@ -57,6 +57,7 @@ const getInitialScore = (assessments, uid) => {
 
 export const AssessmentModal = () => {
     const classes = useStyles();
+    const theme = useTheme();
     const { enqueueSnackbar } = useSnackbar();
     const { socket, online, emitWithTimeout } = useSocketState();
     const { authState } = useAuthState();
@@ -72,12 +73,14 @@ export const AssessmentModal = () => {
     }, [design.assessments, setAssessment, authState.user.uid]);
 
     const handleClose = () => {
-        setAssessment(initialScore);
-        setHover(-1);
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'Assessment',
         });
+        setTimeout(() => {
+            setAssessment(initialScore);
+            setHover(-1);
+        }, theme.transitions.duration.enteringScreen);
     };
 
     const handleRate = () => {

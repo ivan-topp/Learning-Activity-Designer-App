@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment, makeStyles, Step, StepLabel, Stepper, TextField, Typography } from '@material-ui/core';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment, makeStyles, Step, StepLabel, Stepper, TextField, Typography, useTheme } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import { BloomPiramid } from 'pages/DesignPage/Metadata/BloomPiramid';
 import { BloomVerbList } from 'pages/DesignPage/Metadata/BloomVerbList';
@@ -38,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const LearningResultModal = ({ design, isOpen }) => {
     const classes = useStyles();
+    const theme = useTheme();
     const { enqueueSnackbar } = useSnackbar();
     const { socket/*, online*/, emitWithTimeout } = useSocketState();
     const { designState, dispatch: designDispatch } = useDesignState();
@@ -70,16 +71,18 @@ export const LearningResultModal = ({ design, isOpen }) => {
 
     const handleClose = (e) => {
         uiDispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'LearningResult',
         });
     };
 
     const handleCloseModal = () => {
         handleClose();
-        if (isMounted.current) setActiveStep(0);
-        setDescription('');
-        designDispatch({ type: types.design.clearCurrentLearningResult });
+        setTimeout(() => {
+            if (isMounted.current) setActiveStep(0);
+            setDescription('');
+            designDispatch({ type: types.design.clearCurrentLearningResult });
+        }, theme.transitions.duration.enteringScreen);
     };
     
     const handleFinish = () => {

@@ -48,7 +48,7 @@ export const LearningResult = ({ category, verb, description, index}) => {
             }
         });
         uiDispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'LearningResult',
         });
     };
@@ -63,7 +63,7 @@ export const LearningResult = ({ category, verb, description, index}) => {
             }
         });
         uiDispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Confirmation',
         });
         if(uiState.userSaveDesign){

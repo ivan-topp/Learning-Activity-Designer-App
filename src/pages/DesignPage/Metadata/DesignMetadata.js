@@ -362,7 +362,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
     };
 
     const handleOpenLearningResultmodal = () => dispatch({
-        type: types.ui.toggleModal,
+        type: types.ui.openModal,
         payload: 'LearningResult',
     });
 

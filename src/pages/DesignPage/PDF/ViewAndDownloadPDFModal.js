@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
 import { DocumentPDF } from './DocumentPDF';
-import { Backdrop, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, makeStyles, Tab, Tabs, Typography } from '@material-ui/core';
+import { Backdrop, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, makeStyles, Tab, Tabs, Typography, useTheme } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
@@ -73,6 +73,7 @@ const a11yProps = (index) => {
 
 export const ViewAndDownloadPDFModal = ({ imgGraphic, setPdfView }) => {
     const classes = useStyles();
+    const theme = useTheme();
     const { uiState, dispatch } = useUiState();
     const { typeUserPDF } = uiState.pdf;
     const { designState } = useDesignState();
@@ -128,14 +129,16 @@ export const ViewAndDownloadPDFModal = ({ imgGraphic, setPdfView }) => {
 
     const handleClose = () => {
         dispatch({
-            type: types.ui.setPDF,
-            payload: null
-        });
-        dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'PDF',
         });
-        setPdfView(false);
+        setTimeout(() => {
+            dispatch({
+                type: types.ui.setPDF,
+                payload: null
+            });
+            setPdfView(false);
+        }, theme.transitions.duration.enteringScreen);
     };
 
     const handleChange = (event, newValue) => {

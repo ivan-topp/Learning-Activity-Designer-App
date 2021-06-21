@@ -88,14 +88,14 @@ export const NavBar = () => {
 
     const handleOpenLoginModal = () => {
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Login',
         });
     };
 
     const handleOpenRegisterModal = () => {
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Register',
         });
     };
@@ -117,7 +117,7 @@ export const NavBar = () => {
         if (filter.trim().length > 0) {
             if(design !== null && !location.pathname.includes('reader') && !location.pathname.includes('shared-link') && !uiState.userSaveDesign){
                 dispatch({
-                    type: types.ui.toggleModal,
+                    type: types.ui.openModal,
                     payload: 'CheckSaveDesign'
                 })
                 dispatch({
@@ -137,7 +137,7 @@ export const NavBar = () => {
         e.preventDefault();
         if(design !== null && !location.pathname.includes('reader') && !location.pathname.includes('shared-link') && !uiState.userSaveDesign){
             dispatch({
-                type: types.ui.toggleModal,
+                type: types.ui.openModal,
                 payload: 'CheckSaveDesign'
             })
             dispatch({
@@ -155,7 +155,7 @@ export const NavBar = () => {
         e.preventDefault();
         if(design !== null && !location.pathname.includes('reader') && !location.pathname.includes('shared-link') && !uiState.userSaveDesign){
             dispatch({
-                type: types.ui.toggleModal,
+                type: types.ui.openModal,
                 payload: 'CheckSaveDesign'
             })
             dispatch({

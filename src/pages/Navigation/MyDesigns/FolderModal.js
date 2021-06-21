@@ -8,7 +8,8 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Typography
+    Typography,
+    useTheme
 } from '@material-ui/core';
 import { createFolder, renameFolder } from 'services/FolderService';
 
@@ -38,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
 export const FolderModal = () => {
 
     const classes = useStyles();
+    const theme = useTheme();
     const { uiState, dispatch } = useUiState();
     const { folderPath, folder, isFolderModalOpen } = uiState;
     const queryClient = useQueryClient();
@@ -89,16 +91,16 @@ export const FolderModal = () => {
 
     const handleCloseModal = () => {
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'Folder',
         });
-        dispatch({
+        setTimeout(() => dispatch({
             type: types.ui.setFolder,
             payload: {
                 _id: null,
                 name: '',
             }
-        });
+        }), theme.transitions.duration.enteringScreen);
         setName('');
         setError(null);
     };

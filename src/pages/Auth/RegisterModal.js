@@ -83,7 +83,7 @@ export const RegisterModal = React.memo(() => {
     
     const handleClose = () => {
         dispatch({ 
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'Register'
         });
         reset();
@@ -150,7 +150,7 @@ export const RegisterModal = React.memo(() => {
         e.preventDefault();
         handleClose();
         dispatch({ 
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Login'
         });
     };

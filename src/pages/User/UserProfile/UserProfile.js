@@ -161,14 +161,14 @@ export const UserProfile = () => {
 
     const handleEditProfile = () => {
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'EditProfile',
         });
     };
 
     const handleShowContacts = () => {
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Contacts',
         });
     };

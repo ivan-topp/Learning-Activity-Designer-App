@@ -138,7 +138,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, privile
             }
         })
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Confirmation',
         });
     };

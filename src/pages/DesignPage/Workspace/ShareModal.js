@@ -69,7 +69,7 @@ export const ShareModal = () => {
     const handleClose = () => {
         if(isMounted.current) setNewPrivileges([...design.privileges]);
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'Share'
         });
     };
@@ -86,7 +86,7 @@ export const ShareModal = () => {
             },
         ));
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'Share'
         });
     };

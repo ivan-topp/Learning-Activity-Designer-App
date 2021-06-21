@@ -141,14 +141,14 @@ export const MyDesignsPage = () => {
 
     const handleOpenFolderModal = async (e) => {
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Folder'
         });
     };
 
     const handleImportDesign = (e) => {
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'ImportDesigns',
         });
     };

@@ -193,7 +193,7 @@ export const SharedLinkPage = () => {
 
     const handleOpenAssessmentModal = () => {
         uiDispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Assessment',
         });
     };

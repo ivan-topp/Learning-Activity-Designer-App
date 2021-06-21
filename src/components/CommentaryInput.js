@@ -64,7 +64,7 @@ export const CommentaryInput = () => {
 
     const handleOpenLoginModal = () => {
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Login',
         });
     };

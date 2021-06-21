@@ -35,7 +35,7 @@ export const ShowContactsModal = () => {
 
     const handleClose = () => {
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'Contacts',
         });
     };

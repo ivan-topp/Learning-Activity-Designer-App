@@ -155,7 +155,7 @@ export const LoginModal = () => {
 
     const handleClose = () => {
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'Login',
         });
         reset();
@@ -176,7 +176,7 @@ export const LoginModal = () => {
         e.preventDefault();
         handleClose();
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Register',
         });
     };
@@ -184,7 +184,7 @@ export const LoginModal = () => {
     const toResetPassword = (e) => {
         e.preventDefault();
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'Login',
         });
         history.push('/reset-password');

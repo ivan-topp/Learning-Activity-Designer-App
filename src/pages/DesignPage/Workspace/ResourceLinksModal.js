@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, makeStyles } from '@material-ui/core';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, makeStyles, useTheme } from '@material-ui/core';
 import React, { useEffect, useRef, useState } from 'react'
 import types from 'types';
 import { useUiState } from 'contexts/ui/UiContext';
@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ResourceLinksModal = () => {
     const classes = useStyles();
+    const theme = useTheme();
     const isMounted = useRef(true);
     const { uiState, dispatch } = useUiState();
     const { learningActivityIndex, taskIndex } = uiState.resourceLink;
@@ -60,18 +61,20 @@ export const ResourceLinksModal = () => {
     }, []);
 
     const handleClose = () => {
-        if (isMounted.current) setNewResource([...design.data.learningActivities[learningActivityIndex].tasks[taskIndex].resourceLinks]);
         dispatch({
-            type: types.ui.setResourceLink,
-            payload: {
-                learningActivityIndex: null,
-                taskIndex: null,
-            }
-        });
-        dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'Resource',
         });
+        setTimeout(() => {
+            if (isMounted.current) setNewResource([...design.data.learningActivities[learningActivityIndex].tasks[taskIndex].resourceLinks]);
+            dispatch({
+                type: types.ui.setResourceLink,
+                payload: {
+                    learningActivityIndex: null,
+                    taskIndex: null,
+                }
+            });
+        }, theme.transitions.duration.enteringScreen);
     };
     
     const handleAddResource = () =>{
@@ -96,7 +99,7 @@ export const ResourceLinksModal = () => {
             () => enqueueSnackbar('Error al modificar los recursos en la tarea. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
         ));
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.closeModal,
             payload: 'Resource'
         });
     }

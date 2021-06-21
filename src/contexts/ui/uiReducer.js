@@ -3,10 +3,15 @@ import types from "types";
 
 export const uiReducer = ( state, action ) => {
     switch (action.type) {
-        case types.ui.toggleModal:
+        case types.ui.openModal:
             return {
                 ...state,
-                ['is' + action.payload + 'ModalOpen']: !state['is' + action.payload + 'ModalOpen'],
+                ['is' + action.payload + 'ModalOpen']: true,
+            };
+        case types.ui.closeModal:
+            return {
+                ...state,
+                ['is' + action.payload + 'ModalOpen']: false,
             };
         case types.ui.toggleRegisterModal:
             return {

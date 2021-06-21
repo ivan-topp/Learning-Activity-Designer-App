@@ -289,7 +289,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
             },
         });
         dispatch({
-            type: types.ui.toggleModal,
+            type: types.ui.openModal,
             payload: 'Resource',
         });
     }
@@ -321,7 +321,7 @@ export const Task = forwardRef(({ learningActivityIndex, index, task, learningAc
                 }
             });
             dispatch({
-                type: types.ui.toggleModal,
+                type: types.ui.openModal,
                 payload: 'Confirmation',
             });
         }
