@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControl, Grid, IconButton, Link as MaterialLink, makeStyles, MenuItem, Select, TextField, Typography } from '@material-ui/core';
+import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControl, Grid, IconButton, Link as MaterialLink, makeStyles, MenuItem, Select, TextField, Typography, useTheme } from '@material-ui/core';
 import { useUiState } from 'contexts/ui/UiContext';
 import CloseIcon from '@material-ui/icons/Close';
 import types from 'types';
@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const ShareModal = () => {
+    const theme = useTheme();
     const classes = useStyles();
     const isMounted = useRef(true);
     const { uiState, dispatch } = useUiState();
@@ -67,11 +68,13 @@ export const ShareModal = () => {
     };
 
     const handleClose = () => {
-        if(isMounted.current) setNewPrivileges([...design.privileges]);
         dispatch({
             type: types.ui.closeModal,
             payload: 'Share'
         });
+        setTimeout(() => {
+            if(isMounted.current) setNewPrivileges([...design.privileges]);
+        }, theme.transitions.duration.enteringScreen);
     };
 
     const handleAddContactInDesign = () => {

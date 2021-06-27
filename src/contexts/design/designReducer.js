@@ -170,6 +170,42 @@ export const designReducer = ( state, action ) => {
                     comments: state.design.comments.filter(c => c._id.toString() !== action.payload.toString()),
                 }
             };
+        case types.design.reorderActivities:
+            return  {
+                ...state,
+                design: {
+                    ...state.design,
+                    data: {
+                        ...state.design.data,
+                        learningActivities: state.design.data.learningActivities.sort((a, b) => {
+                            if(action.payload.indexOf(a.id) === -1) return 1;
+                            else if(action.payload.indexOf(b.id) === -1) return -1;
+                            else return action.payload.indexOf(a.id) - action.payload.indexOf(b.id);
+                        } )
+                    },
+                }
+            };
+        case types.design.reorderTasks:
+            const newLearningActivities = state.design.data.learningActivities;
+            newLearningActivities.forEach((la, index) => {
+                if(la.id === action.payload.learningActivityId){
+                    newLearningActivities[index].tasks.sort((a, b) => {
+                        if(action.payload.newOrder.indexOf(a.id) === -1) return 1;
+                        else if(action.payload.newOrder.indexOf(b.id) === -1) return -1;
+                        else return action.payload.newOrder.indexOf(a.id) - action.payload.newOrder.indexOf(b.id);
+                    } );
+                }
+            });
+            return  {
+                ...state,
+                design: {
+                    ...state.design,
+                    data: {
+                        ...state.design.data,
+                        learningActivities: newLearningActivities,
+                    },
+                }
+            };
         case types.design.setConnectedUsers:
             return {
                 ...state,

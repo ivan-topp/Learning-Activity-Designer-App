@@ -30,6 +30,12 @@ const initialState = {
 	isCheckSaveDesignModalOpen: false,
 	userSaveDesign: true,
 	isAssessmentModalOpen: false,
+	isReorderActivitiesModalOpen: false,
+	isReorderTasksModalOpen: false,
+	reorderTaskModalState:{
+		learningActivityId: null,
+		tasks: [],
+	},
 	folder: {
 		_id: null,
 		name: '',

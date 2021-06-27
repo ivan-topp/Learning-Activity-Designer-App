@@ -11,7 +11,7 @@ import { useUiState } from 'contexts/ui/UiContext';
 import { ShareModal } from './ShareModal';
 import types from 'types';
 import { useSnackbar } from 'notistack';
-import { Add, Description } from '@material-ui/icons';
+import { Add, Description, Reorder } from '@material-ui/icons';
 import ObjectID from 'bson-objectid';
 import { ViewAndDownloadPDFModal } from 'pages/DesignPage/PDF/ViewAndDownloadPDFModal';
 import { useUserConfigState } from 'contexts/UserConfigContext';
@@ -21,6 +21,9 @@ import { exportJsonToFile } from 'utils/files';
 import { formatName, getUserInitials } from 'utils/textFormatters';
 import { Link, useHistory } from 'react-router-dom';
 import { useAuthState } from 'contexts/AuthContext';
+import { ReorderActivitiesModal } from './ReorderActivitiesModal';
+import { useMemo } from 'react';
+import { ReorderTasksModal } from './ReorderTaskModal';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -99,6 +102,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         display: 'flex',
         justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: 15,
         [theme.breakpoints.down('md')]: {
             flexWrap: 'wrap',
@@ -146,10 +150,12 @@ export const DesignWorkspace = () => {
     let sumHours = 0;
     let sumMinutes = 0;
 
-    const refs = design.data.learningActivities.reduce((activity, value) => {
-        activity[value.id] = createRef();
-        return activity;
-    }, {});
+    const refs = useMemo(() => {
+        return design.data.learningActivities.reduce((activity, value) => {
+            activity[value.id] = createRef();
+            return activity;
+        }, {});
+    }, [design.data.learningActivities]);
 
     const handleSaveDesign = (e) => {
         socket?.emit('save-design', { designId: design._id }, emitWithTimeout(
@@ -191,6 +197,13 @@ export const DesignWorkspace = () => {
         dispatch({
             type: types.ui.openModal,
             payload: 'Share'
+        })
+    };
+
+    const handleOpenReorderActivitiesModal = () => {
+        dispatch({
+            type: types.ui.openModal,
+            payload: 'ReorderActivities'
         })
     };
 
@@ -409,7 +422,7 @@ export const DesignWorkspace = () => {
                         <Grid>
                             {metadata && metadata.results && (
                                 <div className={classes.textLeftPanelMetadata}>
-                                    { metadata.results.map((result, i) =>
+                                    {metadata.results.map((result, i) =>
                                         <div key={`learning-result-${i}`} >
                                             <Typography variant='body2' color={'textSecondary'}>Aprendizaje esperado {i + 1}</Typography>
                                             <Typography variant='body2' gutterBottom >{result.verb + ' ' + result.description}</Typography>
@@ -465,11 +478,38 @@ export const DesignWorkspace = () => {
                             <MenuItem onClick={() => handleOpenModalPDF('student')}>PDF Estudiante</MenuItem>
                             <MenuItem onClick={handleExportToFile}>Respaldar Diseño</MenuItem>
                         </Menu>
-                        <ButtonGroup size='small' fullWidth={isMediumDevice} className={classes.buttonGroupWorkSpace}>
+                        <ButtonGroup fullWidth={isMediumDevice} className={classes.buttonGroupWorkSpace}>
                             <Button onClick={handleOpenMenu}>Exportar</Button>
                             <Button onClick={handleOpenModal}>Compartir</Button>
                             <Button onClick={handleSaveDesign}>Guardar</Button>
                         </ButtonGroup>
+                        {
+                            designState.users.length > 1
+                                ? <Tooltip title='Esta función no esta disponible de manera colaborativa, debe haber 1 solo usuario conectado.' arrow>
+                                    <Box>
+                                        <Button
+                                            size='small'
+                                            fullWidth={isMediumDevice}
+                                            style={{ height: 36 }}
+                                            variant='outlined'
+                                            disabled={designState.users.length > 1}
+                                            onClick={handleOpenReorderActivitiesModal}
+                                            >
+                                            <Reorder style={{ marginRight: 10 }} /> Ordenar Actividades
+                                        </Button>
+                                    </Box>
+                                </Tooltip>
+                                : <Button
+                                    size='small'
+                                    fullWidth={isMediumDevice}
+                                    style={{ height: 36 }}
+                                    variant='outlined'
+                                    disabled={designState.users.length > 1}
+                                    onClick={handleOpenReorderActivitiesModal}
+                                >
+                                    <Reorder style={{ marginRight: 10 }} /> Ordenar Actividades
+                                </Button>
+                        }
                     </div>
                     <Box id='learningActivities' className={classes.workSpaceUnits}>
                         <Box>
@@ -477,7 +517,7 @@ export const DesignWorkspace = () => {
                                 <Grid >
                                     {
                                         design.data.learningActivities && design.data.learningActivities.map((learningActivity, index) =>
-                                            <LearningActivity key={`learningActivity-${index}`} refActivity={refs[learningActivity.id]} index={index} learningActivity={learningActivity} sumHours={sumHours} sumMinutes={sumMinutes} />
+                                            <LearningActivity key={`learningActivity-${learningActivity.id}-${index}`} refActivity={refs[learningActivity.id]} index={index} learningActivity={learningActivity} sumHours={sumHours} sumMinutes={sumMinutes} />
                                         )}
                                 </Grid>
                             </Grid>
@@ -598,6 +638,8 @@ export const DesignWorkspace = () => {
                     </div>
                 </Grid>
                 <ShareModal />
+                <ReorderActivitiesModal />
+                <ReorderTasksModal />
                 {
                     (pdfView) &&
                     <ViewAndDownloadPDFModal imgGraphic={imgGraphic} setPdfView={setPdfView} />
