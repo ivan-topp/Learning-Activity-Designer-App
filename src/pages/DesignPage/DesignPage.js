@@ -224,6 +224,22 @@ export const DesignPage = () => {
                 });
             }
         });
+        socket?.on('reorder-activities', (newOrder) => {
+            if (isMounted.current) {
+                dispatch({
+                    type: types.design.reorderActivities,
+                    payload: newOrder,
+                });
+            }
+        });
+        socket?.on('reorder-tasks', ({learningActivityId, newOrder}) => {
+            if (isMounted.current) {
+                dispatch({
+                    type: types.design.reorderTasks,
+                    payload: { learningActivityId, newOrder },
+                });
+            }
+        });
         socket?.on('edit-task-field', ({ learningActivityID, taskID, field, value, subfield }) => {
             if (isMounted.current) {
                 dispatch({
@@ -233,7 +249,13 @@ export const DesignPage = () => {
             }
         });
         socket?.on('users', (users) => {
-            if (isMounted.current) setUsersList(users);
+            if (isMounted.current) {
+                setUsersList(users);
+                dispatch({
+                    type: types.design.setConnectedUsers,
+                    payload: users,
+                });
+            }
         });
         socket?.on('change-design-privileges', (privileges) => {
             dispatch({
@@ -289,6 +311,8 @@ export const DesignPage = () => {
             socket?.off('users');
             socket?.off('update-design-rate');
             socket?.off('comment-design');
+            socket?.off('reorder-tasks');
+            socket?.off('reorder-activities');
             socket?.off('delete-comment');
         };
     }, [socket, authState.user, id, dispatch]);

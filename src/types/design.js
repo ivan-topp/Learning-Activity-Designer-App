@@ -16,6 +16,8 @@ const design = {
     commentDesign: '[DESIGN] add a commentary',
     deleteComment: '[DESIGN] delete a commentary',
     setConnectedUsers: '[DESIGN] set connected users',
+    reorderActivities: '[DESIGN] reorder activities',
+    reorderTasks: '[DESIGN] reorder tasks',
 };
 
 export default design;

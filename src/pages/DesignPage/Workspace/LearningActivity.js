@@ -10,7 +10,7 @@ import { useUiState } from 'contexts/ui/UiContext';
 import types from 'types';
 import { useSnackbar } from 'notistack';
 import { itemsLearningType } from 'assets/resource/items'
-import { Add, Delete, ListAlt, MoreVert } from '@material-ui/icons';
+import { Add, Delete, ListAlt, MoreVert, Reorder } from '@material-ui/icons';
 import ObjectID from 'bson-objectid';
 import { useSharedDocContext } from 'contexts/SharedDocContext';
 
@@ -202,6 +202,20 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
         });
     };
 
+    const handleReorderTasksModalOpen = () => {
+        dispatch({
+            type: types.ui.setReorderTasksModalState,
+            payload: {
+                learningActivityId: design.data.learningActivities[index].id,
+                tasks: design.data.learningActivities[index].tasks
+            }
+        });
+        dispatch({
+            type: types.ui.openModal,
+            payload: 'ReorderTasks',
+        });
+    };
+
     const handleToggleLearningResult = (e, isSelected, result) => {
         if (isSelected) {
             let indexLearningResults = 0;
@@ -355,6 +369,22 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
                                             <ListAlt fontSize = 'small'/>
                                             <Typography>Definir Evaluación</Typography>
                                         </MenuItem>
+                                        {
+                                            designState.users.length > 1
+                                                ? <Tooltip title='Esta función no esta disponible de manera colaborativa, debe haber 1 solo usuario conectado.' arrow>
+                                                    <Box>
+                                                        <MenuItem disabled onClick={handleReorderTasksModalOpen}>
+                                                            <Reorder style={{marginRight: 10}} />
+                                                            <Typography>Ordenar Tareas</Typography>
+                                                        </MenuItem>
+                                                    </Box>
+                                                </Tooltip>
+                                                : <MenuItem onClick={handleReorderTasksModalOpen}>
+                                                    <Reorder style={{marginRight: 10}} />
+                                                    <Typography>Ordenar Tareas</Typography>
+                                                </MenuItem>
+                                        }
+                                        
                                         <MenuItem onClick={handleDeleteUnit}>
                                             <Delete fontSize="small" />
                                             <Typography>Eliminar</Typography>
@@ -400,6 +430,21 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
                                             <ListAlt fontSize = 'small' style={{marginRight: 8}}/>
                                             <Typography>Definir Evaluación</Typography>
                                         </MenuItem>
+                                        {
+                                            designState.users.length > 1
+                                                ? <Tooltip title='Esta función no esta disponible de manera colaborativa, debe haber 1 solo usuario conectado.' arrow>
+                                                    <Box>
+                                                        <MenuItem disabled onClick={handleReorderTasksModalOpen}>
+                                                            <Reorder style={{marginRight: 10}} />
+                                                            <Typography>Ordenar Tareas</Typography>
+                                                        </MenuItem>
+                                                    </Box>
+                                                </Tooltip>
+                                                : <MenuItem onClick={handleReorderTasksModalOpen}>
+                                                    <Reorder style={{marginRight: 10}} />
+                                                    <Typography>Ordenar Tareas</Typography>
+                                                </MenuItem>
+                                        }
                                         <MenuItem onClick={handleDeleteUnit}>
                                             <Delete fontSize="small" style={{marginRight: 8}}/>
                                             <Typography>Eliminar Actividad</Typography>
@@ -414,7 +459,7 @@ export const LearningActivity = forwardRef(({ index, learningActivity, sumHours,
                         <Grid item xs={12} sm={8} className={classes.taskContainer}>
                             <Grid id='tasks' className={classes.gridTask}>
                                 {
-                                    design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i) => <Task ref={(ref) => taskRefs.current.push(ref)} refTask = {refs[task.id]} key={`task-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index} learningActivityID={learningActivity.id} sumHours={sumHours} sumMinutes={sumMinutes}/>)
+                                    design.data.learningActivities[index] && design.data.learningActivities[index].tasks && design.data.learningActivities[index].tasks.map((task, i) => <Task ref={(ref) => taskRefs.current.push(ref)} refTask = {refs[task.id]} key={`task-${task.id}-${i}-learningActivity-${index}`} index={i} task={task} learningActivityIndex={index} learningActivityID={learningActivity.id} sumHours={sumHours} sumMinutes={sumMinutes}/>)
                                 }
                             </Grid>
                             <Tooltip title='Agregar tarea' arrow>

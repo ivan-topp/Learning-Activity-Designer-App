@@ -13,11 +13,6 @@ export const uiReducer = ( state, action ) => {
                 ...state,
                 ['is' + action.payload + 'ModalOpen']: false,
             };
-        case types.ui.toggleRegisterModal:
-            return {
-                ...state,
-                isRegisterModalOpen: !state.isRegisterModalOpen,
-            };
         case types.ui.updateFolderPath:
             if (state.folderPath !== action.payload) {
                 return {
@@ -85,6 +80,11 @@ export const uiReducer = ( state, action ) => {
             return{
                 ...state,
                 newTask: action.payload,
+            };
+        case types.ui.setReorderTasksModalState:
+            return {
+                ...state,
+                reorderTaskModalState: action.payload,
             };
         default:
             return state;

@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const SharedTextFieldTipTapEditor = forwardRef(({name,
+export const SharedTextfieldTipTapEditor = forwardRef(({name,
     multiline,
     rowMax = 1,
     maxLength,
@@ -342,4 +342,4 @@ const initialValuePropsAreEqual = (prevProps, nextProps) => {
     return prevProps.initialvalue === nextProps.initialvalue;
 }
 
-export const MemorizedSharedTextfieldTipTapEditor = React.memo(SharedTextFieldTipTapEditor, initialValuePropsAreEqual);
+export const MemorizedSharedTextfieldTipTapEditor = React.memo(SharedTextfieldTipTapEditor, initialValuePropsAreEqual);

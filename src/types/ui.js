@@ -1,8 +1,6 @@
 const ui = {
     openModal: '[UI] open modal',
     closeModal: '[UI] close modal',
-    toggleRegisterModal: '[UI] toggle register modal',
-    toggleLearningResultModal: '[UI] toggle learning result modal',
     updateFolderPath: '[UI] update folder path',
     toggleConfirmAction: '[UI] confirm action',
     setFolder: '[UI] set folder data',
@@ -15,6 +13,7 @@ const ui = {
     setHistoryInCheckSaveDesign: '[UI] set history check save design',
     setScrollToNewActivity: '[UI] set scroll to new activity',
     setScrollToNewTask: '[UI] set scroll to new task',
+    setReorderTasksModalState: '[UI] set reorder task modal state',
 };
 
 export default ui;
