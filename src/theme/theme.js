@@ -2,8 +2,7 @@ import { createMuiTheme } from '@material-ui/core';
 import {
   orange,
   lightBlue,
-  deepPurple,
-  deepOrange
+  deepOrange,
 } from "@material-ui/core/colors";
 
 export const getTheme = ( isDarkActive ) =>{
@@ -11,14 +10,14 @@ export const getTheme = ( isDarkActive ) =>{
         palette: {
           type: isDarkActive ? 'dark': 'light',
           primary: {
-            dark: orange[500], 
-            light: lightBlue[500],
-            main: isDarkActive? orange[500] : lightBlue[500],
+            dark: isDarkActive ? '#c25e00': '#006db3',
+            light: isDarkActive ? '#ffbd45': '#63ccff',
+            main: isDarkActive ? orange[600] : lightBlue[600],
           },
           secondary: {
-            dark: deepOrange[900],
-            light: deepPurple[500], 
-            main: isDarkActive? deepOrange[900]: deepPurple[500], 
+            dark: isDarkActive ? '#c66900': '#0077c2',
+            light: isDarkActive ? '#ffc947': '#80d6ff', 
+            main: isDarkActive ? deepOrange[500]: lightBlue[400], 
           },
           text:{
             primary: isDarkActive? '#F4F4F4': '#36393F',

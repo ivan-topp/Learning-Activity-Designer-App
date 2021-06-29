@@ -14,12 +14,13 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center'
     },
     option: {
-        backgroundColor: theme.palette.primary.main,
+        backgroundColor: theme.palette.secondary.main,
         marginBottom: 10,
         width: '100%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        color: theme.palette.getContrastText(theme.palette.secondary.main),
         '&:hover': {
             transition: 'box-shadow .3s',
             cursor: 'pointer',
@@ -47,8 +48,8 @@ const useStyles = makeStyles((theme) => ({
     },
     active: {
         boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.2), 0 0px 20px 0 rgba(0, 0, 0, 0.19)',
-        backgroundColor: theme.palette.secondary.light,
-        color: 'white',
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.getContrastText(theme.palette.primary.main),
     }
 }));
 

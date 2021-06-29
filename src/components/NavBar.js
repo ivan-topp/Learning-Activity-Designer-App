@@ -4,7 +4,7 @@ import { useQueryClient } from 'react-query';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Search } from '@material-ui/icons';
 import Logo from 'assets/img/Logo.png';
-import { Avatar, Typography, Toolbar, AppBar, Button, ButtonGroup, IconButton, Menu, MenuItem, Switch, FormControlLabel, OutlinedInput, Grid, useMediaQuery } from '@material-ui/core';
+import { Avatar, Typography, Toolbar, AppBar, Button, IconButton, Menu, MenuItem, Switch, FormControlLabel, OutlinedInput, Grid, useMediaQuery } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { useUiState } from 'contexts/ui/UiContext';
 import { useAuthState } from 'contexts/AuthContext';
@@ -22,8 +22,8 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.primary
     },
     logo: {
-        width: theme.spacing(5),
-        height: theme.spacing(5),
+        width: theme.spacing(4),
+        height: theme.spacing(4),
         //margin: 'auto',
     },
     brand: {
@@ -40,9 +40,14 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
     },
+    btn: {
+        margin: '0px 5px',
+        height: 35,
+    },
     userAndOptions: {
         display: 'flex',
         justifyContent: 'flex-end',
+        alignItems: 'center',
         [theme.breakpoints.down('xs')]: {
             justifyContent: 'center',
         },
@@ -115,7 +120,7 @@ export const NavBar = () => {
     const handleSearchUsers = async (e) => {
         e.preventDefault();
         if (filter.trim().length > 0) {
-            if(design !== null && !location.pathname.includes('reader') && !location.pathname.includes('shared-link') && !uiState.userSaveDesign){
+            if (design !== null && !location.pathname.includes('reader') && !location.pathname.includes('shared-link') && !uiState.userSaveDesign) {
                 dispatch({
                     type: types.ui.openModal,
                     payload: 'CheckSaveDesign'
@@ -126,16 +131,16 @@ export const NavBar = () => {
                         url: `/users/search?q=${filter.trim()}`,
                     }
                 })
-            } else{
+            } else {
                 history.push(`/users/search?q=${filter.trim()}`);
             }
             setFilter('');
         }
     };
 
-    const handleGoUserProfile = async (e) =>{
+    const handleGoUserProfile = async (e) => {
         e.preventDefault();
-        if(design !== null && !location.pathname.includes('reader') && !location.pathname.includes('shared-link') && !uiState.userSaveDesign){
+        if (design !== null && !location.pathname.includes('reader') && !location.pathname.includes('shared-link') && !uiState.userSaveDesign) {
             dispatch({
                 type: types.ui.openModal,
                 payload: 'CheckSaveDesign'
@@ -146,14 +151,14 @@ export const NavBar = () => {
                     url: `/profile/${authState.user.uid}`,
                 }
             })
-        } else{
+        } else {
             history.push(`/profile/${authState.user.uid}`);
         }
     }
 
-    const handleGoHomePage = async (e) =>{
+    const handleGoHomePage = async (e) => {
         e.preventDefault();
-        if(design !== null && !location.pathname.includes('reader') && !location.pathname.includes('shared-link') && !uiState.userSaveDesign){
+        if (design !== null && !location.pathname.includes('reader') && !location.pathname.includes('shared-link') && !uiState.userSaveDesign) {
             dispatch({
                 type: types.ui.openModal,
                 payload: 'CheckSaveDesign'
@@ -164,7 +169,7 @@ export const NavBar = () => {
                     url: `/`,
                 }
             })
-        } else{
+        } else {
             history.push(`/`);
         }
     }
@@ -177,7 +182,7 @@ export const NavBar = () => {
 
     const renderUserOptions = () => {
         return (<Grid item xs={!isXSDevice ? 12 : 6} sm={4} lg={2} className={classes.userAndOptions}>
-            <Button size='small' onClick = {handleGoUserProfile} style={{ display: 'flex', alignItems: 'center', textTransform: 'none' }}>
+            <Button size='small' onClick={handleGoUserProfile} style={{ display: 'flex', alignItems: 'center', textTransform: 'none' }}>
                 <Avatar
                     style={{ marginRight: 10, width: 30, height: 30 }}
                     alt={formatName(authState.user.name, authState.user.lastname)}
@@ -243,18 +248,16 @@ export const NavBar = () => {
                                 </Typography>
                             </Button>
                         </Grid>
-                        { isXSDevice && authState.token && renderUserOptions() }
+                        {isXSDevice && authState.token && renderUserOptions()}
                         {
                             (!authState.token)
                                 ? <Grid item xs={12} sm={9} lg={10} className={classes.userAndOptions}>
-                                    <ButtonGroup variant="text" aria-label="text primary button group">
-                                        <Button onClick={handleOpenLoginModal} >
-                                            Ingresar
-                                            </Button>
-                                        <Button onClick={handleOpenRegisterModal}>
-                                            Registrarme
-                                            </Button>
-                                    </ButtonGroup>
+                                    <Button className={classes.btn} variant='contained' color='primary' size='small' onClick={handleOpenLoginModal} >
+                                        Ingresar
+                                    </Button>
+                                    <Button className={classes.btn} variant='outlined' color='primary' size='small' onClick={handleOpenRegisterModal}>
+                                        Registrarme
+                                    </Button>
                                 </Grid>
                                 : <>
                                     <Grid item xs={12} sm={5} lg={8}>
@@ -275,7 +278,7 @@ export const NavBar = () => {
                                             </form>
                                         </div>
                                     </Grid>
-                                    { !isXSDevice && renderUserOptions() }
+                                    {!isXSDevice && renderUserOptions()}
                                 </>
                         }
                     </Grid>
@@ -283,7 +286,7 @@ export const NavBar = () => {
             </AppBar>
             <LoginModal />
             <RegisterModal />
-            
+
         </div>
     );
 }

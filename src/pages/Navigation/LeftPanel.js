@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Divider, List, ListItem, ListItemText, makeStyles } from '@material-ui/core';
-import { Group, Home, Public } from '@material-ui/icons';
+import { Add, Group, Home, Public } from '@material-ui/icons';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useMutation, useQueryClient } from 'react-query';
 import { useAuthState } from 'contexts/AuthContext';
@@ -45,10 +45,11 @@ export const LeftPanel = () => {
 
     return (
         <>
-            <Button variant='contained' color='default' style={{ margin: 10 }} onClick={handleCreateDesign}>
-                Crear Diseño
+            <Button variant='outlined' color='primary' style={{ margin: 10 }} startIcon={<Add fontSize='large' />} onClick={handleCreateDesign}>
+                Nuevo Diseño
             </Button>
             <List component="nav" aria-label="main mailbox folders">
+                <Divider />
                 <ListItem button selected={location.pathname.includes('/my-designs')} component={ Link } to='/my-designs'>
                     <Home className={classes.icon} />
                     <ListItemText primary='Mis Diseños'/>

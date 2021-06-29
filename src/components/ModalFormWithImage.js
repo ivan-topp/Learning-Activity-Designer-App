@@ -23,7 +23,10 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    },
+    dialogContent: {
+        padding: 20,
+    },
 }));
 
 export const ModalFormWithImage = React.memo(({ isOpen, handleClose, maxWidth = 'sm', title = '', subtitle = '', image, content, actions }) => {
@@ -55,7 +58,7 @@ export const ModalFormWithImage = React.memo(({ isOpen, handleClose, maxWidth = 
                     </Grid>
                 </Grid>
             </DialogTitle>
-            <DialogContent>
+            <DialogContent className={classes.dialogContent}>
                 {content}
             </DialogContent>
             {

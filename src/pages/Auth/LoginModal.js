@@ -18,12 +18,6 @@ import types from 'types';
 import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
-    formcontrol: {
-        display: 'flex',
-        flexDirection: 'column',
-        margin: 'auto',
-        width: 'fit-content',
-    },
     margin: {
         margin: theme.spacing(1),
     },
@@ -34,6 +28,11 @@ const useStyles = makeStyles((theme) => ({
         marginRight: '10%',
         width: '80%',
         overflow: 'auto',
+        [theme.breakpoints.down('xs')]: {
+            marginLeft: 0,
+            marginRight: 0,
+            width: '100%',
+        }
     },
     logo: {
         display: 'block',
@@ -227,6 +226,7 @@ export const LoginModal = () => {
                             InputProps={{
                                 endAdornment:
                                     <IconButton
+                                    style={{height: 40, width: 40}}
                                         onClick={handleClickShowPassword}
                                         onMouseDown={handleMouseDownPassword}
                                     >
