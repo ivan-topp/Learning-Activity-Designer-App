@@ -150,7 +150,7 @@ export const ReorderTasksModal = () => {
                             IMPORTANTE: Esta funcionalidad solo se encuentra disponible cuando hay un solo usuario conectado al diseño de aprendizaje.
                         </Typography>
                         {
-                            designState.users.length > 1 && <Alert severity='warning' style={{display: 'flex', alignItems: 'center'}}>
+                            designState.users.length > 1 && <Alert severity='warning' variant='outlined' style={{display: 'flex', alignItems: 'center'}}>
                                 Esta funcionalidad está habilitada cuando hay un solo usuario conectado al diseño.
                                 Por lo tanto, no podrá guardar los cambios. 
                                 Por favor inténtelo más tarde, cuando solo usted esté conectado al diseño.

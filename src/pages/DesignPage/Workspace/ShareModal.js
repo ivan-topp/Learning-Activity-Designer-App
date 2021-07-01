@@ -141,7 +141,7 @@ export const ShareModal = () => {
     if (error) {
         return (
             <div className={classes.error}>
-                <Alert severity='error'>
+                <Alert severity='error' variant='outlined'>
                     {error}
                 </Alert>
             </div>
@@ -158,7 +158,7 @@ export const ShareModal = () => {
         } else if (isError) {
             return (
                 <div className={classes.error}>
-                    <Alert severity='error'>
+                    <Alert severity='error' variant='outlined'>
                         {error}
                     </Alert>
                 </div>)

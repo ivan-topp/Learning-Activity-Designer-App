@@ -199,7 +199,7 @@ export const LoginModal = () => {
                 image={<img className={classes.logo} src={Logo} alt="Logo" />}
                 content={
                     <form className={classes.form} onSubmit={handleLogin} noValidate>
-                        {errorFromServer && <Alert severity="error"> {errorFromServer}</Alert>}
+                        {errorFromServer && <Alert severity="error" variant='outlined'> {errorFromServer}</Alert>}
                         <TextField
                             error={!!emailError}
                             helperText={emailError}

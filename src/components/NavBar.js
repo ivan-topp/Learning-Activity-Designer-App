@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useQueryClient } from 'react-query';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { Search } from '@material-ui/icons';
+import { ExitToApp, Search } from '@material-ui/icons';
 import Logo from 'assets/img/Logo.png';
-import { Avatar, Typography, Toolbar, AppBar, Button, IconButton, Menu, MenuItem, Switch, FormControlLabel, OutlinedInput, Grid, useMediaQuery } from '@material-ui/core';
+import { Avatar, Typography, Toolbar, AppBar, Button, IconButton, Menu, MenuItem, ListItemIcon, Switch, FormControlLabel, OutlinedInput, Grid, useMediaQuery } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { useUiState } from 'contexts/ui/UiContext';
 import { useAuthState } from 'contexts/AuthContext';
@@ -33,12 +33,32 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     search: {
+        width: '100%',
         display: 'flex',
         justifyContent: 'center',
+        alignItems: 'center',
+    },
+    searchInput:{
+        width: '100%',
+        height: 40,
+        '& fieldset': {
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: 0,
+        }
+    },
+    searchButton: {
+        borderTopLeftRadius: 0,
+        borderBottomLeftRadius: 0,
+        height: 40,
     },
     searchForm: {
+        width: '50%',
         display: 'flex',
         alignItems: 'center',
+        [theme.breakpoints.down('xs')]: {
+            width: '100%',
+            padding: '0px 5px',
+        },
     },
     btn: {
         margin: '0px 5px',
@@ -184,7 +204,13 @@ export const NavBar = () => {
         return (<Grid item xs={!isXSDevice ? 12 : 6} sm={4} lg={2} className={classes.userAndOptions}>
             <Button size='small' onClick={handleGoUserProfile} style={{ display: 'flex', alignItems: 'center', textTransform: 'none' }}>
                 <Avatar
-                    style={{ marginRight: 10, width: 30, height: 30 }}
+                    style={{ marginRight: 10,
+                        width: 30,
+                        height: 30,
+                        border: `1px solid ${theme.palette.divider}`,
+                        backgroundColor: authState.user.color, 
+                        color: theme.palette.getContrastText(authState.user.color),
+                    }}
                     alt={formatName(authState.user.name, authState.user.lastname)}
                     src={authState.user.img && authState.user.img.length > 0 ? `${process.env.REACT_APP_URL}uploads/users/${authState.user.img}` : ''}
                 >
@@ -225,10 +251,11 @@ export const NavBar = () => {
                         label="Modo Avanzado"
                     />
                 </MenuItem>
-                <MenuItem>
-                    <Button color="primary" onClick={handleLogout}>
-                        Cerrar sesión
-                    </Button>
+                <MenuItem onClick={handleLogout}>
+                    <ListItemIcon>
+                        <ExitToApp />
+                    </ListItemIcon>
+                    Cerrar sesión
                 </MenuItem>
 
             </Menu>
@@ -240,7 +267,7 @@ export const NavBar = () => {
             <AppBar position="static" className={classes.navbarColor} elevation={0}>
                 <Toolbar style={{ padding: 0 }}>
                     <Grid container>
-                        <Grid item xs={!isXSDevice ? 12 : 6} sm={3} lg={2}>
+                        <Grid item xs={!isXSDevice ? 12 : 6} sm={3} lg={2} style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Button size='small' onClick={handleGoHomePage} className={classes.brand}>
                                 <Avatar className={classes.logo} src={Logo} alt="Logo" />
                                 <Typography variant="h6" className={classes.title}>
@@ -260,10 +287,11 @@ export const NavBar = () => {
                                     </Button>
                                 </Grid>
                                 : <>
-                                    <Grid item xs={12} sm={5} lg={8}>
+                                    <Grid item xs={12} sm={5} lg={8} style={{display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
                                         <div className={classes.search}>
                                             <form className={classes.searchForm} onSubmit={handleSearchUsers} noValidate>
                                                 <OutlinedInput
+                                                    className={classes.searchInput}
                                                     margin='dense'
                                                     variant="outlined"
                                                     name="filter"
@@ -272,9 +300,12 @@ export const NavBar = () => {
                                                     placeholder='Buscar usuario'
                                                     onChange={handleInputFormChange}
                                                 />
-                                                <IconButton type="submit" className={classes.iconButton} aria-label="search">
+                                                <Button variant='contained' disableElevation color='primary' type='submit' className={classes.searchButton} >
                                                     <Search />
-                                                </IconButton>
+                                                </Button>
+                                                {/* <IconButton type="submit" className={classes.iconButton} aria-label="search">
+                                                    <Search />
+                                                </IconButton> */}
                                             </form>
                                         </div>
                                     </Grid>

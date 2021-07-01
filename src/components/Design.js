@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
         userSelect: 'none',
         backgroundColor: theme.palette.background.design,
         '&:hover': {
-            boxShadow: '0px 0px 10px 0 #bcc3d6',
+            boxShadow: `0px 0px 10px 0 ${theme.palette.type !== 'dark' ? '#bcc3d6' : '#172b3a'}`,
             background: theme.palette.background.designHover,
         },
     },

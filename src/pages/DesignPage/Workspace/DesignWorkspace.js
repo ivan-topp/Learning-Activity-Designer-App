@@ -42,9 +42,10 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
         background: theme.palette.background.workSpace,
         height: 'auto',
-        paddingBottom: theme.spacing(2),
+        paddingBottom: theme.spacing(6),
         [theme.breakpoints.up('md')]: {
             height: 'calc(100vh - 212px)',
+            paddingBottom: theme.spacing(4),
         },
     },
     rightPanel: {

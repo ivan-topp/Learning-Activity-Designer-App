@@ -159,7 +159,7 @@ export const DesignPageReader = () => {
     if(error){
         return (
             <div className={classes.error}>
-                <Alert severity='error'>
+                <Alert severity='error' variant='outlined'>
                     { error }
                 </Alert>
             </div>

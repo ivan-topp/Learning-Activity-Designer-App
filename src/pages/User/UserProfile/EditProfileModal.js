@@ -162,7 +162,7 @@ export const EditProfileModal = React.memo(() => {
 
     if (isError) {
         return (<div className={classes.errorContainer}>
-            <Alert severity='error' className={classes.error}>
+            <Alert severity='error' variant='outlined' className={classes.error}>
                 Ha ocurrido un problema al intentar obtener el usuario en la base de datos. Esto probablemente se deba a un problema de conexión, por favor revise que su equipo tenga conexión a internet e intente más tarde.
                 Si el problema persiste, por favor comuníquese con el equipo de soporte.
             </Alert>

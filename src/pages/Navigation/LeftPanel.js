@@ -48,7 +48,7 @@ export const LeftPanel = () => {
             <Button variant='outlined' color='primary' style={{ margin: 10 }} startIcon={<Add fontSize='large' />} onClick={handleCreateDesign}>
                 Nuevo Diseño
             </Button>
-            <List component="nav" aria-label="main mailbox folders">
+            <List component="nav" aria-label="main mailbox folders" style={{padding: 0}}>
                 <Divider />
                 <ListItem button selected={location.pathname.includes('/my-designs')} component={ Link } to='/my-designs'>
                     <Home className={classes.icon} />

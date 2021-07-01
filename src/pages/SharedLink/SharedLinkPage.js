@@ -185,7 +185,7 @@ export const SharedLinkPage = () => {
 
     const renderError = () => {
         return <div className={classes.error}>
-            <Alert severity='error'>
+            <Alert severity='error' variant='outlined'>
                 {error.message}
             </Alert>
         </div>;
@@ -250,7 +250,7 @@ export const SharedLinkPage = () => {
 
     const renderNotFoundMessage = () => {
         return <div className={classes.error}>
-            <Alert severity='error'>
+            <Alert severity='error' variant='outlined'>
                 No se ha encontrado diseño.
             </Alert>
         </div>;

@@ -1,8 +1,6 @@
 import { createMuiTheme } from '@material-ui/core';
 import {
-  orange,
-  lightBlue,
-  deepOrange,
+  blue, green, orange, red,
 } from "@material-ui/core/colors";
 
 export const getTheme = ( isDarkActive ) =>{
@@ -10,25 +8,37 @@ export const getTheme = ( isDarkActive ) =>{
         palette: {
           type: isDarkActive ? 'dark': 'light',
           primary: {
-            dark: isDarkActive ? '#c25e00': '#006db3',
-            light: isDarkActive ? '#ffbd45': '#63ccff',
-            main: isDarkActive ? orange[600] : lightBlue[600],
+            main: isDarkActive ? blue[200] : blue[500],
+            dark: isDarkActive ? '#5d99c6': '#0069c0',
+            light: isDarkActive ? '#c3fdff': '#6ec6ff',
           },
           secondary: {
-            dark: isDarkActive ? '#c66900': '#0077c2',
-            light: isDarkActive ? '#ffc947': '#80d6ff', 
-            main: isDarkActive ? deepOrange[500]: lightBlue[400], 
+            main: isDarkActive ? blue[300]: blue[400], 
+            dark: isDarkActive ? '#2286c3': '#0077c2',
+            light: isDarkActive ? '#9be7ff': '#80d6ff', 
           },
           text:{
-            primary: isDarkActive? '#F4F4F4': '#36393F',
+            primary: isDarkActive? '#F4F4F4': '#0a1319',
           },
           background:{
-            default: isDarkActive? '#36393F': '#F4F4F4', //SidePanels,
-            paper: isDarkActive? '#36393F': '#F4F4F4', // Menu, Login and Register Modal
-            workSpace: isDarkActive? '#2F3136': '#FEFEFE',
-            navbar: isDarkActive? '#202225': '#DCDCDC',
-            design: isDarkActive? '#36393F': '#F4F4F4',
-            designHover: isDarkActive? '#393D46': '#F6F6F6',
+            default: isDarkActive? '#0a1319': '#f0f7ff', //SidePanels,
+            paper: isDarkActive? '#0a1319': '#f0f7ff', // Menu, Login and Register Modal
+            workSpace: isDarkActive? '#060e16': '#e8eff7',
+            navbar: isDarkActive? '#0f1c26': '#dce7f4',
+            design: isDarkActive? '#0a1319': '#f0f7ff',
+            designHover: isDarkActive? '#091421': '#e8eff7',
+          },
+          error: {
+            main: isDarkActive? red[400]: red[500],
+          },
+          info: {
+            main: isDarkActive? blue[300]: blue[300],
+          },
+          warning: {
+            main: isDarkActive? orange[700]: orange[900],
+          },
+          success: {
+            main: isDarkActive? green[300]: green[400],
           }
         },
     });

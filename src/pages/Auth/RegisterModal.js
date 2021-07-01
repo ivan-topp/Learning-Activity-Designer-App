@@ -164,7 +164,7 @@ export const RegisterModal = React.memo(() => {
             image={<img className={classes.logo} src={Logo} alt="Logo" />}
             content={
                 <form className={classes.form} onSubmit={handleRegister} noValidate>
-                    { errorFromServer && <Alert severity="error">{ errorFromServer }</Alert> }
+                    { errorFromServer && <Alert severity="error" variant='outlined'>{ errorFromServer }</Alert> }
                     <TextField
                         variant='outlined'
                         error={!!nameError}

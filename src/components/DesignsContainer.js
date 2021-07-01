@@ -59,14 +59,14 @@ export const DesignsContainer = ({ data, status, isFetchingNextPage, fetchNextPa
     const alert = () => {
         if(label === 'shared-with-me'){
             return (
-                <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <Alert severity="info" variant='outlined' style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                     No se han encontrado diseños compartidos. Cuando otros usuarios compartan diseños contigo aparecerán aquí.
                 </Alert>
             );
         } else if (label === 'user-profile'){
             if (data.pages[0].ownerId === authState.user.uid) {
                 return (
-                    <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                    <Alert severity="info" variant='outlined' style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                         No cuentas con diseños públicos. Crea tu primer diseño público haciendo click {' '}
                         <Link className={classes.clickHere} onClick={handleCreateDesign}>aquí</Link>
                         !
@@ -74,20 +74,20 @@ export const DesignsContainer = ({ data, status, isFetchingNextPage, fetchNextPa
                 );
             } else {
                 return (
-                    <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                    <Alert severity="info" variant='outlined' style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                         Este usuario no cuenta con diseños públicos.
                     </Alert>
                 );
             }
         } else if(label === 'public-repository'){
             return (
-                <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <Alert severity="info" variant='outlined' style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                     No se han encontrado resultados para tu búsqueda.
                 </Alert>
             );
         } else {
             return (
-                <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <Alert severity="info" variant='outlined' style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                     No se han encontrado diseños en este directorio. Crea tu primer diseño haciendo click {' '}
                     <Link className={classes.clickHere} onClick={handleCreateDesign}>aquí</Link>
                     !
@@ -103,7 +103,7 @@ export const DesignsContainer = ({ data, status, isFetchingNextPage, fetchNextPa
             </div>
         </div>
     ) : status === 'error' ? (
-        <Alert severity='error' className={classes.error}>
+        <Alert severity='error' variant='outlined' className={classes.error}>
             Ha ocurrido un problema al intentar obtener los diseños. Esto probablemente se deba a un problema de conexión, por favor revise que su equipo tenga conexión a internet e intente más tarde.
             Si el problema persiste, por favor comuníquese con el equipo de soporte.
         </Alert>

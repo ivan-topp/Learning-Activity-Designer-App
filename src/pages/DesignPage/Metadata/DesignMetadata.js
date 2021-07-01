@@ -104,7 +104,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
     const descriptionRef = useRef();
     const objectiveRef = useRef();
     const evaluationRef = useRef();
-    
+
 
     const [form, handleInputChange, , setValues] = useForm({
         name: metadata.name,
@@ -278,7 +278,7 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
         evaluation,
         evaluationPattern
     } = form;
-    
+
     const { isLoading, isError, data, error } = useQuery('categories', async () => {
         return await getCategories();
     }, { refetchOnWindowFocus: false });
@@ -316,15 +316,15 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
         }
         socket?.emit('edit-metadata-field', { designId: design._id, field, value, subfield }, emitWithTimeout(
             (resp) => {
-                if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
-                if(uiState.userSaveDesign){
+                if (!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                if (uiState.userSaveDesign) {
                     dispatch({
                         type: types.ui.setUserSaveDesign,
                         payload: false,
                     });
                 }
             },
-            () => {if(!online || !connected) enqueueSnackbar('Error al editar el diseño. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 });},
+            () => { if (!online || !connected) enqueueSnackbar('Error al editar el diseño. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }); },
         ));
         // handleInputChange(e);
         if (subfield) {
@@ -346,10 +346,10 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
     };
 
     const handleSaveDesign = (e) => {
-        if(evaluationPatternRef.current.editing) evaluationPatternRef.current.handleSave();
+        if (evaluationPatternRef.current.editing) evaluationPatternRef.current.handleSave();
         socket?.emit('save-design', { designId: design._id }, emitWithTimeout(
             (resp) => {
-                if(resp.ok && !uiState.userSaveDesign){
+                if (resp.ok && !uiState.userSaveDesign) {
                     dispatch({
                         type: types.ui.setUserSaveDesign,
                         payload: true,
@@ -369,20 +369,20 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
     const handleChangeKeywords = (keywords, type, targetKeyword) => {
         if (type === 'add') socket?.emit('add-design-keyword', { designId: design._id, keyword: targetKeyword }, emitWithTimeout(
             (resp) => {
-                if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                if (!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
             },
             () => enqueueSnackbar('Error al agregar la palabra clave. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
         ));
         else if (type === 'remove') socket?.emit('remove-design-keyword', { designId: design._id, keyword: targetKeyword }, emitWithTimeout(
             (resp) => {
-                if(!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
+                if (!resp.ok) return enqueueSnackbar(resp.message, { variant: 'error', autoHideDuration: 2000 });
             },
             () => enqueueSnackbar('Error al eliminar la palabra clave. Por favor revise su conexión. Tiempo de espera excedido.', { variant: 'error', autoHideDuration: 2000 }),
         ));
     };
-    
+
     return (
-        <>  
+        <>
             <Grid container key={design._id}>
                 <Grid item xs={12} md={3} lg={2} className={classes.leftPanel}></Grid>
                 <Grid item xs={12} md={6} lg={8} className={classes.workspace}>
@@ -469,10 +469,10 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                                                 <Skeleton width={'100%'} height={20} />
                                             </div>
                                         </>)
-                                        : (<Box style={{marginTop: -10}}>
+                                        : (<Box style={{ marginTop: -10 }}>
                                             <Typography variant='body2' gutterBottom>Valoración media </Typography>
                                             <Box display='flex' >
-                                                <Star style={{marginRight: 10}}/> { metadata.scoreMean }
+                                                <Star style={{ marginRight: 10 }} /> {metadata.scoreMean}
                                             </Box>
                                         </Box>)
                                 }
@@ -765,11 +765,11 @@ export const DesignMetadata = forwardRef(({ evaluationPatternRef }, ref) => {
                             <div className={`${classes.content} ${classes.learningResults}`}>
                                 {
                                     metadata.results.length === 0
-                                        ? <Alert severity="info" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                                        ? <Alert severity="info" variant='outlined' style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                                             Este diseño aún no tiene aprendizajes esperados. Agrega el primer aprendizaje esperado haciendo click {' '}
                                             {<Link className={classes.clickHere} onClick={handleOpenLearningResultmodal}>aquí</Link>}
-                                    !
-                                </Alert>
+                                            !
+                                        </Alert>
                                         : metadata.results.map((result, index) => (
                                             <LearningResult key={`learning-result-${index}`} index={index} {...result} />
                                         ))

@@ -94,7 +94,7 @@ export const SearchUsersPage = () => {
     if (!q) {
         return (
             <div className={classes.errorContainer}>
-                <Alert severity='error' className={classes.error}>
+                <Alert severity='error' variant='outlined' className={classes.error}>
                     No se ha ingresado filtro para la búsqueda de usuarios. Por favor ingrese información en la entrada de texto de la barra de navegación para buscar usuarios
                     y presione 'enter' o el ícono de búsqueda.
                 </Alert>
@@ -134,7 +134,7 @@ export const SearchUsersPage = () => {
                             </div>
                         </div>
                     ) : status === 'error' ? (
-                        <Alert severity='error' className={classes.error}>
+                        <Alert severity='error' variant='outlined' className={classes.error}>
                             { error.message}
                         </Alert>
                     ) : (
@@ -155,7 +155,7 @@ export const SearchUsersPage = () => {
                                                 </Button>
                                             }
                                         </div></>)
-                                    : <Alert severity='error' className={classes.error}>
+                                    : <Alert severity='error' variant='outlined' className={classes.error}>
                                         No se han encontrado coincidencias.
                                 </Alert>
                             }

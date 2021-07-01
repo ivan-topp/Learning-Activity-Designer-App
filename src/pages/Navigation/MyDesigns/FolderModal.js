@@ -130,7 +130,7 @@ export const FolderModal = () => {
                     <Close />
                 </IconButton>
             </div>
-            <DialogContent>
+            <DialogContent dividers>
                 <Typography style={{marginBottom: 20}}>
                     Usted está por { !folder._id ? 'crear una nueva carpeta' : 'editar una carpeta' }.
                     Por favor ingrese el { !folder._id ? '' : 'nuevo' } nombre para su carpeta en la siguiente entrada de texto.
