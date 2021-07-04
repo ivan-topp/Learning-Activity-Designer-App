@@ -5,7 +5,7 @@ import {
     TextField,
     Link,
 } from '@material-ui/core';
-import Logo from 'assets/img/Logo.png';
+import Logo from 'assets/img/logo_uct_2.png';
 import Alert from '@material-ui/lab/Alert';
 import { ModalFormWithImage } from 'components/ModalFormWithImage';
 import { useForm } from 'hooks/useForm';
@@ -25,9 +25,12 @@ const useStyles = makeStyles((theme) => ({
         display: 'block',
         marginLeft: 'auto',
         marginRight: 'auto',
-        width: '30%',
+        width: '20%',
         marginTop: 15,
         marginBottom: 15,
+        [theme.breakpoints.down('xs')]: {
+            width: '35%',
+        }
     },
     footer: {
         display: 'flex',

@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useQueryClient } from 'react-query';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { ExitToApp, Search } from '@material-ui/icons';
-import Logo from 'assets/img/Logo.png';
+import Logo from 'assets/img/logo_uct.png';
 import { Avatar, Typography, Toolbar, AppBar, Button, IconButton, Menu, MenuItem, ListItemIcon, Switch, FormControlLabel, OutlinedInput, Grid, useMediaQuery } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { useUiState } from 'contexts/ui/UiContext';
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.primary
     },
     logo: {
-        width: theme.spacing(4),
+        // width: theme.spacing(4),
         height: theme.spacing(4),
         //margin: 'auto',
     },
@@ -204,12 +204,17 @@ export const NavBar = () => {
         return (<Grid item xs={!isXSDevice ? 12 : 6} sm={4} lg={2} className={classes.userAndOptions}>
             <Button size='small' onClick={handleGoUserProfile} style={{ display: 'flex', alignItems: 'center', textTransform: 'none' }}>
                 <Avatar
-                    style={{ marginRight: 10,
-                        width: 30,
-                        height: 30,
-                        border: `1px solid ${theme.palette.divider}`,
-                        backgroundColor: authState.user.color, 
-                        color: theme.palette.getContrastText(authState.user.color),
+                    style={{ 
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginRight: 10,
+                        textAlign: 'center',
+                        width: 35,
+                        height: 35,
+                        fontSize: 16,
+                        // border: `1px solid ${theme.palette.divider}`,
+                        // backgroundColor: authState.user.color, 
+                        // color: theme.palette.getContrastText(authState.user.color),
                     }}
                     alt={formatName(authState.user.name, authState.user.lastname)}
                     src={authState.user.img && authState.user.img.length > 0 ? `${process.env.REACT_APP_URL}uploads/users/${authState.user.img}` : ''}
@@ -269,10 +274,11 @@ export const NavBar = () => {
                     <Grid container>
                         <Grid item xs={!isXSDevice ? 12 : 6} sm={3} lg={2} style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start'}}>
                             <Button size='small' onClick={handleGoHomePage} className={classes.brand}>
-                                <Avatar className={classes.logo} src={Logo} alt="Logo" />
-                                <Typography variant="h6" className={classes.title}>
+                                {/* <Avatar className={classes.logo} src={Logo} alt="Logo" /> */}
+                                <img className={classes.logo} src={Logo} alt='Logo' />
+                                {/* <Typography variant="h6" className={classes.title}>
                                     LAD
-                                </Typography>
+                                </Typography> */}
                             </Button>
                         </Grid>
                         {isXSDevice && authState.token && renderUserOptions()}

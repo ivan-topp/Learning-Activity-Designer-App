@@ -9,7 +9,7 @@ import {
 
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import Alert from '@material-ui/lab/Alert';
-import Logo from 'assets/img/Logo.png';
+import Logo from 'assets/img/logo_uct_2.png';
 import { useForm } from 'hooks/useForm';
 import { useUiState } from 'contexts/ui/UiContext';
 import { ModalFormWithImage } from 'components/ModalFormWithImage';
@@ -246,7 +246,7 @@ export const LoginModal = () => {
                             </div>
                             <div style={{ paddingBottom: 15, paddingTop: 10 }}>
                                 <Link href="#" variant="body1" onClick={toRegister}>
-                                    ¿No tienes cuenta? Registrate
+                                    ¿No tienes cuenta? Regístrate
                                 </Link>
                             </div>
                         </div>

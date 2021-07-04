@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Page, Text, View, Document, StyleSheet, Image, Link } from '@react-pdf/renderer';
-import Logo from 'assets/img/Logo.png';
+import Logo from 'assets/img/logo_uct.png';
 import { useBetween } from 'use-between';
 import { MiniContext } from './MiniContext';
 import { formatDate } from 'utils/dateTimeFormatter';
@@ -9,10 +9,10 @@ export const DocumentPDF = ({design, img, typeUserPDF}) => {
     const { selectedDate, privileges} = useBetween(MiniContext);
     const styles = StyleSheet.create({
         logo: {
-            width: 100,
-            height: 100,
+            width: 250,
+            objectFit: 'cover',
             marginVertical: 15,
-            marginHorizontal: 250
+            marginHorizontal: 'auto',
         }, 
         title: {
             fontSize: 20,
