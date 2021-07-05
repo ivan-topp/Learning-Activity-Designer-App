@@ -2,14 +2,15 @@ import { useTheme, Grid, makeStyles, Typography, Button, Box, Avatar, Paper } fr
 import { useUiState } from 'contexts/ui/UiContext';
 import React from 'react';
 import types from 'types';
-import PyramidBloom from 'assets/img/PyramidBloom.png';
+import PyramidBloomLight from 'assets/img/PyramidBloomLight.png';
+import PyramidBloomDark from 'assets/img/PyramidBloomDark.png';
 import Design from 'assets/img/Design.png';
 import { ReactComponent as Collaboration } from 'assets/img/collaboration.svg';
 import { ReactComponent as TimeChart } from 'assets/img/time_chart.svg';
 import { ReactComponent as Evaluation } from 'assets/img/evaluation.svg';
 import { ReactComponent as ConversationalFramework } from 'assets/img/conversational_framework.svg';
-import { ReactComponent as LiveCollaborationLight } from 'assets/img/live_collaboration_light.svg';
-import { ReactComponent as LiveCollaborationDark } from 'assets/img/live_collaboration_dark.svg';
+//import { ReactComponent as LiveCollaborationLight } from 'assets/img/live_collaboration_light.svg';
+//import { ReactComponent as LiveCollaborationDark } from 'assets/img/live_collaboration_dark.svg';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -28,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     },
     featureList: {
         display: 'flex',
-        paddingTop: 100,
+        paddingTop: 25,
         paddingBottom: 100,
         // justifyContent: 'space-between',
         minHeight: 'calc(100vh - 64px)',
@@ -76,10 +77,17 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    inviteUserText: {
-        marginBottom: theme.spacing(5),
+    inviteUserButton: {
+        marginTop: theme.spacing(3),
     },
-    inviteUserButton: {},
+    firstData:{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        [theme.breakpoints.down('md')]: {
+            flexDirection: 'column-reverse'
+        },
+    },
     banner: {
         display: 'flex',
         justifyContent: 'center',
@@ -87,7 +95,8 @@ const useStyles = makeStyles((theme) => ({
         minHeight: 'calc(100vh - 64px)',
         width: '100%',
         background: theme.palette.background.workSpace,
-        padding: theme.spacing(2),
+        padding: theme.spacing(10),
+        
     },
     bannerItem: {
         display: 'flex',
@@ -97,19 +106,12 @@ const useStyles = makeStyles((theme) => ({
     row: {
         marginTop: theme.spacing(2),
     },
-    col: {
-        marginBottom: theme.spacing(2),
-        marginTop: theme.spacing(2),
-    },
-    textMid: {
-        marginBottom: theme.spacing(3)
-    },
     sizeIcon: {
         fontSize: 80
     },
     firstImgSize: {
-        width: theme.spacing(50),
-        height: theme.spacing(50),
+        width: theme.spacing(65),
+        height: theme.spacing(65),
         [theme.breakpoints.down('md')]: {
             width: theme.spacing(40),
             height: theme.spacing(40),
@@ -123,6 +125,14 @@ const useStyles = makeStyles((theme) => ({
         //     height: theme.spacing(15),
         // },
     },
+    marginAutor:{
+        [theme.breakpoints.down('xl')]: {
+            marginRight: 150
+        },
+        [theme.breakpoints.down('md')]: {
+            marginRight: 10
+        },
+    }
 }));
 
 export const LandingPage = () => {
@@ -140,45 +150,46 @@ export const LandingPage = () => {
     return (
         <Grid className={classes.root}>
             <Grid container className={classes.banner}>
-                <Grid item xs={12} lg={6} className={classes.bannerItem}>
-                    <Box display="flex" justifyContent="center">
-                        <Avatar variant="square" className={classes.firstImgSize} src={Design} alt="Design" />
+                <Grid item>
+                    <Box >
+                        <Grid container className={classes.firstData}>
+                            <Grid item xs={12} lg={6} className={classes.bannerItem}>
+                                <div style ={{marginLeft: 100, marginRight: 100}}>
+                                    <Typography variant = 'h3' style ={{ marginBottom: 25}}>Planifica tus clases mediante diseños</Typography>
+                                    <Typography> Nuestra plataforma web te facilita la planificación de tus actividades de enseñanza, de tal manera de lograr y comprobar que los estudiantes utilicen los contenidos aprendidos. </Typography>
+                                    <Typography style={{marginTop: 10}}>Tus diseños estarán basados en la evaluación, tendrás apoyo visual de la planificación y serán coherentes con un soporte pedagógico.</Typography>
+                                    <Typography style={{marginTop: 10}}>Comparte tus diseños, de tal manera que puedas trabajar en equipo y compartir con la comunidad tus modelos de enseñanza.</Typography>
+                                    <Button style ={{marginTop: 50, marginBottom: 20}} onClick={handleOpenRegisterModal} color='primary' variant='contained'>
+                                        Comienza a diseñar
+                                    </Button>
+                                </div>
+                            </Grid>
+                            <Grid item xs={12} lg={6} className={classes.bannerItem}>
+                                <Box display="flex" justifyContent="center">
+                                    <Avatar variant="square" className={classes.firstImgSize} src={Design} alt="Design" />
+                                </Box>
+                            </Grid>
+                        </Grid>
                     </Box>
-                    <Typography variant='h4' className={classes.row}>Diseña</Typography>
-                    <Typography variant='body1' className={classes.col}>
-                        <li>Diseño basado en la evaluación.</li>
-                        <li>Apoyo visual de la planificación.</li>
-                        <li>Diseños coherentes con soporte pedagógico.</li>
-                    </Typography>
+                    <div style={{ width: '100%'}} >
+                        <Box display="flex" justifyContent="center">
+                            <Typography variant='body1' align='center'>"No pienses en un curso como un depósito de información. Piensa qué necesitan hacer tus estudiantes con la información una vez que terminen el curso y diséñalo en torno a eso."</Typography>
+                        </Box>
+                        <Box display="flex" justifyContent="flex-end" className={classes.marginAutor}>
+                            <Typography variant='caption' className={classes.row}>~ Matthew Guyan</Typography>
+                        </Box>
+                    </div>
                 </Grid>
-                <Grid item xs={12} lg={6} className={classes.bannerItem}>
-                    <Box display="flex" justifyContent="center">
-                        {
-                            theme.palette.type === 'dark' ? <LiveCollaborationDark className={classes.firstImgSize} /> : <LiveCollaborationLight className={classes.firstImgSize} />
-                        }
-                        
-                        {/* <Avatar variant="square" className={classes.firstImgSize} src={Collaborative} alt="Collaborative" /> */}
-                    </Box>
-                    <Typography variant='h4' className={classes.row}>Colabora</Typography>
-                    <Typography variant='body1' className={classes.col}>
-                        <li>Crea diseños con tu equipo de trabajo.</li>
-                        <li>Comparte tus diseños a otros.</li>
-                        <li>Busca y utiliza diseños hechos por otros.</li>
-                    </Typography>
-                </Grid>
-                <div style={{ width: '70%', marginTop: 20 }}>
-                    <Box display="flex" justifyContent="center">
-                        <Typography variant='body1' className={classes.row} align='center'>"No pienses en un curso como un depósito de información. Piensa qué necesitan hacer tus estudiantes con la información una vez que terminen el curso y diséñalo en torno a eso."</Typography>
-                    </Box>
-                    <Box display="flex" justifyContent="flex-end">
-                        <Typography variant='caption' className={classes.row}>~ Matthew Guyan</Typography>
-                    </Box>
-                </div>
             </Grid>
+            <Box display="flex" justifyContent="center">
+                <Typography style={{paddingTop: 100}} variant='h6' >¿Que utilidades te otorga la plataforma?</Typography>
+            </Box>
             <Grid container className={classes.featureList}>
                 <Grid item xs={12} md={6} lg={4} className={classes.featureGrid}>
                     <Paper className={classes.feature}>
-                        <Avatar variant="square" className={classes.featureImage} src={PyramidBloom} alt="PyramidBloom" />
+                        {
+                            theme.palette.type === 'dark' ? <Avatar variant="square" className={classes.featureImage} src={PyramidBloomDark} alt="PyramidBloomDark"  /> : <Avatar variant="square" className={classes.featureImage} src={PyramidBloomLight} alt="PyramidBloomLight" /> 
+                        }
                         <Typography align='center'>
                             Tus diseños se definen en coherencia con la Taxonomía de Bloom. Esto te permitirá definir los niveles cognitivos esperados para tus estudiantes, y facilitar las labores de evaluación.
                         </Typography>
