@@ -250,12 +250,12 @@ export const NavBar = () => {
                         label="Tema Oscuro"
                     />
                 </MenuItem>
-                <MenuItem>
+                {/* <MenuItem>
                     <FormControlLabel
                         control={<Switch checked={userConfig.modeAdvanced} onChange={handleChangeUserConfig} name="modeAdvanced" />}
                         label="Modo Avanzado"
                     />
-                </MenuItem>
+                </MenuItem> */}
                 <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
                         <ExitToApp />

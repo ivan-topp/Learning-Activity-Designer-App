@@ -201,9 +201,7 @@ export const LandingPage = () => {
                     </Box>
                 </Grid>
             </Grid>
-            <Box display="flex" justifyContent="center">
-                <Typography style={{ paddingTop: 100 }} variant='h6' >¿Que utilidades te otorga la plataforma?</Typography>
-            </Box>
+            <Typography style={{ paddingTop: 100, paddingBottom: 75 }} align='center' variant='h6' >¿Que utilidades te otorga la plataforma?</Typography>
             <Grid container className={classes.featureList}>
                 <Grid item xs={12} md={6} lg={4} className={classes.featureGrid}>
                     <Paper className={classes.feature}>
