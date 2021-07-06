@@ -9,6 +9,7 @@ import { DesignProvider } from "contexts/design/DesignContext";
 import { SharedDocProvider } from "contexts/SharedDocContext";
 import { SnackbarProvider } from 'notistack';
 import { Grow } from '@material-ui/core';
+import { UserConfigProvider } from 'contexts/UserConfigContext';
 
 
 const queryClient = new QueryClient()
@@ -20,13 +21,15 @@ function LearningActivityDesigner() {
             <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }} TransitionComponent={Grow}>
                 <UiProvider>
                     <AuthProvider>
-                        <DesignProvider>
-                            <SocketProvider>
-                                <SharedDocProvider>
-                                    <AppRouter />
-                                </SharedDocProvider>
-                            </SocketProvider>
-                        </DesignProvider>
+                        <UserConfigProvider>
+                            <DesignProvider>
+                                <SocketProvider>
+                                    <SharedDocProvider>
+                                        <AppRouter />
+                                    </SharedDocProvider>
+                                </SocketProvider>
+                            </DesignProvider>
+                        </UserConfigProvider>
                     </AuthProvider>
                 </UiProvider>
             </SnackbarProvider>

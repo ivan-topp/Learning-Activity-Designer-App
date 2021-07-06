@@ -12,7 +12,6 @@ import { MyDesignsPage } from 'pages/Navigation/MyDesigns/MyDesignsPage';
 import { UserProfile } from 'pages/User/UserProfile/UserProfile';
 import { useAuthState } from 'contexts/AuthContext';
 import { NavBar } from 'components/NavBar';
-import { UserConfigProvider } from 'contexts/UserConfigContext';
 import { Footer } from 'components/Footer';
 import { CssBaseline, makeStyles } from '@material-ui/core';
 import { SharedWithMePage } from 'pages/Navigation/SharedWithMe/SharedWithMePage';
@@ -37,14 +36,17 @@ const useStyles = makeStyles((theme) => ({
         },
         //Sombra del scrollbar
         '*::-webkit-scrollbar-track': {
-            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)'
+            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
+            // '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
 
         },
         //Scrollbar
         '*::-webkit-scrollbar-thumb': {
             '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
+            // '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.2)',
             borderRadius: '15px',
-            backgroundColor: 'rgba(0,0,0,.1)',
+            backgroundColor: theme.palette.type === 'dark' ? theme.palette.grey[400] : theme.palette.grey[500],
+            // backgroundColor: 'rgba(0,0,0,.1)',
         }
     },
 }));
@@ -65,7 +67,7 @@ export const AppRouter = () => {
     return (
         <Router>
             <div>
-                <UserConfigProvider>
+                
                     <CssBaseline />
                     <NavBar />
                         <Switch>
@@ -84,7 +86,6 @@ export const AppRouter = () => {
                         </Switch>
                         <ConfirmationModal />
                     <Footer />
-                </UserConfigProvider>
             </div>
         </Router>
     );

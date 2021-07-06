@@ -80,13 +80,30 @@ const useStyles = makeStyles((theme) => ({
     inviteUserButton: {
         marginTop: theme.spacing(3),
     },
-    firstData:{
+    firstData: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         [theme.breakpoints.down('md')]: {
             flexDirection: 'column-reverse'
         },
+    },
+    introText: {
+        marginLeft: 100,
+        marginRight: 100,
+        [theme.breakpoints.down('xs')]: {
+            marginLeft: 20,
+            marginRight: 20,
+            marginBottom: 50,
+        }
+    },
+    phrase: {
+        marginLeft: 100,
+        marginRight: 100,
+        [theme.breakpoints.down('xs')]: {
+            marginLeft: 20,
+            marginRight: 20,
+        }
     },
     banner: {
         display: 'flex',
@@ -95,13 +112,18 @@ const useStyles = makeStyles((theme) => ({
         minHeight: 'calc(100vh - 64px)',
         width: '100%',
         background: theme.palette.background.workSpace,
-        padding: theme.spacing(10),
-        
+        padding: theme.spacing(5),
+        [theme.breakpoints.down('xs')]: {
+            padding: 20,
+        }
     },
     bannerItem: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        [theme.breakpoints.down('xs')]: {
+            alignItems: 'flex-end',
+        }
     },
     row: {
         marginTop: theme.spacing(2),
@@ -125,12 +147,12 @@ const useStyles = makeStyles((theme) => ({
         //     height: theme.spacing(15),
         // },
     },
-    marginAutor:{
-        [theme.breakpoints.down('xl')]: {
-            marginRight: 150
-        },
-        [theme.breakpoints.down('md')]: {
-            marginRight: 10
+    marginAutor: {
+        marginLeft: 100,
+        marginRight: 100,
+        [theme.breakpoints.down('xs')]: {
+            marginLeft: 20,
+            marginRight: 20,
         },
     }
 }));
@@ -150,45 +172,43 @@ export const LandingPage = () => {
     return (
         <Grid className={classes.root}>
             <Grid container className={classes.banner}>
-                <Grid item>
-                    <Box >
-                        <Grid container className={classes.firstData}>
-                            <Grid item xs={12} lg={6} className={classes.bannerItem}>
-                                <div style ={{marginLeft: 100, marginRight: 100}}>
-                                    <Typography variant = 'h3' style ={{ marginBottom: 25}}>Planifica tus clases mediante diseños</Typography>
-                                    <Typography> Nuestra plataforma web te facilita la planificación de tus actividades de enseñanza, de tal manera de lograr y comprobar que los estudiantes utilicen los contenidos aprendidos. </Typography>
-                                    <Typography style={{marginTop: 10}}>Tus diseños estarán basados en la evaluación, tendrás apoyo visual de la planificación y serán coherentes con un soporte pedagógico.</Typography>
-                                    <Typography style={{marginTop: 10}}>Comparte tus diseños, de tal manera que puedas trabajar en equipo y compartir con la comunidad tus modelos de enseñanza.</Typography>
-                                    <Button style ={{marginTop: 50, marginBottom: 20}} onClick={handleOpenRegisterModal} color='primary' variant='contained'>
-                                        Comienza a diseñar
-                                    </Button>
-                                </div>
-                            </Grid>
-                            <Grid item xs={12} lg={6} className={classes.bannerItem}>
-                                <Box display="flex" justifyContent="center">
-                                    <Avatar variant="square" className={classes.firstImgSize} src={Design} alt="Design" />
-                                </Box>
-                            </Grid>
+                <Grid item xs={12}>
+                    <Grid container className={classes.firstData}>
+                        <Grid item xs={12} lg={6} className={classes.bannerItem}>
+                            <Box className={classes.introText}>
+                                <Typography variant='h3' style={{ marginBottom: 25 }}>Planifica tus clases mediante diseños</Typography>
+                                <Typography> Nuestra plataforma web te facilita la planificación de tus actividades de enseñanza, de tal manera de lograr y comprobar que los estudiantes utilicen los contenidos aprendidos. </Typography>
+                                <Typography style={{ marginTop: 10 }}>Tus diseños estarán basados en la evaluación, tendrás apoyo visual de la planificación y serán coherentes con un soporte pedagógico.</Typography>
+                                <Typography style={{ marginTop: 10 }}>Comparte tus diseños, de tal manera que puedas trabajar en equipo y compartir con la comunidad tus modelos de enseñanza.</Typography>
+                                <Button style={{ marginTop: 50, marginBottom: 20 }} onClick={handleOpenRegisterModal} color='primary' variant='contained'>
+                                    Comienza a diseñar
+                                </Button>
+                            </Box>
                         </Grid>
+                        <Grid item xs={12} lg={6} className={classes.bannerItem}>
+                            <Box display="flex" justifyContent="center">
+                                <Avatar variant="square" className={classes.firstImgSize} src={Design} alt="Design" />
+                            </Box>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                    <Box display="flex" justifyContent="center">
+                        <Typography variant='body1' align='center' className={classes.phrase}>"No pienses en un curso como un depósito de información. Piensa qué necesitan hacer tus estudiantes con la información una vez que terminen el curso y diséñalo en torno a eso."</Typography>
                     </Box>
-                    <div style={{ width: '100%'}} >
-                        <Box display="flex" justifyContent="center">
-                            <Typography variant='body1' align='center'>"No pienses en un curso como un depósito de información. Piensa qué necesitan hacer tus estudiantes con la información una vez que terminen el curso y diséñalo en torno a eso."</Typography>
-                        </Box>
-                        <Box display="flex" justifyContent="flex-end" className={classes.marginAutor}>
-                            <Typography variant='caption' className={classes.row}>~ Matthew Guyan</Typography>
-                        </Box>
-                    </div>
+                    <Box display="flex" justifyContent="flex-end" className={classes.marginAutor}>
+                        <Typography variant='caption' className={classes.row}>~ Matthew Guyan</Typography>
+                    </Box>
                 </Grid>
             </Grid>
             <Box display="flex" justifyContent="center">
-                <Typography style={{paddingTop: 100}} variant='h6' >¿Que utilidades te otorga la plataforma?</Typography>
+                <Typography style={{ paddingTop: 100 }} variant='h6' >¿Que utilidades te otorga la plataforma?</Typography>
             </Box>
             <Grid container className={classes.featureList}>
                 <Grid item xs={12} md={6} lg={4} className={classes.featureGrid}>
                     <Paper className={classes.feature}>
                         {
-                            theme.palette.type === 'dark' ? <Avatar variant="square" className={classes.featureImage} src={PyramidBloomDark} alt="PyramidBloomDark"  /> : <Avatar variant="square" className={classes.featureImage} src={PyramidBloomLight} alt="PyramidBloomLight" /> 
+                            theme.palette.type === 'dark' ? <Avatar variant="square" className={classes.featureImage} src={PyramidBloomDark} alt="PyramidBloomDark" /> : <Avatar variant="square" className={classes.featureImage} src={PyramidBloomLight} alt="PyramidBloomLight" />
                         }
                         <Typography align='center'>
                             Tus diseños se definen en coherencia con la Taxonomía de Bloom. Esto te permitirá definir los niveles cognitivos esperados para tus estudiantes, y facilitar las labores de evaluación.
