@@ -108,8 +108,7 @@ export const Design = ({ _id, title, updatedAt, metadata, folder, owner, privile
         },
         // Si la mutación falla, usa los datos previos desde el contexto retornado en onMutate para restaurar los datos
         onError: (error, design, context) => {
-            // TODO: Emitir notificación para retroalimentar
-            console.log(error);
+            enqueueSnackbar(error.message, { variant: 'error', autoHideDuration: 10000 });
             queryClient.setQueryData(['designs', folder.path], context.previousDesigns);
             queryClient.setQueryData([owner, 'user-public-designs'], context.previousPublicDesigns);
             if (context.previousRecentDesigns) queryClient.setQueryData('recent-designs', context.previousRecentDesigns);

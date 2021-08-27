@@ -161,7 +161,7 @@ export const DesignPage = () => {
             });
         };
     }, [clearDoc, dispatch]);
-    
+
     useEffect(() => {
         if (online) {
             socket?.emit('join-to-design', { user: authState.user, designId: id, public: false }, emitWithTimeout(
@@ -179,8 +179,12 @@ export const DesignPage = () => {
                         } else {
                             setError('Ha ocurrido un error, el diseño no existe o usted no tiene privilegios para editar este diseño.');
                         };
-    
+
                     } else {
+                        dispatch({
+                            type: types.ui.setUserSaveDesign,
+                            payload: true,
+                        });
                         setError(res.message);
                     };
                 },
@@ -232,7 +236,7 @@ export const DesignPage = () => {
                 });
             }
         });
-        socket?.on('reorder-tasks', ({learningActivityId, newOrder}) => {
+        socket?.on('reorder-tasks', ({ learningActivityId, newOrder }) => {
             if (isMounted.current) {
                 dispatch({
                     type: types.design.reorderTasks,
